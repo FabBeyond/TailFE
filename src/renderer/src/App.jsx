@@ -36,9 +36,10 @@ function useSettings() {
   const [activeTab, setActiveTab] = useState(0)
   const [insertMode, setInsertMode] = useState(false)
   const [kbdSearchLet, setKdbSearchLet] = useState("")
-  const [mainZoom, setMainZoom] = useState(30)
+  const [mainZoom, setMainZoom] = useState(20)
+  const [columnWidths, setColumnWidths] = useState({nameCol: 300, sizeCol: 150})
 
-  return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, setActiveTab, mainZoom, setMainZoom}
+  return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths}
 }
 
 function handleKeyDown(e, settings) {
@@ -88,12 +89,11 @@ function handleKeyDown(e, settings) {
     }
   }
 }
-function startResize(e, sidebarWidth, setSidebarWidth) {
+function startResize(e, startWidth, onResize) {
   const startX = e.clientX
-  const startWidth = sidebarWidth
 
   function onMouseMove(moveEvent) {
-    setSidebarWidth(startWidth + (moveEvent.clientX - startX))
+    onResize(startWidth + (moveEvent.clientX - startX))
   }
   function onMouseUp() {
     window.removeEventListener("mousemove", onMouseMove)
@@ -101,6 +101,11 @@ function startResize(e, sidebarWidth, setSidebarWidth) {
   }
   window.addEventListener("mousemove", onMouseMove)
   window.addEventListener("mouseup", onMouseUp)
+}
+function startColumnResize(e, columnWidths, setColumnWidths, column) {
+  startResize(e, columnWidths[column], (newWidth) => {
+    setColumnWidths(prev => ({...prev, [column]: newWidth}))
+  })
 }
 
 const SettingsContext = createContext()
@@ -153,13 +158,10 @@ function TopBar() {
   return (
     <input type="text" value={tempPath} onChange={(e) => {
       setTempPath(e.target.value)
-      console.log(e.target.value)
     }} onKeyUp={(e) => {
       if (e.key === "Enter") {
-          console.log(e.target.value)
         isValidPath(e.target.value).then(valid => {
           if (!valid) {
-              console.log("invalid")
             e.target.value = tabPaths[activeTab]
             e.target.blur()
           }
@@ -174,6 +176,7 @@ function TopBar() {
 }
 function Tab({path, tabId}) {
   const [files, setFiles] = useState([])
+  const {mainZoom, columnWidths, setColumnWidths} = useContext(SettingsContext)
 
   useEffect(() => {
     readDirSafe(path, setFiles)
@@ -183,14 +186,23 @@ function Tab({path, tabId}) {
     <File key={file.name} file={file} tabId={tabId}/>
   ))
   return (
-    <ul className="file-list">
-      {fileObjs}
-    </ul>
+    <>
+      <div className="files-headers" style={{fontSize: mainZoom}}>
+        <p className="name" style={{width: columnWidths.nameCol}}>Name</p>
+        <div className="resize-handle" onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "nameCol")}></div>
+        <p className="size" style={{width: columnWidths.sizeCol}}>Size</p>
+        <div className="resize-handle" onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "sizeCol")}></div>
+        <p className="last-modified">Last Modified</p>
+      </div>
+      <ul className="file-list">
+        {fileObjs}
+      </ul>
+    </>
   )
 }
 function File({file, tabId}) {
   const {showDotFiles} = useContext(SettingsContext)
-  const {tabPaths, setTabPaths, mainZoom} = useContext(SettingsContext)
+  const {tabPaths, setTabPaths, mainZoom, columnWidths, setColumnWidths} = useContext(SettingsContext)
 
   if (!showDotFiles && file.name.startsWith(".")) return
 
@@ -199,12 +211,22 @@ function File({file, tabId}) {
       <button style={{fontSize: mainZoom}} onClick={() => {
         changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
       }}>
-        {file.isDirectory ? (
-          <img src={icons["folder-icon.png"]} alt="folder-icon"/>
-        ) : (
-          <img src={icons["file-icon.png"]} alt="file-icon"/>
-        )}
-        <p>{file.name}</p>
+        <div className="file-name" style={{width: columnWidths.nameCol}}>
+          {file.isDirectory ? (
+            <img src={icons["folder-icon.png"]} alt="folder-icon"/>
+          ) : (
+            <img src={icons["file-icon.png"]} alt="file-icon"/>
+          )}
+          <p>{file.name}</p>
+        </div>
+        <div className="file-size" style={{width: columnWidths.sizeCol}}>
+          {!file.isDirectory &&
+            <p>{file.size} bytes</p>
+          }
+        </div>
+        <div className="file-last-modified">
+          <p>{file.lastModified.toString()}</p>
+        </div>
       </button>
     </div>
   )

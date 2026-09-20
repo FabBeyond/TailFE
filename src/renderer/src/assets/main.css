@@ -19,7 +19,7 @@ body {
   width: fit-content;
 }
 .fl-folder img {
-  width: 1em;
+  width: 1.5em;
 }
 .fl-folder button {
   border: none;
@@ -63,13 +63,12 @@ body {
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  width: 500px;
 }
 .file-list button:hover {
   background-color: #2c2c33;
 }
 .file img {
-  height: 1em;
+  height: 1.5em;
 }
 .file p {
   color: white;
@@ -81,4 +80,21 @@ body {
 }
 .resize-handle:hover {
   background: #FFFFFF
+}
+.file-name {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+}
+.files-headers {
+  display: flex;
+  color: white;
+}
+.files-headers > p {
+  flex-shrink: 0;
+  overflow: hidden;
+  margin: 0;
+}
+.file-last-modified {
+  flex: 1;
 }
