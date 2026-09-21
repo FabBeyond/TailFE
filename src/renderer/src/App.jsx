@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import TimeAgo from "javascript-time-ago"
+import en from "javascript-time-ago/locale/en"
 
 const iconModules = import.meta.glob('./assets/resources/*.{png,svg,jpg}', {
   eager: true,
@@ -7,6 +9,7 @@ const iconModules = import.meta.glob('./assets/resources/*.{png,svg,jpg}', {
 const icons = Object.fromEntries(
   Object.entries(iconModules).map(([path, url]) => [path.split('/').pop(), url])
 )
+const timeAgo = new TimeAgo("en")
 
 function concatPath(path1, path2) {
   return `${path1}/${path2}`.replace(/\/+/g, '/')
@@ -38,6 +41,11 @@ function useSettings() {
   const [kbdSearchLet, setKdbSearchLet] = useState("")
   const [mainZoom, setMainZoom] = useState(20)
   const [columnWidths, setColumnWidths] = useState({nameCol: 300, sizeCol: 150})
+  const [tick, setTick] =  useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t+1), 60000)
+    return () =>  clearInterval(id)
+  })
 
   return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths}
 }
@@ -201,7 +209,7 @@ function Tab({path, tabId}) {
   )
 }
 function File({file, tabId}) {
-  const {showDotFiles} = useContext(SettingsContext)
+  const {showDotFiles, tick} = useContext(SettingsContext)
   const {tabPaths, setTabPaths, mainZoom, columnWidths, setColumnWidths} = useContext(SettingsContext)
 
   if (!showDotFiles && file.name.startsWith(".")) return
@@ -225,7 +233,7 @@ function File({file, tabId}) {
           }
         </div>
         <div className="file-last-modified">
-          <p>{file.lastModified.toString()}</p>
+          <p>{timeAgo.format(file.lastModified)}</p>
         </div>
       </button>
     </div>
