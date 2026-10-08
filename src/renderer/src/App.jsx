@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import TimeAgo from "javascript-time-ago"
 import en from "javascript-time-ago/locale/en"
 
@@ -13,6 +13,10 @@ const timeAgo = new TimeAgo("en")
 
 function concatPath(path1, path2) {
   return `${path1}/${path2}`.replace(/\/+/g, '/')
+}
+function removeLastPathElement(path) {
+  const lastIndex = path.lastIndexOf("/")
+  return path.slice(0, lastIndex)
 }
 function changeTabPath(setTabPaths, tabId, newPath) {
   setTabPaths(prev => {
@@ -46,13 +50,19 @@ function useSettings() {
     const id = setInterval(() => setTick(t => t+1), 60000)
     return () =>  clearInterval(id)
   })
+  const [history, setHistory] = useState([])
+  const isHistoryChange = useRef(false)
+  const [historyIndex, setHistoryIndex] = useState(0)
 
-  return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths}
+  return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet,
+    activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths, history, setHistory, isHistoryChange,
+    historyIndex, setHistoryIndex}
 }
 
 function handleKeyDown(e, settings) {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return
-  const {insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, tabPaths, setTabPaths, mainZoom, setMainZoom} = settings
+  const {insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, tabPaths, setTabPaths,
+  mainZoom, setMainZoom, history, setHistory, historyIndex, setHistoryIndex} = settings
 
   // make Shift+i super insert mode where you type the full path
   if (e.key === "i" && !insertMode) {
@@ -95,6 +105,15 @@ function handleKeyDown(e, settings) {
         return prev+2
       })
     }
+    else if (e.key === "<") {
+      settings.isHistoryChange.current = true
+      setHistoryIndex(i => i-1)
+      changeTabPath(setTabPaths, activeTab, history[historyIndex])
+      console.log(historyIndex)
+    }
+    else if (e.key === ">") {
+      //forward history
+    }
   }
 }
 function startResize(e, startWidth, onResize) {
@@ -124,13 +143,16 @@ function App() {
   const [sidebarWidth, setSidebarWidth] = useState(200)
 
   const settings = useSettings()
-  const {tabPaths, insertMode} = settings
+  const {tabPaths} = settings
+
+  const settingsRef = useRef(settings)
+  settingsRef.current = settings
 
   useEffect(() => {
-    const listener = (e) => handleKeyDown(e, settings)
+    const listener = (e) => handleKeyDown(e, settingsRef.current)
     window.addEventListener("keydown", listener)
     return () => window.removeEventListener("keydown", listener)
-  }, [insertMode])
+  }, [])
 
   useEffect(() => {
     readDirSafe(curPath, setEntries)
@@ -184,10 +206,19 @@ function TopBar() {
 }
 function Tab({path, tabId}) {
   const [files, setFiles] = useState([])
-  const {mainZoom, columnWidths, setColumnWidths} = useContext(SettingsContext)
+  const {mainZoom, columnWidths, setColumnWidths, history, setHistory,
+    historyIndex, setHistoryIndex, isHistoryChange} = useContext(SettingsContext)
 
   useEffect(() => {
     readDirSafe(path, setFiles)
+    if (isHistoryChange.current) {
+      isHistoryChange.current = false
+    }
+    else {
+      setHistory(prev => [...prev.slice(0, historyIndex + 1), path])
+      setHistoryIndex(i => i+1)
+    }
+    console.log(historyIndex)
   }, [path])
 
   const fileObjs = files.map(file => (

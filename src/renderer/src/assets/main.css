@@ -72,6 +72,7 @@ body {
 }
 .file p {
   color: white;
+  text-align: left;
 }
 .resize-handle {
   width: 4px;
