@@ -52,7 +52,7 @@ function useSettings() {
   })
   const [history, setHistory] = useState([])
   const isHistoryChange = useRef(false)
-  const [historyIndex, setHistoryIndex] = useState(0)
+  const [historyIndex, setHistoryIndex] = useState(-1)
 
   return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet,
     activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths, history, setHistory, isHistoryChange,
@@ -106,10 +106,11 @@ function handleKeyDown(e, settings) {
       })
     }
     else if (e.key === "<") {
-      settings.isHistoryChange.current = true
-      setHistoryIndex(i => i-1)
-      changeTabPath(setTabPaths, activeTab, history[historyIndex])
-      console.log(historyIndex)
+      if (historyIndex > 0) {
+        settings.isHistoryChange.current = true
+        setHistoryIndex(i => i-1)
+        changeTabPath(setTabPaths, activeTab, history[historyIndex-1])
+      }
     }
     else if (e.key === ">") {
       //forward history
@@ -209,12 +210,16 @@ function Tab({path, tabId}) {
   const {mainZoom, columnWidths, setColumnWidths, history, setHistory,
     historyIndex, setHistoryIndex, isHistoryChange} = useContext(SettingsContext)
 
+  const lastRecordedPath = useRef(null)
+
   useEffect(() => {
     readDirSafe(path, setFiles)
     if (isHistoryChange.current) {
+      lastRecordedPath.current = path
       isHistoryChange.current = false
     }
-    else {
+    else if (lastRecordedPath.current !== path){
+      lastRecordedPath.current = path
       setHistory(prev => [...prev.slice(0, historyIndex + 1), path])
       setHistoryIndex(i => i+1)
     }
