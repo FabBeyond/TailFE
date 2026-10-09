@@ -68,6 +68,15 @@ app.whenReady().then(() => {
     }
   })
 
+  ipcMain.handle("delete-file", async (_event, filePath) => {
+    try {
+      await fs.rm(filePath, {recursive: true})
+    }
+    catch (err) {
+      return {error: err.code}
+    }
+  })
+
   createWindow()
 
   app.on('activate', function () {

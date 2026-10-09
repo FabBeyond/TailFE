@@ -99,3 +99,11 @@ body {
 .file-last-modified {
   flex: 1;
 }
+.context-menu {
+  width: 200px;
+  height: 300px;
+  background-color: #000000;
+  position: absolute;
+}
+.context-menu button {
+}

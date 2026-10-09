@@ -34,6 +34,15 @@ function readDirSafe(path, onSuccess) {
     if (!result.error) onSuccess(result)
   })
 }
+function deleteFile(path, tabPaths, activeTab, setRefreshToken) {
+  const result = window.api.deleteFile(path)
+  if (!result.error) {
+    setRefreshToken(1)
+  }
+  else {
+    console.log(result.error)
+  }
+}
 function isValidPath(path) {
   return window.api.readDir(path).then(result => !result.error)
 }
@@ -53,10 +62,12 @@ function useSettings() {
   const [history, setHistory] = useState([])
   const isHistoryChange = useRef(false)
   const [historyIndex, setHistoryIndex] = useState(-1)
+  const [menu, setMenu] = useState(null)
+  const [refreshToken, setRefreshToken] = useState(0)
 
   return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet,
     activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths, history, setHistory, isHistoryChange,
-    historyIndex, setHistoryIndex}
+    historyIndex, setHistoryIndex, menu, setMenu, refreshToken, setRefreshToken}
 }
 
 function handleKeyDown(e, settings) {
@@ -148,7 +159,7 @@ function App() {
   const [sidebarWidth, setSidebarWidth] = useState(200)
 
   const settings = useSettings()
-  const {tabPaths} = settings
+  const {tabPaths, setMenu} = settings
 
   const settingsRef = useRef(settings)
   settingsRef.current = settings
@@ -167,6 +178,15 @@ function App() {
     <Tab key={idx} path={path} tabId={idx}/>
   ))
 
+  useEffect(() => {
+    const listener = (e) => {
+      e.preventDefault()
+      const target = e.target.closest(".file")
+      setMenu({x: e.clientX, y: e.clientY, target: target?.dataset.path ?? null})
+    }
+    window.addEventListener("contextmenu", listener)
+    return () => window.removeEventListener("contextmenu", listener)
+  }, [])
   return (
     <SettingsContext.Provider value={settings}>
       <TopBar/>
@@ -179,6 +199,7 @@ function App() {
           {tabs}
         </ul>
       </div>
+      <ContextMenu/>
     </SettingsContext.Provider>
   )
 }
@@ -212,12 +233,13 @@ function TopBar() {
 function Tab({path, tabId}) {
   const [files, setFiles] = useState([])
   const {mainZoom, columnWidths, setColumnWidths, history, setHistory,
-    historyIndex, setHistoryIndex, isHistoryChange} = useContext(SettingsContext)
+    historyIndex, setHistoryIndex, isHistoryChange, refreshToken, setRefreshToken} = useContext(SettingsContext)
 
   const lastRecordedPath = useRef(null)
 
   useEffect(() => {
     readDirSafe(path, setFiles)
+    setRefreshToken(0)
     if (isHistoryChange.current) {
       lastRecordedPath.current = path
       isHistoryChange.current = false
@@ -227,7 +249,7 @@ function Tab({path, tabId}) {
       setHistory(prev => [...prev.slice(0, historyIndex + 1), path])
       setHistoryIndex(i => i+1)
     }
-  }, [path])
+  }, [path, refreshToken])
 
   const fileObjs = files.map(file => (
     <File key={file.name} file={file} tabId={tabId}/>
@@ -254,7 +276,7 @@ function File({file, tabId}) {
   if (!showDotFiles && file.name.startsWith(".")) return
 
   return (
-    <div className="file">
+    <div className="file" data-path={concatPath(tabPaths[tabId], file.name)}>
       <button style={{fontSize: mainZoom}} onClick={() => {
         changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
       }}>
@@ -332,6 +354,32 @@ function FLFolder({folderName, curPath}) {
       </div>
       {open && <FolderList files={children} curPath={concatPath(curPath, folderName.name)}/>}
     </div>
+  )
+}
+function ContextMenu() {
+  const {menu, setMenu, tabPaths, activeTab, setRefreshToken} = useContext(SettingsContext)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!menu) return
+    function onClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenu(null)
+      }
+    }
+    window.addEventListener("click", onClick)
+    return () => window.removeEventListener("click", onClick)
+  }, [menu])
+
+  return (
+    (menu && <div className="context-menu" ref={menuRef} style={{left: menu.x, top: menu.y}}>
+        <ul>
+          <li><button onClick={() => {
+            deleteFile(menu.target, tabPaths, activeTab, setRefreshToken)
+          }}>Delete</button></li>
+        </ul>
+      </div>
+    )
   )
 }
 
