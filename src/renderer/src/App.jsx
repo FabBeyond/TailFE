@@ -373,12 +373,19 @@ function ContextMenu() {
 
   return (
     (menu && <div className="context-menu" ref={menuRef} style={{left: menu.x, top: menu.y}}>
-        <ul>
+      <ul>
+        {menu.target &&
           <li><button onClick={() => {
             deleteFile(menu.target, tabPaths, activeTab, setRefreshToken)
           }}>Delete</button></li>
-        </ul>
-      </div>
+        }
+        <li><button onClick={() => {
+          window.api.createFolder(concatPath(tabPaths[activeTab], "NewFolder"))
+          setRefreshToken(1)
+        }}>New Folder</button>
+        </li>
+      </ul>
+    </div>
     )
   )
 }

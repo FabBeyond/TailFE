@@ -76,6 +76,14 @@ app.whenReady().then(() => {
       return {error: err.code}
     }
   })
+  ipcMain.handle("create-folder", async (_event, dirPath) => {
+    try {
+      await fs.mkdir(dirPath)
+    }
+    catch (err) {
+      return {error: err.code}
+    }
+  })
 
   createWindow()
 
