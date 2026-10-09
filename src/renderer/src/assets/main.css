@@ -105,5 +105,6 @@ body {
   background-color: #000000;
   position: absolute;
 }
-.context-menu button {
+.selected {
+  background-color: #FF0000;
 }

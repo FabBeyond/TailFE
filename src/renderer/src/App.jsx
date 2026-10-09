@@ -64,10 +64,11 @@ function useSettings() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [menu, setMenu] = useState(null)
   const [refreshToken, setRefreshToken] = useState(0)
+  const [selectedFile, setSelectedFile] = useState(null)
 
   return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet,
     activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths, history, setHistory, isHistoryChange,
-    historyIndex, setHistoryIndex, menu, setMenu, refreshToken, setRefreshToken}
+    historyIndex, setHistoryIndex, menu, setMenu, refreshToken, setRefreshToken, selectedFile, setSelectedFile}
 }
 
 function handleKeyDown(e, settings) {
@@ -271,13 +272,17 @@ function Tab({path, tabId}) {
 }
 function File({file, tabId}) {
   const {showDotFiles, tick} = useContext(SettingsContext)
-  const {tabPaths, setTabPaths, mainZoom, columnWidths, setColumnWidths} = useContext(SettingsContext)
+  const {tabPaths, setTabPaths, mainZoom, columnWidths, setColumnWidths, selectedFile, setSelectedFile} = useContext(SettingsContext)
 
   if (!showDotFiles && file.name.startsWith(".")) return
 
+  const path = concatPath(tabPaths[tabId], file.name)
+
   return (
-    <div className="file" data-path={concatPath(tabPaths[tabId], file.name)}>
+    <div className="file" style={{backgroundColor: selectedFile == path ? "#FF0000" : "none"}} data-path={concatPath(tabPaths[tabId], file.name)}>
       <button style={{fontSize: mainZoom}} onClick={() => {
+        setSelectedFile(path)
+      }} onDoubleClick={() => {
         changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
       }}>
         <div className="file-name" style={{width: columnWidths.nameCol}}>
