@@ -1,8 +1,17 @@
 import { join } from 'node:path'
+import { execFile, spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { promisify } from 'node:util'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+
+const FILE_MANAGER_DESKTOP_IDS = [
+  "org.gnome.nautilus.desktop", "nautilus.desktop", "org.gnome.Nautilus.desktop",
+  "dolphin.desktop", "org.kde.dolphin.desktop",
+  "nemo.desktop", "pcmanfm.desktop", "pcmanfm-qt.desktop",
+  "thunar.desktop", "io.elementary.files.desktop"
+]
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -68,6 +77,20 @@ app.whenReady().then(() => {
     }
   })
 
+  const execFileAsync = promisify(execFile)
+  async function hasDefaultProgram(path) {
+    try {
+      const {stdout: mimeType} = await execFileAsync("xdg-mime", ["query", "filetype", path])
+      const {stdout: defaultApp} = await execFileAsync("xdg-mime", ["query", "default", mimeType.trim()])
+      const app = defaultApp.trim()
+      if (!app) return false
+      return !FILE_MANAGER_DESKTOP_IDS.includes(app)
+    }
+    catch {
+      return false
+    }
+  }
+
   ipcMain.handle("delete-file", async (_event, filePath) => {
     try {
       await fs.rm(filePath, {recursive: true})
@@ -91,6 +114,13 @@ app.whenReady().then(() => {
     catch (err) {
       return {error: err.code}
     }
+  })
+  ipcMain.handle("open-file", async (_event, path) => {
+    if (!(await hasDefaultProgram(path))) {
+      return {noProgram: true}
+    }
+    const result = await shell.openPath(path)
+    return result ? {error: result} : {success: true}
   })
 
   createWindow()

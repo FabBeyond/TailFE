@@ -18,8 +18,17 @@ function File({file, tabId}) {
       <button style={{fontSize: mainZoom}} onClick={() => {
         setTempName(file.name)
         setSelectedFile(path)
-      }} onDoubleClick={() => {
-        changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
+      }} onDoubleClick={async () => {
+        if (file.isDirectory) {
+          changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
+        }
+        else {
+          const result = await window.api.openFile(path)
+          console.log(result)
+          if (result.noProgram) {
+              console.log("no program")
+          }
+        }
       }}>
         <div className="file-name" style={{width: columnWidths.nameCol}}>
           {file.isDirectory ? (

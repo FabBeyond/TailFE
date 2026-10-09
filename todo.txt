@@ -1,0 +1,2 @@
+Things to port to other os:
+- App picker
