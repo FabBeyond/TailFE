@@ -102,8 +102,23 @@ body {
 .context-menu {
   width: 200px;
   height: 300px;
-  background-color: #000000;
+  background-color: #292c38;
+  border-radius: 10px;
   position: absolute;
+  list-style-type: none;
+}
+.context-menu ul {
+  padding: 0;
+}
+.context-menu button {
+  background-color: #393c40;
+  width: 100%;
+  text-align: left;
+  padding-left: 20px;
+  color: white;
+  border: none;
+  margin-top: 0;
+  margin: 0;
 }
 .selected {
   background-color: #FF0000;

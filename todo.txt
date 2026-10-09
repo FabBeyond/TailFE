@@ -1,2 +1,6 @@
 Things to port to other os:
 - App picker
+
+General todo:
+- add app picker for unknown files
+- add toast notifs for errors

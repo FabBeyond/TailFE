@@ -10,7 +10,7 @@ export function deleteFile(path, tabPaths, activeTab, setRefreshToken) {
   }
 }
 export function createFolder(tabPaths, activeTab, setRefreshToken) {
-  const result = window.api.createFolder(concatPath(tabPaths[activeTab], "NewFolder"))
+  const result = window.api.createFolder(concatPath(tabPaths[activeTab], "1yt8034yhi1u9023Uht43R94YRgewrG"))
   if (!result.error) {
     setRefreshToken(1)
   }

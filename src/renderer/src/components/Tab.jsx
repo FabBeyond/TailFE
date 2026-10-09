@@ -12,7 +12,6 @@ function Tab({path, tabId}) {
   const lastRecordedPath = useRef(null)
 
   useEffect(() => {
-    setSelectedFile(null)
     readDirSafe(path, setFiles)
     setRefreshToken(0)
     if (isHistoryChange.current) {
@@ -25,6 +24,9 @@ function Tab({path, tabId}) {
       setHistoryIndex(i => i+1)
     }
   }, [path, refreshToken])
+  useEffect(() => {
+    setSelectedFile(null)
+  }, [path])
 
   const fileObjs = files.map(file => (
     <File key={file.name} file={file} tabId={tabId}/>

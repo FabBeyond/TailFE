@@ -26,7 +26,7 @@ function File({file, tabId}) {
           const result = await window.api.openFile(path)
           console.log(result)
           if (result.noProgram) {
-              console.log("no program")
+            console.log("no program")
           }
         }
       }}>
