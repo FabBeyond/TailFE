@@ -113,7 +113,11 @@ function handleKeyDown(e, settings) {
       }
     }
     else if (e.key === ">") {
-      //forward history
+      if (historyIndex+1 < history.length) {
+        settings.isHistoryChange.current = true
+        setHistoryIndex(i => i+1)
+        changeTabPath(setTabPaths, activeTab, history[historyIndex+1])
+      }
     }
   }
 }
@@ -223,7 +227,6 @@ function Tab({path, tabId}) {
       setHistory(prev => [...prev.slice(0, historyIndex + 1), path])
       setHistoryIndex(i => i+1)
     }
-    console.log(historyIndex)
   }, [path])
 
   const fileObjs = files.map(file => (
