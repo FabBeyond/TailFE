@@ -7,11 +7,12 @@ import File from './File'
 function Tab({path, tabId}) {
   const [files, setFiles] = useState([])
   const {mainZoom, columnWidths, setColumnWidths, history, setHistory,
-    historyIndex, setHistoryIndex, isHistoryChange, refreshToken, setRefreshToken} = useContext(SettingsContext)
+    historyIndex, setHistoryIndex, isHistoryChange, refreshToken, setRefreshToken, setSelectedFile} = useContext(SettingsContext)
 
   const lastRecordedPath = useRef(null)
 
   useEffect(() => {
+    setSelectedFile(null)
     readDirSafe(path, setFiles)
     setRefreshToken(0)
     if (isHistoryChange.current) {

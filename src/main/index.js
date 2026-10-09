@@ -84,6 +84,14 @@ app.whenReady().then(() => {
       return {error: err.code}
     }
   })
+  ipcMain.handle("rename", async (_event, path, newPath) => {
+    try {
+      await fs.rename(path, newPath)
+    }
+    catch (err) {
+      return {error: err.code}
+    }
+  })
 
   createWindow()
 

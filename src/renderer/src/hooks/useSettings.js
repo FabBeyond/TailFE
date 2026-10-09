@@ -21,8 +21,9 @@ export function useSettings() {
   const [menu, setMenu] = useState(null)
   const [refreshToken, setRefreshToken] = useState(0)
   const [selectedFile, setSelectedFile] = useState(null)
+  const [renaming, setRenaming] = useState(false)
 
   return {showDotFiles, setShowDotFiles, tabPaths, setTabPaths, insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet,
     activeTab, setActiveTab, mainZoom, setMainZoom, columnWidths, setColumnWidths, history, setHistory, isHistoryChange,
-    historyIndex, setHistoryIndex, menu, setMenu, refreshToken, setRefreshToken, selectedFile, setSelectedFile}
+    historyIndex, setHistoryIndex, menu, setMenu, refreshToken, setRefreshToken, selectedFile, setSelectedFile, renaming, setRenaming}
 }

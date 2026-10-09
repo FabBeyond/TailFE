@@ -10,7 +10,7 @@ import ContextMenu from './components/ContextMenu'
 function handleKeyDown(e, settings) {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return
   const {insertMode, setInsertMode, kbdSearchLet, setKdbSearchLet, activeTab, tabPaths, setTabPaths,
-  mainZoom, setMainZoom, history, setHistory, historyIndex, setHistoryIndex} = settings
+  mainZoom, setMainZoom, history, setHistory, historyIndex, setHistoryIndex, selectedFile, setRenaming} = settings
 
   // make Shift+i super insert mode where you type the full path
   if (e.key === "i" && !insertMode) {
@@ -66,6 +66,9 @@ function handleKeyDown(e, settings) {
         setHistoryIndex(i => i+1)
         changeTabPath(setTabPaths, activeTab, history[historyIndex+1])
       }
+    }
+    else if (e.key === "F2") {
+      setRenaming(i => true)
     }
   }
 }
