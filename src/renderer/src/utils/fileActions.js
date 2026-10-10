@@ -1,5 +1,3 @@
-import { concatPath } from "./paths"
-
 export async function deleteFile(path, tabPaths, activeTab, setRefreshToken) {
   const result = await window.api.deleteFile(path)
   if (!result.error) {
@@ -8,15 +6,15 @@ export async function deleteFile(path, tabPaths, activeTab, setRefreshToken) {
     console.log(result.error)
   }
 }
-export async function createFolder(tabPaths, activeTab, setRefreshToken) {
-  const result = await window.api.createFolder(
-    concatPath(tabPaths[activeTab], "1yt8034yhi1u9023Uht43R94YRgewrG")
-  )
-  if (!result.error) {
-    setRefreshToken(1)
-  } else {
+export async function createFolder(dir, setRefreshToken) {
+  const result = await window.api.createFolder(dir)
+  if (result.error) {
     console.log(result.error)
+    return null
   }
+
+  setRefreshToken(1)
+  return result.path
 }
 export async function rename(path, newPath, setRefreshToken) {
   const result = await window.api.rename(path, newPath)

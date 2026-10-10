@@ -109,12 +109,16 @@ app.whenReady().then(() => {
       return { error: err.code }
     }
   })
-  ipcMain.handle("create-folder", async (_event, dirPath) => {
-    try {
-      await fs.mkdir(dirPath)
-      return { success: true }
-    } catch (err) {
-      return { error: err.code }
+  ipcMain.handle("create-folder", async (_event, dir) => {
+    for (let i = 1; ; i++) {
+      const name = i === 1 ? "New Folder" : `New Folder (${i})`
+      const path = join(dir, name)
+      try {
+        await fs.mkdir(path)
+        return { path }
+      } catch (err) {
+        if (err.code !== "EEXIST") return { error: err.code }
+      }
     }
   })
   ipcMain.handle("rename", async (_event, path, newPath) => {

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { deleteFile, createFolder } from "../utils/fileActions"
-import { concatPath, changeTabPath } from "../utils/paths.js"
+import { changeTabPath } from "../utils/paths.js"
 import data from "../data.json"
 
 function ContextMenu() {
@@ -42,11 +42,13 @@ function ContextMenu() {
       }
     },
     openChoose: () => console.log("open chooser"),
-    newFolder: () => {
-      createFolder(tabPaths, activeTab, setRefreshToken)
-      const newFolderPath = concatPath(tabPaths[activeTab], "1yt8034yhi1u9023Uht43R94YRgewrG")
-      setSelectedFile(newFolderPath)
-      setRenaming(true)
+    newFolder: async () => {
+      const path = await createFolder(tabPaths[activeTab], setRefreshToken)
+      console.log(path)
+      if (path) {
+        setSelectedFile(path)
+        setRenaming(true)
+      }
     },
     delete: () => deleteFile(menu.target, tabPaths, activeTab, setRefreshToken),
     showProperties: () => console.log("show properties")

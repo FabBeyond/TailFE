@@ -4,9 +4,29 @@ import { concatPath, changeTabPath } from "../utils/paths"
 import { icons } from "../utils/icons"
 import { timeAgo } from "../utils/timeAgo"
 
+function RenameInput({ initialName, onSubmit, onCancel }) {
+  const [name, setName] = useState(initialName)
+
+  return (
+    <input
+      type="text"
+      autoFocus
+      className="rename-input"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      onDoubleClick={(e) => e.stopPropagation()}
+      onBlur={onCancel}
+      onKeyUp={(e) => {
+        if (e.key === "Enter") onSubmit(name)
+        else if (e.key === "Escape") onCancel()
+      }}
+    />
+  )
+}
+
 function File({ file, tabId }) {
-  const { showDotFiles } = useContext(SettingsContext)
   const {
+    showDotFiles,
     tabPaths,
     setTabPaths,
     mainZoom,
@@ -17,9 +37,8 @@ function File({ file, tabId }) {
     setRenaming,
     setRefreshToken
   } = useContext(SettingsContext)
-  const [tempName, setTempName] = useState("")
 
-  if (!showDotFiles && file.name.startsWith(".")) return
+  if (!showDotFiles && file.name.startsWith(".")) return null
 
   const path = concatPath(tabPaths[tabId], file.name)
 
@@ -27,13 +46,12 @@ function File({ file, tabId }) {
     <div
       className="file"
       style={{ backgroundColor: selectedFile === path ? "#FF0000" : "transparent" }}
-      data-path={concatPath(tabPaths[tabId], file.name)}
+      data-path={path}
       data-is-directory={file.isDirectory}
     >
       <button
         style={{ fontSize: mainZoom }}
         onClick={() => {
-          setTempName(file.name)
           setSelectedFile(path)
         }}
         onDoubleClick={async () => {
@@ -55,25 +73,16 @@ function File({ file, tabId }) {
             <img src={icons["file-icon.png"]} alt="file-icon" />
           )}
           {renaming && selectedFile === path ? (
-            <input
-              type="text"
-              autoFocus
-              className="rename-input"
-              value={tempName}
-              onChange={(e) => {
-                setTempName(e.target.value)
-              }}
-              onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  window.api.rename(path, concatPath(tabPaths[tabId], e.target.value))
-                  setRefreshToken(1)
-                  setRenaming(false)
-                  e.target.blur()
-                } else if (e.key === "Escape") {
-                  setRenaming(false)
-                  e.target.blur()
+            <RenameInput
+              initialName={file.name}
+              onSubmit={async (name) => {
+                if (name && name !== file.name) {
+                  await window.api.rename(path, concatPath(tabPaths[tabId], name))
+                  setRefreshToken((t) => t + 1)
                 }
+                setRenaming(false)
               }}
+              onCancel={() => setRenaming(false)}
             />
           ) : (
             <p>{file.name}</p>
