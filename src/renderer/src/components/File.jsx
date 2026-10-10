@@ -3,6 +3,7 @@ import { SettingsContext } from "../hooks/useSettings"
 import { concatPath, changeTabPath } from "../utils/paths"
 import { icons } from "../utils/icons"
 import { timeAgo } from "../utils/timeAgo"
+import { rename } from "../utils/fileActions.js"
 
 function RenameInput({ initialName, onSubmit, onCancel }) {
   const [name, setName] = useState(initialName)
@@ -77,8 +78,7 @@ function File({ file, tabId }) {
               initialName={file.name}
               onSubmit={async (name) => {
                 if (name && name !== file.name) {
-                  await window.api.rename(path, concatPath(tabPaths[tabId], name))
-                  setRefreshToken((t) => t + 1)
+                  await rename(path, concatPath(tabPaths[tabId], name), setRefreshToken)
                 }
                 setRenaming(false)
               }}

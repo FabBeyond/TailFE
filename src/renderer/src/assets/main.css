@@ -125,3 +125,19 @@ body {
 }
 .rename-input {
 }
+.toasts-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 500px;
+  height: 500px;
+  background-color: #0000ff44;
+}
+.toast {
+  background-color: #ff00ff;
+  width: 300px;
+  height: 200px;
+}
+.toast title {
+  text-align: center;
+}
