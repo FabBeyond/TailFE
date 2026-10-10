@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
+import { removeLastPathElement, changeTabPath } from "../utils/paths.js"
 import File from "./File"
 
 function Tab({ path, tabId }) {
@@ -16,7 +17,8 @@ function Tab({ path, tabId }) {
     isHistoryChangeRef,
     refreshToken,
     setRefreshToken,
-    setSelectedFile
+    setSelectedFile,
+    setTabPaths
   } = useContext(SettingsContext)
 
   const lastRecordedPathRef = useRef(null)
@@ -24,12 +26,13 @@ function Tab({ path, tabId }) {
   useEffect(() => {
     window.api.readDir(path).then((result) => {
       if (result.error) {
+        changeTabPath(setTabPaths, tabId, removeLastPathElement(path))
         showToast("Can't open folder", errorMessage(result.error), "error")
         return
       }
       setFiles(result)
     })
-  }, [path, refreshToken])
+  }, [path, refreshToken, tabId, setTabPaths])
 
   useEffect(() => {
     setRefreshToken(0)

@@ -21,7 +21,7 @@ function emit() {
   for (const listener of listeners) listener()
 }
 
-export function showToast(title, message, type = "info", duration = 4000) {
+export function showToast(title, message, type = "info", duration = 8000) {
   const id = crypto.randomUUID()
   toasts = [...toasts, { id, title, message, type }]
   emit()

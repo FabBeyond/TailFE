@@ -3,7 +3,8 @@ export function concatPath(path1, path2) {
 }
 export function removeLastPathElement(path) {
   const lastIndex = path.lastIndexOf("/")
-  return path.slice(0, lastIndex)
+  let newPath = path.slice(0, lastIndex)
+  return newPath === "" ? "/" : newPath
 }
 export function changeTabPath(setTabPaths, tabId, newPath) {
   setTabPaths((prev) => {
