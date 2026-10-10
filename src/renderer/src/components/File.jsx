@@ -81,6 +81,7 @@ function File({ file, tabId }) {
                   await rename(path, concatPath(tabPaths[tabId], name), setRefreshToken)
                 }
                 setRenaming(false)
+                setSelectedFile(concatPath(tabPaths[tabId], name))
               }}
               onCancel={() => setRenaming(false)}
             />

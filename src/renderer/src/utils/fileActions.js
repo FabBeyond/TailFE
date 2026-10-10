@@ -20,11 +20,10 @@ export async function createFolder(dir, setRefreshToken) {
 }
 export async function rename(path, newPath, setRefreshToken) {
   const result = await window.api.rename(path, newPath)
-  console.log(result)
   if (!result.error) {
     setRefreshToken(1)
   } else {
-    showToast(result.error)
+    showToast(result.error, "error", 30000)
     console.log(result.error)
   }
 }

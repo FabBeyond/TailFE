@@ -123,10 +123,15 @@ app.whenReady().then(() => {
   })
   ipcMain.handle("rename", async (_event, path, newPath) => {
     try {
+      await fs.access(newPath)
+      return { error: "EEXIST" }
+    } catch {}
+
+    try {
       await fs.rename(path, newPath)
       return { success: true }
     } catch (err) {
-      return { error: err.code }
+      return { error: err.code ?? err.message }
     }
   })
   ipcMain.handle("open-file", async (_event, path) => {

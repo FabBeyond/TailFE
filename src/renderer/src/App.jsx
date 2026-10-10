@@ -21,7 +21,8 @@ function handleKeyDown(e, settings) {
     history,
     historyIndex,
     setHistoryIndex,
-    setRenaming
+    setRenaming,
+    selectedFile
   } = settings
 
   // make Shift+i super insert mode where you type the full path
@@ -74,7 +75,9 @@ function handleKeyDown(e, settings) {
         changeTabPath(setTabPaths, activeTab, history[historyIndex + 1])
       }
     } else if (e.key === "F2") {
-      setRenaming(true)
+      if (selectedFile) {
+        setRenaming(true)
+      }
     }
   }
 }
