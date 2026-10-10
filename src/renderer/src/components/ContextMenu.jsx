@@ -1,10 +1,10 @@
 import { useContext, useEffect, useRef } from 'react'
 import { SettingsContext } from '../hooks/useSettings'
 import { deleteFile, createFolder } from '../utils/fileActions'
-import { concatPath } from '../utils/paths.js'
+import { concatPath, changeTabPath } from '../utils/paths.js'
 
 function ContextMenu() {
-  const {menu, setMenu, tabPaths, activeTab, setRefreshToken, selectedFile, setSelectedFile, setRenaming} = useContext(SettingsContext)
+  const {menu, setMenu, tabPaths, setTabPaths, activeTab, setRefreshToken, selectedFile, setSelectedFile, setRenaming} = useContext(SettingsContext)
   const menuRef = useRef(null)
 
   useEffect(() => {
@@ -22,10 +22,28 @@ function ContextMenu() {
     (menu && <div className="context-menu" ref={menuRef} style={{left: menu.x, top: menu.y}}>
       <ul>
         {menu.target &&
-          <li><button onClick={() => {
-            deleteFile(menu.target, tabPaths, activeTab, setRefreshToken)
-            setMenu(null)
-          }}>Delete</button></li>
+          <>
+            <li><button onClick={async () => {
+              if (menu.isDirectory) {
+                changeTabPath(setTabPaths, activeTab, menu.target)
+              }
+              else {
+                const result = await window.api.openFile(menu.target)
+                if (result.noProgram) {
+                  console.log("no program :(")
+                }
+              }
+              setMenu(null)
+            }}>Open</button></li>
+            <li><button onClick={() => {
+              console.log("open with")
+              setMenu(null)
+            }}>Open With</button></li>
+            <li><button onClick={() => {
+              deleteFile(menu.target, tabPaths, activeTab, setRefreshToken)
+              setMenu(null)
+            }}>Delete</button></li>
+          </>
         }
         <li><button onClick={() => {
           createFolder(tabPaths, activeTab, setRefreshToken)
@@ -35,6 +53,10 @@ function ContextMenu() {
           setMenu(null)
         }}>New Folder</button>
         </li>
+        <li><button onClick={() => {
+          console.log("show properties")
+          setMenu(null)
+        }}>Properties</button></li>
       </ul>
     </div>
     )

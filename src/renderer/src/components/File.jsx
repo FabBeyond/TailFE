@@ -14,7 +14,8 @@ function File({file, tabId}) {
   const path = concatPath(tabPaths[tabId], file.name)
 
   return (
-    <div className="file" style={{backgroundColor: selectedFile === path ? "#FF0000" : "transparent"}} data-path={concatPath(tabPaths[tabId], file.name)}>
+    <div className="file" style={{backgroundColor: selectedFile === path ? "#FF0000" : "transparent"}}
+      data-path={concatPath(tabPaths[tabId], file.name)} data-is-directory={file.isDirectory}>
       <button style={{fontSize: mainZoom}} onClick={() => {
         setTempName(file.name)
         setSelectedFile(path)

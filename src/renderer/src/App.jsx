@@ -102,7 +102,7 @@ function App() {
     const listener = (e) => {
       e.preventDefault()
       const target = e.target.closest(".file")
-      setMenu({x: e.clientX, y: e.clientY, target: target?.dataset.path ?? null})
+      setMenu({x: e.clientX, y: e.clientY, target: target?.dataset.path ?? null, isDirectory: target?.dataset.isDirectory === "true"})
     }
     window.addEventListener("contextmenu", listener)
     return () => window.removeEventListener("contextmenu", listener)
