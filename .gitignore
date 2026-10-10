@@ -6,7 +6,6 @@ dist/
 dist-electron/
 out/
 release/
-build/
 *.tsbuildinfo
 
 # Packaged installers
@@ -40,8 +39,7 @@ pnpm-debug.log*
 coverage/
 
 # Editors / OS
-.vscode/*
-!.vscode/extensions.json
+.vscode/
 .idea/
 .DS_Store
 Thumbs.db

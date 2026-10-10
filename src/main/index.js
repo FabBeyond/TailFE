@@ -1,8 +1,8 @@
 import { join } from "node:path"
-import { execFile, spawn } from "node:child_process"
+import { execFile } from "node:child_process"
 import fs from "node:fs/promises"
 import { promisify } from "node:util"
-import { app, shell, BrowserWindow, ipcMain, dialog } from "electron"
+import { app, shell, BrowserWindow, ipcMain } from "electron"
 import { electronApp, optimizer, is } from "@electron-toolkit/utils"
 import icon from "../../resources/icon.png?asset"
 
@@ -104,6 +104,7 @@ app.whenReady().then(() => {
   ipcMain.handle("delete-file", async (_event, filePath) => {
     try {
       await fs.rm(filePath, { recursive: true })
+      return { success: true }
     } catch (err) {
       return { error: err.code }
     }
@@ -111,6 +112,7 @@ app.whenReady().then(() => {
   ipcMain.handle("create-folder", async (_event, dirPath) => {
     try {
       await fs.mkdir(dirPath)
+      return { success: true }
     } catch (err) {
       return { error: err.code }
     }
@@ -118,6 +120,7 @@ app.whenReady().then(() => {
   ipcMain.handle("rename", async (_event, path, newPath) => {
     try {
       await fs.rename(path, newPath)
+      return { success: true }
     } catch (err) {
       return { error: err.code }
     }

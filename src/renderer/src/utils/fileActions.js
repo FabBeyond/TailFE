@@ -19,7 +19,7 @@ export async function createFolder(tabPaths, activeTab, setRefreshToken) {
   }
 }
 export async function rename(path, newPath, setRefreshToken) {
-  const result = await window.api.rename(path)
+  const result = await window.api.rename(path, newPath)
   if (!result.error) {
     setRefreshToken(1)
   } else {

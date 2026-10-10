@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { deleteFile, createFolder } from "../utils/fileActions"
-import { concatPath } from "../utils/paths.js"
+import { concatPath, changeTabPath } from "../utils/paths.js"
 import data from "../data.json"
 
 function ContextMenu() {
@@ -13,7 +13,6 @@ function ContextMenu() {
     setRefreshToken,
     setSelectedFile,
     setRenaming,
-    changeTabPath,
     setTabPaths
   } = useContext(SettingsContext)
   const menuRef = useRef(null)
