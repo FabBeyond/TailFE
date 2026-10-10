@@ -1,31 +1,28 @@
-import eslint from '@electron-toolkit/eslint-config'
-import eslintConfigPrettier from '@electron-toolkit/eslint-config-prettier'
-import eslintPluginReact from 'eslint-plugin-react'
-import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
-import eslintPluginReactRefresh from 'eslint-plugin-react-refresh'
+import js from "@eslint/js";
+import electronToolkit from "@electron-toolkit/eslint-config";
+import electronToolkitPrettier from "@electron-toolkit/eslint-config-prettier";
+import pluginReact from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import { defineConfig } from "eslint/config";
 
-export default [
-  { ignores: ['**/node_modules', '**/dist', '**/out'] },
-  eslint,
-  eslintPluginReact.configs.flat.recommended,
-  eslintPluginReact.configs.flat['jsx-runtime'],
+export default defineConfig([
+  { ignores: ["out/**", "dist/**", "node_modules/**"] },
+  { files: ["**/*.{js,mjs,cjs,jsx}"], plugins: { js }, extends: ["js/recommended"] },
+  electronToolkit,
+  pluginReact.configs.flat.recommended,
+  reactHooks.configs.flat["recommended-latest"],
   {
-    settings: {
-      react: {
-        version: 'detect'
-      }
-    }
-  },
-  {
-    files: ['**/*.{js,jsx}'],
-    plugins: {
-      'react-hooks': eslintPluginReactHooks,
-      'react-refresh': eslintPluginReactRefresh
-    },
+    files: ["**/*.{jsx,js}"],
+    plugins: { "react-refresh": reactRefresh },
     rules: {
-      ...eslintPluginReactHooks.configs.recommended.rules,
-      ...eslintPluginReactRefresh.configs.vite.rules
+      "react-refresh/only-export-components": "warn",
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off"
+    },
+    settings: {
+      react: { version: "detect" }
     }
   },
-  eslintConfigPrettier
-]
+  electronToolkitPrettier
+]);

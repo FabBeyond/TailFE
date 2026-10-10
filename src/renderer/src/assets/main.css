@@ -10,7 +10,7 @@
   display: flex;
 }
 body {
-  background-color: #1b1b1f
+  background-color: #1b1b1f;
 }
 .fl-folder > .fl-folder-content {
   display: flex;
@@ -80,7 +80,7 @@ body {
   background: transparent;
 }
 .resize-handle:hover {
-  background: #FFFFFF
+  background: #ffffff;
 }
 .file-name {
   display: flex;
@@ -121,8 +121,7 @@ body {
   margin: 0;
 }
 .selected {
-  background-color: #FF0000;
+  background-color: #ff0000;
 }
 .rename-input {
-
 }
