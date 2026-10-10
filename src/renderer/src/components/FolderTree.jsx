@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from 'react'
-import { SettingsContext } from '../hooks/useSettings'
-import { concatPath, changeTabPath, hasDirectories, readDirSafe } from '../utils/paths'
-import { icons } from '../utils/icons'
+import { useContext, useEffect, useState } from "react"
+import { SettingsContext } from "../hooks/useSettings"
+import { concatPath, changeTabPath, hasDirectories, readDirSafe } from "../utils/paths"
+import { icons } from "../utils/icons"
 
 export function RootFolderList() {
   return (
     <ul className="folder-list">
-      <FLFolder folderName={{ name: '/', isDirectory: true }} curPath="/" />
+      <FLFolder folderName={{ name: "/", isDirectory: true }} curPath="/" />
     </ul>
   )
 }
@@ -33,21 +33,21 @@ export function FLFolder({ folderName, curPath }) {
     }
   }, [open, curPath, folderName.name])
 
-  if (!showDotFiles && folderName.name.startsWith('.')) return
+  if (!showDotFiles && folderName.name.startsWith(".")) return
 
   return (
     <div className="fl-folder">
       <div className="fl-folder-content">
         <button
-          className={`${open ? 'arrow-open' : ''} ${!hasDirectories(children) ? 'hide' : ''}`}
+          className={`${open ? "arrow-open" : ""} ${!hasDirectories(children) ? "hide" : ""}`}
           onClick={() => {
             const next = !open
             setOpen(next)
           }}
         >
-          <img src={icons['arrow-icon.png']} />
+          <img src={icons["arrow-icon.png"]} />
         </button>
-        <img src={icons['folder-icon.png']} alt="folder icon" />
+        <img src={icons["folder-icon.png"]} alt="folder icon" />
         <button
           onClick={() =>
             changeTabPath(setTabPaths, activeTab, concatPath(curPath, folderName.name))

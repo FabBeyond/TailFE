@@ -1,3 +1,4 @@
-import TimeAgo from 'javascript-time-ago'
+import TimeAgo from "javascript-time-ago"
+import en from "javascript-time-ago/locale/en"
 
-export const timeAgo = new TimeAgo('en')
+export const timeAgo = new TimeAgo("en")

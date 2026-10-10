@@ -1,7 +1,7 @@
-const iconModules = import.meta.glob('../assets/resources/*.{png,svg,jpg}', {
+const iconModules = import.meta.glob("../assets/resources/*.{png,svg,jpg}", {
   eager: true,
-  import: 'default'
+  import: "default"
 })
 export const icons = Object.fromEntries(
-  Object.entries(iconModules).map(([path, url]) => [path.split('/').pop(), url])
+  Object.entries(iconModules).map(([path, url]) => [path.split("/").pop(), url])
 )

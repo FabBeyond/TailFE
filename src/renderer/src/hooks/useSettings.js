@@ -1,16 +1,16 @@
-import { createContext, useEffect, useRef, useState } from 'react'
+import { createContext, useEffect, useRef, useState } from "react"
 
 export const SettingsContext = createContext()
 
 export function useSettings() {
   const [showDotFiles, setShowDotFiles] = useState(false)
-  const [tabPaths, setTabPaths] = useState(['/'])
+  const [tabPaths, setTabPaths] = useState(["/"])
   const [activeTab, setActiveTab] = useState(0)
   const [insertMode, setInsertMode] = useState(false)
-  const [kbdSearchLet, setKdbSearchLet] = useState('')
+  const [kbdSearchLet, setKdbSearchLet] = useState("")
   const [mainZoom, setMainZoom] = useState(20)
   const [columnWidths, setColumnWidths] = useState({ nameCol: 300, sizeCol: 150 })
-  const [setTick] = useState(0)
+  const [, setTick] = useState(0)
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 60000)
     return () => clearInterval(id)

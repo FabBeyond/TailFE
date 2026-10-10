@@ -1,8 +1,8 @@
-import { useContext, useState } from 'react'
-import { SettingsContext } from '../hooks/useSettings'
-import { concatPath, changeTabPath } from '../utils/paths'
-import { icons } from '../utils/icons'
-import { timeAgo } from '../utils/timeAgo'
+import { useContext, useState } from "react"
+import { SettingsContext } from "../hooks/useSettings"
+import { concatPath, changeTabPath } from "../utils/paths"
+import { icons } from "../utils/icons"
+import { timeAgo } from "../utils/timeAgo"
 
 function File({ file, tabId }) {
   const { showDotFiles } = useContext(SettingsContext)
@@ -17,16 +17,16 @@ function File({ file, tabId }) {
     setRenaming,
     setRefreshToken
   } = useContext(SettingsContext)
-  const [tempName, setTempName] = useState('')
+  const [tempName, setTempName] = useState("")
 
-  if (!showDotFiles && file.name.startsWith('.')) return
+  if (!showDotFiles && file.name.startsWith(".")) return
 
   const path = concatPath(tabPaths[tabId], file.name)
 
   return (
     <div
       className="file"
-      style={{ backgroundColor: selectedFile === path ? '#FF0000' : 'transparent' }}
+      style={{ backgroundColor: selectedFile === path ? "#FF0000" : "transparent" }}
       data-path={concatPath(tabPaths[tabId], file.name)}
       data-is-directory={file.isDirectory}
     >
@@ -43,16 +43,16 @@ function File({ file, tabId }) {
             const result = await window.api.openFile(path)
             console.log(result)
             if (result.noProgram) {
-              console.log('no program')
+              console.log("no program")
             }
           }
         }}
       >
         <div className="file-name" style={{ width: columnWidths.nameCol }}>
           {file.isDirectory ? (
-            <img src={icons['folder-icon.png']} alt="folder-icon" />
+            <img src={icons["folder-icon.png"]} alt="folder-icon" />
           ) : (
-            <img src={icons['file-icon.png']} alt="file-icon" />
+            <img src={icons["file-icon.png"]} alt="file-icon" />
           )}
           {renaming && selectedFile === path ? (
             <input
@@ -64,12 +64,12 @@ function File({ file, tabId }) {
                 setTempName(e.target.value)
               }}
               onKeyUp={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   window.api.rename(path, concatPath(tabPaths[tabId], e.target.value))
                   setRefreshToken(1)
                   setRenaming(false)
                   e.target.blur()
-                } else if (e.key === 'Escape') {
+                } else if (e.key === "Escape") {
                   setRenaming(false)
                   e.target.blur()
                 }

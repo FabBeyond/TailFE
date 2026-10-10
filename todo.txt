@@ -4,3 +4,4 @@ Things to port to other os:
 General todo:
 - add app picker for unknown files
 - add toast notifs for errors
+- Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'error') at createFolder (fileActions.js:15:15)

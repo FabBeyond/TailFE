@@ -1,0 +1,29 @@
+{
+  "contextMenu": [
+    {
+      "name": "Open",
+      "action": "openDefault",
+      "condition": ["hasTarget"]
+    },
+    {
+      "name": "Open With",
+      "action": "openChoose",
+      "condition": ["hasTarget"]
+    },
+    {
+      "name": "Delete",
+      "action": "delete",
+      "condition": ["hasTarget"]
+    },
+    {
+      "name": "New Folder",
+      "action": "newFolder",
+      "condition": []
+    },
+    {
+      "name": "Properties",
+      "action": "showProperties",
+      "condition": ["hasTarget"]
+    }
+  ]
+}

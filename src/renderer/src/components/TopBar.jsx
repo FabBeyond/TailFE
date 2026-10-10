@@ -1,6 +1,6 @@
-import { useContext, useState } from 'react'
-import { SettingsContext } from '../hooks/useSettings'
-import { changeTabPath, isValidPath } from '../utils/paths'
+import { useContext, useState } from "react"
+import { SettingsContext } from "../hooks/useSettings"
+import { changeTabPath, isValidPath } from "../utils/paths"
 
 function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
   const [tempPath, setTempPath] = useState(initialPath)
@@ -13,7 +13,7 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
         setTempPath(e.target.value)
       }}
       onKeyUp={(e) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
           isValidPath(e.target.value).then((valid) => {
             if (!valid) {
               e.target.value = tabPaths[activeTab]

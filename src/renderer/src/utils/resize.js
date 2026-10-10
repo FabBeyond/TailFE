@@ -5,11 +5,11 @@ export function startResize(e, startWidth, onResize) {
     onResize(startWidth + (moveEvent.clientX - startX))
   }
   function onMouseUp() {
-    window.removeEventListener('mousemove', onMouseMove)
-    window.removeEventListener('mouseup', onMouseUp)
+    window.removeEventListener("mousemove", onMouseMove)
+    window.removeEventListener("mouseup", onMouseUp)
   }
-  window.addEventListener('mousemove', onMouseMove)
-  window.addEventListener('mouseup', onMouseUp)
+  window.addEventListener("mousemove", onMouseMove)
+  window.addEventListener("mouseup", onMouseUp)
 }
 export function startColumnResize(e, columnWidths, setColumnWidths, column) {
   startResize(e, columnWidths[column], (newWidth) => {

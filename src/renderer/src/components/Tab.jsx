@@ -1,8 +1,8 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { SettingsContext } from '../hooks/useSettings'
-import { readDirSafe } from '../utils/paths'
-import { startColumnResize } from '../utils/resize'
-import File from './File'
+import { useContext, useEffect, useRef, useState } from "react"
+import { SettingsContext } from "../hooks/useSettings"
+import { readDirSafe } from "../utils/paths"
+import { startColumnResize } from "../utils/resize"
+import File from "./File"
 
 function Tab({ path, tabId }) {
   const [files, setFiles] = useState([])
@@ -54,14 +54,14 @@ function Tab({ path, tabId }) {
         </p>
         <div
           className="resize-handle"
-          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, 'nameCol')}
+          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "nameCol")}
         ></div>
         <p className="size" style={{ width: columnWidths.sizeCol }}>
           Size
         </p>
         <div
           className="resize-handle"
-          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, 'sizeCol')}
+          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "sizeCol")}
         ></div>
         <p className="last-modified">Last Modified</p>
       </div>

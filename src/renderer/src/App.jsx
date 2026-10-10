@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
-import { SettingsContext, useSettings } from './hooks/useSettings'
-import { changeTabPath, concatPath, readDirSafe } from './utils/paths'
-import { startResize } from './utils/resize'
-import TopBar from './components/TopBar'
-import Tab from './components/Tab'
-import { RootFolderList } from './components/FolderTree'
-import ContextMenu from './components/ContextMenu'
+import { useEffect, useRef, useState } from "react"
+import { SettingsContext, useSettings } from "./hooks/useSettings"
+import { changeTabPath, concatPath, readDirSafe } from "./utils/paths"
+import { startResize } from "./utils/resize"
+import TopBar from "./components/TopBar"
+import Tab from "./components/Tab"
+import { RootFolderList } from "./components/FolderTree"
+import ContextMenu from "./components/ContextMenu"
 
 function handleKeyDown(e, settings) {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return
   const {
     insertMode,
     setInsertMode,
@@ -24,55 +24,55 @@ function handleKeyDown(e, settings) {
   } = settings
 
   // make Shift+i super insert mode where you type the full path
-  if (e.key === 'i' && !insertMode) {
+  if (e.key === "i" && !insertMode) {
     e.preventDefault()
     setInsertMode(true)
     return
-  } else if (e.key === 'Escape' && insertMode) {
+  } else if (e.key === "Escape" && insertMode) {
     e.preventDefault()
     setInsertMode(false)
-    setKdbSearchLet('')
+    setKdbSearchLet("")
     return
   }
 
   if (insertMode) {
     setKdbSearchLet((prev) => {
-      if (e.key === 'Shift') return prev
-      if (e.key === 'Backspace') {
+      if (e.key === "Shift") return prev
+      if (e.key === "Backspace") {
         return prev.slice(0, -1)
       }
-      if (e.key === 'Enter') {
-        if (prev === '.') {
+      if (e.key === "Enter") {
+        if (prev === ".") {
           // move backwards
         }
         changeTabPath(setTabPaths, activeTab, concatPath(tabPaths[activeTab], prev))
         setInsertMode(false)
-        return ''
+        return ""
       }
       return prev + e.key
     })
   } else {
-    if (e.key === ',') {
+    if (e.key === ",") {
       setMainZoom((prev) => {
         return prev - 2
       })
-    } else if (e.key === '.') {
+    } else if (e.key === ".") {
       setMainZoom((prev) => {
         return prev + 2
       })
-    } else if (e.key === '<') {
+    } else if (e.key === "<") {
       if (historyIndex > 0) {
         settings.isHistoryChangeRef.current = true
         setHistoryIndex((i) => i - 1)
         changeTabPath(setTabPaths, activeTab, history[historyIndex - 1])
       }
-    } else if (e.key === '>') {
+    } else if (e.key === ">") {
       if (historyIndex + 1 < history.length) {
         settings.isHistoryChangeRef.current = true
         setHistoryIndex((i) => i + 1)
         changeTabPath(setTabPaths, activeTab, history[historyIndex + 1])
       }
-    } else if (e.key === 'F2') {
+    } else if (e.key === "F2") {
       setRenaming(true)
     }
   }
@@ -80,7 +80,7 @@ function handleKeyDown(e, settings) {
 
 function App() {
   const [entries, setEntries] = useState([])
-  const [curPath] = useState('/')
+  const [curPath] = useState("/")
   const [sidebarWidth, setSidebarWidth] = useState(200)
 
   const settings = useSettings()
@@ -94,8 +94,8 @@ function App() {
 
   useEffect(() => {
     const listener = (e) => handleKeyDown(e, settingsRef.current)
-    window.addEventListener('keydown', listener)
-    return () => window.removeEventListener('keydown', listener)
+    window.addEventListener("keydown", listener)
+    return () => window.removeEventListener("keydown", listener)
   }, [])
 
   useEffect(() => {
@@ -107,16 +107,16 @@ function App() {
   useEffect(() => {
     const listener = (e) => {
       e.preventDefault()
-      const target = e.target.closest('.file')
+      const target = e.target.closest(".file")
       setMenu({
         x: e.clientX,
         y: e.clientY,
         target: target?.dataset.path ?? null,
-        isDirectory: target?.dataset.isDirectory === 'true'
+        isDirectory: target?.dataset.isDirectory === "true"
       })
     }
-    window.addEventListener('contextmenu', listener)
-    return () => window.removeEventListener('contextmenu', listener)
+    window.addEventListener("contextmenu", listener)
+    return () => window.removeEventListener("contextmenu", listener)
   }, [setMenu])
   return (
     <SettingsContext.Provider value={settings}>

@@ -1,8 +1,8 @@
 export function concatPath(path1, path2) {
-  return `${path1}/${path2}`.replace(/\/+/g, '/')
+  return `${path1}/${path2}`.replace(/\/+/g, "/")
 }
 export function removeLastPathElement(path) {
-  const lastIndex = path.lastIndexOf('/')
+  const lastIndex = path.lastIndexOf("/")
   return path.slice(0, lastIndex)
 }
 export function changeTabPath(setTabPaths, tabId, newPath) {
