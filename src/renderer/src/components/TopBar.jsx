@@ -1,6 +1,7 @@
 import { useContext, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
-import { changeTabPath, isValidPath } from "../utils/paths"
+import { changeTabPath } from "../utils/paths"
+import { showToast, errorMessage } from "../utils/toast.js"
 
 function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
   const [tempPath, setTempPath] = useState(initialPath)
@@ -14,14 +15,15 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
       }}
       onKeyUp={(e) => {
         if (e.key === "Enter") {
-          isValidPath(e.target.value).then((valid) => {
-            if (!valid) {
-              e.target.value = tabPaths[activeTab]
-              e.target.blur()
+          const input = e.target
+          window.api.readDir(tempPath).then((result) => {
+            if (result.error) {
+              showToast("Can't open folder", `${tempPath}: ${errorMessage(result.error)}`, "error")
+              setTempPath(tabPaths[activeTab])
             } else {
-              changeTabPath(setTabPaths, activeTab, e.target.value)
-              e.target.blur()
+              changeTabPath(setTabPaths, activeTab, tempPath)
             }
+            input.blur()
           })
         }
       }}

@@ -75,9 +75,7 @@ function handleKeyDown(e, settings) {
         changeTabPath(setTabPaths, activeTab, history[historyIndex + 1])
       }
     } else if (e.key === "F2") {
-      if (selectedFile) {
-        setRenaming(true)
-      }
+      if (selectedFile) setRenaming(true)
     }
   }
 }

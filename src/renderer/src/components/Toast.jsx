@@ -9,7 +9,8 @@ function Toast() {
       {toasts.map((item) => (
         <div key={item.id} className="toast">
           <p className="title">{item.title}</p>
-          <p className="content">{item.content}</p>
+          <div className="divider"></div>
+          <p className="content">{item.message}</p>
         </div>
       ))}
     </div>

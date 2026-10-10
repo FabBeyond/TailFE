@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from "react"
 import { SettingsContext } from "../hooks/useSettings"
-import { deleteFile, createFolder } from "../utils/fileActions"
+import { deleteFile, createFolder, openFile } from "../utils/fileActions"
 import { changeTabPath } from "../utils/paths.js"
 import data from "../data.json"
 
@@ -35,16 +35,12 @@ function ContextMenu() {
       if (menu.isDirectory) {
         changeTabPath(setTabPaths, activeTab, menu.target)
       } else {
-        const result = await window.api.openFile(menu.target)
-        if (result.noProgram) {
-          console.log("no program :(")
-        }
+        await openFile(menu.target)
       }
     },
     openChoose: () => console.log("open chooser"),
     newFolder: async () => {
       const path = await createFolder(tabPaths[activeTab], setRefreshToken)
-      console.log(path)
       if (path) {
         setSelectedFile(path)
         setRenaming(true)

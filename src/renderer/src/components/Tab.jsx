@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
-import { readDirSafe } from "../utils/paths"
+import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
 import File from "./File"
 
@@ -22,7 +22,16 @@ function Tab({ path, tabId }) {
   const lastRecordedPathRef = useRef(null)
 
   useEffect(() => {
-    readDirSafe(path, setFiles)
+    window.api.readDir(path).then((result) => {
+      if (result.error) {
+        showToast("Can't open folder", errorMessage(result.error), "error")
+        return
+      }
+      setFiles(result)
+    })
+  }, [path, refreshToken])
+
+  useEffect(() => {
     setRefreshToken(0)
     if (isHistoryChangeRef.current) {
       lastRecordedPathRef.current = path

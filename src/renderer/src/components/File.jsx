@@ -3,7 +3,7 @@ import { SettingsContext } from "../hooks/useSettings"
 import { concatPath, changeTabPath } from "../utils/paths"
 import { icons } from "../utils/icons"
 import { timeAgo } from "../utils/timeAgo"
-import { rename } from "../utils/fileActions.js"
+import { rename, openFile } from "../utils/fileActions.js"
 
 function RenameInput({ initialName, onSubmit, onCancel }) {
   const [name, setName] = useState(initialName)
@@ -59,11 +59,7 @@ function File({ file, tabId }) {
           if (file.isDirectory) {
             changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
           } else {
-            const result = await window.api.openFile(path)
-            console.log(result)
-            if (result.noProgram) {
-              console.log("no program")
-            }
+            await openFile(path)
           }
         }}
       >

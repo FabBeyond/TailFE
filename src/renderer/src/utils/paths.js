@@ -21,6 +21,3 @@ export function readDirSafe(path, onSuccess) {
     if (!result.error) onSuccess(result)
   })
 }
-export function isValidPath(path) {
-  return window.api.readDir(path).then((result) => !result.error)
-}
