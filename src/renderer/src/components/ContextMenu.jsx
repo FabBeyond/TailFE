@@ -48,7 +48,7 @@ function ContextMenu() {
       setSelectedFile(newFolderPath)
       setRenaming(true)
     },
-    deleteFile: () => deleteFile(menu.target, tabPaths, activeTab, setRefreshToken),
+    delete: () => deleteFile(menu.target, tabPaths, activeTab, setRefreshToken),
     showProperties: () => console.log("show properties")
   }
   const conditions = {
