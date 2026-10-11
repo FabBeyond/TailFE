@@ -5,6 +5,7 @@ export const SettingsContext = createContext()
 export function useSettings() {
   const [showDotFiles, setShowDotFiles] = useState(false)
   const [tabPaths, setTabPaths] = useState(["/"])
+  const [tabFiles, setTabFiles] = useState([[]])
   const [activeTab, setActiveTab] = useState(0)
   const [insertMode, setInsertMode] = useState(false)
   const [kbdSearchLet, setKdbSearchLet] = useState("")
@@ -22,12 +23,15 @@ export function useSettings() {
   const [refreshToken, setRefreshToken] = useState(0)
   const [selectedFile, setSelectedFile] = useState(null)
   const [renaming, setRenaming] = useState(false)
+  const [propertiesShown, setPropertiesShown] = useState(false)
 
   return {
     showDotFiles,
     setShowDotFiles,
     tabPaths,
     setTabPaths,
+    tabFiles,
+    setTabFiles,
     insertMode,
     setInsertMode,
     kbdSearchLet,
@@ -50,6 +54,8 @@ export function useSettings() {
     selectedFile,
     setSelectedFile,
     renaming,
-    setRenaming
+    setRenaming,
+    propertiesShown,
+    setPropertiesShown
   }
 }

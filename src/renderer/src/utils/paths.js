@@ -17,6 +17,10 @@ export function hasDirectories(files) {
   files = files.filter((file) => file.isDirectory)
   return files.length > 0
 }
+export function getSelectedEntry(tabFiles, tabPaths, activeTab, selectedFile) {
+  const dir = tabPaths[activeTab]
+  return (tabFiles[activeTab] ?? []).find((file) => concatPath(dir, file.name) === selectedFile)
+}
 export function readDirSafe(path, onSuccess) {
   window.api.readDir(path).then((result) => {
     if (!result.error) onSuccess(result)

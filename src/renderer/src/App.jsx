@@ -4,6 +4,7 @@ import { changeTabPath, concatPath, readDirSafe } from "./utils/paths"
 import { startResize } from "./utils/resize"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
+import Properties from "./components/Properties.jsx"
 import Toast from "./components/Toast.jsx"
 import { RootFolderList } from "./components/FolderTree"
 import ContextMenu from "./components/ContextMenu"
@@ -135,6 +136,7 @@ function App() {
       </div>
       <ContextMenu />
       <Toast />
+      <Properties />
     </SettingsContext.Provider>
   )
 }

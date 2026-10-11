@@ -13,12 +13,14 @@ function ContextMenu() {
     setRefreshToken,
     setSelectedFile,
     setRenaming,
-    setTabPaths
+    setTabPaths,
+    setPropertiesShown
   } = useContext(SettingsContext)
   const menuRef = useRef(null)
 
   useEffect(() => {
     if (!menu) return
+    setSelectedFile(menu.target)
     function onClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenu(null)
@@ -26,7 +28,7 @@ function ContextMenu() {
     }
     window.addEventListener("click", onClick)
     return () => window.removeEventListener("click", onClick)
-  }, [menu, setMenu])
+  }, [menu, setMenu, setSelectedFile])
 
   if (!menu) return null
 
@@ -47,7 +49,7 @@ function ContextMenu() {
       }
     },
     delete: () => deleteFile(menu.target, tabPaths, activeTab, setRefreshToken),
-    showProperties: () => console.log("show properties")
+    showProperties: () => setPropertiesShown(true)
   }
   const conditions = {
     hasTarget: () => !!menu.target,

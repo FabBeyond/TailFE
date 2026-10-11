@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
@@ -6,8 +6,9 @@ import { removeLastPathElement, changeTabPath } from "../utils/paths.js"
 import File from "./File"
 
 function Tab({ path, tabId }) {
-  const [files, setFiles] = useState([])
   const {
+    tabFiles,
+    setTabFiles,
     mainZoom,
     columnWidths,
     setColumnWidths,
@@ -30,9 +31,13 @@ function Tab({ path, tabId }) {
         showToast("Can't open folder", errorMessage(result.error), "error")
         return
       }
-      setFiles(result)
+      setTabFiles((prev) => {
+        const next = [...prev]
+        next[tabId] = result
+        return next
+      })
     })
-  }, [path, refreshToken, tabId, setTabPaths])
+  }, [path, refreshToken, tabId, setTabPaths, setTabFiles])
 
   useEffect(() => {
     setRefreshToken(0)
@@ -57,6 +62,7 @@ function Tab({ path, tabId }) {
     setSelectedFile(null)
   }, [path, setSelectedFile])
 
+  const files = tabFiles[tabId] ?? []
   const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={tabId} />)
   return (
     <>
