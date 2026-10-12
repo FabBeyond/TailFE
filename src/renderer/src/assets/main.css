@@ -13,10 +13,12 @@
   --border: #262931;
   --border-input: #2c2f38;
   --border-raised: #31343e;
+  --accent-faded: rgba(122, 162, 247, 0.16);
 }
 
 /* ===== Base ===== */
 body {
+  overflow: hidden;
   background-color: var(--background);
 }
 #root {
@@ -110,16 +112,15 @@ textarea:focus {
 .sidebar {
   position: relative;
   display: flex;
-  padding: 0;
   background-color: var(--bars-colors);
   border-right: 2px solid var(--border);
-  height: 100vh;
+  height: calc(100vh - 62px);
 }
 .sidebar-content {
   width: 100%;
-  display: block;
-  overflow: hidden;
-  margin-left: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-left: 20px;
 }
 .sidebar-resize-handle {
   position: absolute;
@@ -159,7 +160,11 @@ textarea:focus {
 .fl-folder-content {
   display: flex;
   flex-direction: row;
-  width: fit-content;
+  width: 100%;
+  padding-right: 10px;
+}
+.fl-folder-content:hover {
+  background-color: var(--accent-faded);
 }
 .fl-folder-content * {
   align-items: center;
@@ -168,11 +173,13 @@ textarea:focus {
   color: var(--text-color);
 }
 .fl-folder button {
+  text-align: start;
   color: var(--text-color);
   border: none;
   background: none;
   cursor: pointer;
   padding: 0;
+  width: 100%;
 }
 .folder-icon {
   width: 2em;
