@@ -1,5 +1,6 @@
 Things to port to other os:
 - App picker
+- Check if places work
 
 General todo:
 - add app picker for unknown files

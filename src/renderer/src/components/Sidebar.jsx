@@ -22,7 +22,7 @@ export function Sidebar() {
         <RootFolderList />
       </div>
       <div
-        className="resize-handle"
+        className="resize-handle sidebar-resize-handle"
         onMouseDown={(e) => {
           startResize(e, settings.sidebarWidth, settings.setSidebarWidth)
         }}
@@ -73,9 +73,12 @@ function Places() {
 
 export function RootFolderList() {
   return (
-    <ul className="folder-list">
-      <FLFolder folderName={{ name: "/", isDirectory: true }} curPath="/" />
-    </ul>
+    <div className="folder-tree">
+      <p>FOLDERS</p>
+      <ul className="folder-list">
+        <FLFolder folderName={{ name: "/", isDirectory: true }} curPath="/" />
+      </ul>
+    </div>
   )
 }
 export function FolderList({ files, curPath }) {
@@ -106,16 +109,15 @@ export function FLFolder({ folderName, curPath }) {
   return (
     <div className="fl-folder">
       <div className="fl-folder-content">
-        <button
+        <ChevronRightIcon
           className={`${open ? "arrow-open" : ""} ${!hasDirectories(children) ? "hide" : ""}`}
+          style={{ cursor: "pointer" }}
           onClick={() => {
             const next = !open
             setOpen(next)
           }}
-        >
-          <ChevronRightIcon />
-        </button>
-        <FolderIcon />
+        />
+        <FolderIcon className="folder-icon" />
         <button
           onClick={() =>
             changeTabPath(setTabPaths, activeTab, concatPath(curPath, folderName.name))
