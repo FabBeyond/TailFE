@@ -45,8 +45,7 @@ function File({ file, tabId }) {
 
   return (
     <div
-      className="file"
-      style={{ backgroundColor: selectedFile === path ? "#FF0000" : "transparent" }}
+      className={`file ${selectedFile === path ? "selected" : ""}`}
       data-path={path}
       data-is-directory={file.isDirectory}
     >
