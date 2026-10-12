@@ -1,7 +1,65 @@
 import { useContext, useEffect, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { concatPath, changeTabPath, hasDirectories, readDirSafe } from "../utils/paths"
-import { ChevronRightIcon, FolderIcon } from "lucide-react"
+import {
+  ChevronRightIcon,
+  FolderIcon,
+  HouseIcon,
+  FileTextIcon,
+  ArrowDownToLineIcon,
+  ImageIcon
+} from "lucide-react"
+import { startResize } from "../utils/resize"
+import data from "../data.json"
+
+export function Sidebar() {
+  const settings = useContext(SettingsContext)
+
+  return (
+    <div className="sidebar" style={{ width: settings.sidebarWidth, flexShrink: 0 }}>
+      <div className="sidebar-content">
+        <Places />
+        <RootFolderList />
+      </div>
+      <div
+        className="resize-handle"
+        onMouseDown={(e) => {
+          startResize(e, settings.sidebarWidth, settings.setSidebarWidth)
+        }}
+      ></div>
+    </div>
+  )
+}
+function Places() {
+  const sidebarIcons = {
+    House: HouseIcon,
+    FileText: FileTextIcon,
+    ArrowDownToLine: ArrowDownToLineIcon,
+    Image: ImageIcon
+  }
+  const settings = useContext(SettingsContext)
+
+  return (
+    <div className="places">
+      <p>PLACES</p>
+      {data["sidebar"].map((item) => {
+        const Icon = sidebarIcons[item.icon] ?? FolderIcon
+
+        return (
+          <div
+            key={item.id}
+            onClick={() => {
+              changeTabPath(settings.setTabPaths, settings.activeTab, item.path)
+            }}
+          >
+            <Icon />
+            <p>{item.name}</p>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 export function RootFolderList() {
   return (

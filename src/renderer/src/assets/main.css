@@ -109,22 +109,40 @@ body {
 .arrow-open {
   rotate: 90deg;
 }
-.fl-folder > .folder-list {
-  padding-left: 20px;
-}
-.folder-list {
-  display: block;
+.sidebar {
+  position: relative;
+  display: flex;
   padding: 0;
-  overflow: hidden;
-  width: 100%;
-  background-color: #54545e;
+  background-color: var(--bars-colors);
+  border-right: 2px solid var(--border);
   height: 100vh;
 }
-#root > .folder-list {
-  height: 100vh;
+.sidebar-content {
+  display: block;
+  overflow: hidden;
+}
+.places {
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-left: 20px;
+}
+.places {
+  color: var(--text-color);
+}
+.places > p {
+  color: var(--text-muted);
+}
+.places > div {
+  display: flex;
+  gap: 10px;
 }
 .fl-folder-content p {
   color: white;
+}
+.folder-list {
+  padding: 0;
 }
 .tab-list {
   padding: 0;
@@ -155,6 +173,10 @@ body {
   text-align: left;
 }
 .resize-handle {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  height: 100%;
   width: 4px;
   cursor: col-resize;
   background: transparent;

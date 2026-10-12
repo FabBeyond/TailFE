@@ -11,6 +11,7 @@ export function useSettings() {
   const [kbdSearchLet, setKdbSearchLet] = useState("")
   const [mainZoom, setMainZoom] = useState(20)
   const [columnWidths, setColumnWidths] = useState({ nameCol: 300, sizeCol: 150 })
+  const [sidebarWidth, setSidebarWidth] = useState(200)
   const [, setTick] = useState(0)
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 60000)
@@ -59,6 +60,8 @@ export function useSettings() {
     propertiesShown,
     setPropertiesShown,
     pathWriting,
-    setPathWriting
+    setPathWriting,
+    sidebarWidth,
+    setSidebarWidth
   }
 }

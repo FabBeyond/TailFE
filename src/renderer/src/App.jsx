@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react"
 import { SettingsContext, useSettings } from "./hooks/useSettings"
 import { changeTabPath, concatPath, moveInHistory, readDirSafe } from "./utils/paths"
-import { startResize } from "./utils/resize"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
 import Properties from "./components/Properties.jsx"
 import Toast from "./components/Toast.jsx"
-import { RootFolderList } from "./components/FolderTree"
+import { Sidebar } from "./components/Sidebar"
 import ContextMenu from "./components/ContextMenu"
 
 function handleKeyDown(e, settings) {
@@ -114,13 +113,7 @@ function App() {
     <SettingsContext.Provider value={settings}>
       <TopBar />
       <div className="bottom-part">
-        <div className="sidebar" style={{ width: sidebarWidth, flexShrink: 0 }}>
-          <RootFolderList files={entries} curPath={curPath} />
-        </div>
-        <div
-          className="resize-handle"
-          onMouseDown={(e) => startResize(e, sidebarWidth, setSidebarWidth)}
-        ></div>
+        <Sidebar />
         <ul className="tab-list">{tabs}</ul>
       </div>
       <ContextMenu />

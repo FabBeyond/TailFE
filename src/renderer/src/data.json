@@ -25,5 +25,31 @@
       "action": "showProperties",
       "condition": ["hasTarget"]
     }
+  ],
+  "sidebar": [
+    {
+      "id": "home",
+      "name": "Home",
+      "icon": "House",
+      "path": "/home/fabian"
+    },
+    {
+      "id": "documents",
+      "name": "Documents",
+      "icon": "FileText",
+      "path": "/home/fabian/Documents"
+    },
+    {
+      "id": "downloads",
+      "name": "Downloads",
+      "icon": "ArrowDownToLine",
+      "path": "/home/fabian/Downloads"
+    },
+    {
+      "id": "pictures",
+      "name": "Pictures",
+      "icon": "Image",
+      "path": "/home/fabian/Pictures"
+    }
   ]
 }
