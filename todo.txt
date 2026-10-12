@@ -6,3 +6,6 @@ General todo:
 - add app picker for unknown files
 - add toast notifs for errors
 - permission popup for restricted stuff
+- pretty up context menu
+- add zipping features
+- add status bar

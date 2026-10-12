@@ -4,6 +4,7 @@ import { concatPath, changeTabPath } from "../utils/paths"
 import { FileIcon, FolderIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
 import { rename, openFile } from "../utils/fileActions.js"
+import { bytesToReadable } from "../utils/fileUtils.js"
 
 function RenameInput({ initialName, onSubmit, onCancel }) {
   const [name, setName] = useState(initialName)
@@ -81,7 +82,7 @@ function File({ file, tabId }) {
           )}
         </div>
         <div className="file-size" style={{ width: columnWidths.sizeCol }}>
-          {!file.isDirectory && <p>{file.size} bytes</p>}
+          {!file.isDirectory && <p>{bytesToReadable(file.size)}</p>}
         </div>
         <div className="file-last-modified">
           <p>{timeAgo.format(file.lastModified)}</p>
