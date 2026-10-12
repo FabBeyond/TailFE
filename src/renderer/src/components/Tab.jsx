@@ -67,14 +67,14 @@ function Tab({ path, tabId }) {
   return (
     <>
       <div className="files-headers" style={{ fontSize: mainZoom }}>
-        <p className="name" style={{ width: columnWidths.nameCol }}>
+        <p className="name" style={{ width: columnWidths.nameCol - 4 }}>
           Name
         </p>
         <div
           className="resize-handle"
           onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "nameCol")}
         ></div>
-        <p className="size" style={{ width: columnWidths.sizeCol }}>
+        <p className="size" style={{ width: columnWidths.sizeCol - 4 }}>
           Size
         </p>
         <div

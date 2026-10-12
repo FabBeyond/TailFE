@@ -57,6 +57,7 @@ function Places() {
 
         return (
           <div
+            className="places-entry"
             key={item.id}
             onClick={() => {
               changeTabPath(settings.setTabPaths, settings.activeTab, paths[item.id])

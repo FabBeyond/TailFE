@@ -1,7 +1,7 @@
 import { useContext, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { concatPath, changeTabPath } from "../utils/paths"
-import { FileIcon, FolderIcon } from "lucide-react"
+import { FileTextIcon, FolderIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
 import { rename, openFile } from "../utils/fileActions.js"
 import { bytesToReadable } from "../utils/fileUtils.js"
@@ -64,7 +64,7 @@ function File({ file, tabId }) {
         }}
       >
         <div className="file-name" style={{ width: columnWidths.nameCol }}>
-          {file.isDirectory ? <FolderIcon /> : <FileIcon />}
+          {file.isDirectory ? <FolderIcon /> : <FileTextIcon />}
           {renaming && selectedFile === path ? (
             <RenameInput
               initialName={file.name}
