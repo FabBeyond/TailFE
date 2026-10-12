@@ -2,12 +2,14 @@ import { useContext, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { changeTabPath } from "../utils/paths"
 import { showToast, errorMessage } from "../utils/toast.js"
+import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
 
 function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
   const [tempPath, setTempPath] = useState(initialPath)
 
   return (
     <input
+      className="address-bar"
       type="text"
       value={tempPath}
       onChange={(e) => {
@@ -32,16 +34,24 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
 }
 
 function TopBar() {
-  const { tabPaths, setTabPaths, activeTab } = useContext(SettingsContext)
+  const { tabPaths, setTabPaths, activeTab, insertMode } = useContext(SettingsContext)
 
   return (
-    <AddressInput
-      key={`${activeTab}-${tabPaths[activeTab]}`}
-      initialPath={tabPaths[activeTab]}
-      activeTab={activeTab}
-      tabPaths={tabPaths}
-      setTabPaths={setTabPaths}
-    />
+    <div className="top-bar">
+      <ChevronLeftIcon />
+      <ChevronRightIcon />
+      <ArrowUp />
+      <AddressInput
+        key={`${activeTab}-${tabPaths[activeTab]}`}
+        initialPath={tabPaths[activeTab]}
+        activeTab={activeTab}
+        tabPaths={tabPaths}
+        setTabPaths={setTabPaths}
+      />
+      <div className="mode-indicator">
+        <p>{insertMode ? "INSERT" : "NORMAL"}</p>
+      </div>
+    </div>
   )
 }
 

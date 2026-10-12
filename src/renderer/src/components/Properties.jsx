@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { SettingsContext } from "../hooks/useSettings.js"
-import { icons } from "../utils/icons"
+import { FileIcon, FolderIcon } from "lucide-react"
 import { getSelectedEntry } from "../utils/paths.js"
 
 function Properties() {
@@ -24,11 +24,7 @@ function Properties() {
       }}
     >
       <div className="properties-container" onClick={(e) => e.stopPropagation()}>
-        {file.isDirectory ? (
-          <img src={icons["folder-icon.png"]} alt="folder-icon" />
-        ) : (
-          <img src={icons["file-icon.png"]} alt="file-icon" />
-        )}
+        {file.isDirectory ? <FolderIcon /> : <FileIcon />}
         <p className="properties-name">{file.name}</p>
       </div>
     </div>

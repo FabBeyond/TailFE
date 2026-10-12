@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { concatPath, changeTabPath, hasDirectories, readDirSafe } from "../utils/paths"
-import { icons } from "../utils/icons"
+import { ChevronRightIcon, FolderIcon } from "lucide-react"
 
 export function RootFolderList() {
   return (
@@ -45,9 +45,9 @@ export function FLFolder({ folderName, curPath }) {
             setOpen(next)
           }}
         >
-          <img src={icons["arrow-icon.png"]} />
+          <ChevronRightIcon />
         </button>
-        <img src={icons["folder-icon.png"]} alt="folder icon" />
+        <FolderIcon />
         <button
           onClick={() =>
             changeTabPath(setTabPaths, activeTab, concatPath(curPath, folderName.name))

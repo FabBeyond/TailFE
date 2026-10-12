@@ -3,14 +3,75 @@
 .hide {
   visibility: hidden;
 }
+:root {
+  --background: #16171c;
+  --bars-colors: #1a1c22;
+  --accent: #7aa2f7;
+  --menu-item-hover: #2c2f39;
+  --menus: #22252d;
+  --text-color: #e6e7eb;
+  --text-muted: #9a9ead;
+  --address-bar: #1f2128;
+}
 #root {
   user-select: none;
+  font-family: "IBM Plex Sans Variable", system-ui, sans-serif;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+input:focus,
+button:focus,
+textarea:focus {
+  outline: none;
 }
 .bottom-part {
   display: flex;
 }
 body {
-  background-color: #1b1b1f;
+  background-color: var(--background);
+}
+.top-bar {
+  background-color: var(--bars-colors);
+  color: var(--text-color);
+  display: flex;
+  height: 60px;
+  width: 100%;
+  align-items: center;
+  padding: 0 30px;
+  gap: 30px;
+}
+.address-bar {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 2px solid #000000;
+  border-radius: 8px;
+  background-color: var(--address-bar);
+  color: var(--text);
+}
+.top-bar svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.mode-indicator {
+  display: flex;
+  padding: 4px 10px;
+  height: 40px;
+  width: 125px;
+  border-radius: 6px;
+  background: rgba(122, 162, 247, 0.16);
+  color: #7aa2f7;
+  font-size: 16px;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  letter-spacing: 0.06em;
 }
 .fl-folder > .fl-folder-content {
   display: flex;
@@ -18,8 +79,10 @@ body {
   font-size: 20px;
   width: fit-content;
 }
-.fl-folder img {
+.fl-folder svg {
   width: 1.5em;
+  height: 1.5em;
+  color: white;
 }
 .fl-folder button {
   border: none;
@@ -28,9 +91,6 @@ body {
 }
 .arrow-open {
   rotate: 90deg;
-}
-.fl-folder > img {
-  margin-right: 10px;
 }
 .fl-folder > .folder-list {
   padding-left: 20px;
@@ -67,8 +127,11 @@ body {
 .file-list button:hover {
   background-color: #2c2c33;
 }
-.file img {
+.file svg {
+  width: 1.5em;
   height: 1.5em;
+  flex-shrink: 0;
+  color: white;
 }
 .file p {
   color: white;
@@ -171,9 +234,10 @@ body {
   left: 0;
   background-color: transparent;
 }
-.properties-container > img {
+.properties-container > svg {
   width: 150px;
   height: 150px;
+  color: white;
 }
 .properties-name {
   color: white;
