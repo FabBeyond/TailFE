@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld("api", {
   deleteFile: (path) => ipcRenderer.invoke("delete-file", path),
   createFolder: (path) => ipcRenderer.invoke("create-folder", path),
   rename: (path, newPath) => ipcRenderer.invoke("rename", path, newPath),
-  openFile: (path) => ipcRenderer.invoke("open-file", path)
+  openFile: (path) => ipcRenderer.invoke("open-file", path),
+  getPath: (name) => ipcRenderer.invoke("get-path", name)
 })

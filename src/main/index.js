@@ -85,6 +85,8 @@ app.whenReady().then(() => {
   })
 
   const execFileAsync = promisify(execFile)
+  const ALLOWED_PATHS = ["home", "desktop", "documents", "downloads", "music", "pictures", "videos"]
+
   async function hasDefaultProgram(path) {
     try {
       const { stdout: mimeType } = await execFileAsync("xdg-mime", ["query", "filetype", path])
@@ -140,6 +142,14 @@ app.whenReady().then(() => {
     }
     const result = await shell.openPath(path)
     return result ? { error: result } : { success: true }
+  })
+  ipcMain.handle("get-path", (_, name) => {
+    if (!ALLOWED_PATHS.includes(name)) return { error: "EINVAL" }
+    try {
+      return { path: app.getPath(name) }
+    } catch (err) {
+      return { error: err.message }
+    }
   })
 
   createWindow()

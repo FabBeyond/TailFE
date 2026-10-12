@@ -31,25 +31,25 @@
       "id": "home",
       "name": "Home",
       "icon": "House",
-      "path": "/home/fabian"
+      "folder": "home"
     },
     {
       "id": "documents",
       "name": "Documents",
       "icon": "FileText",
-      "path": "/home/fabian/Documents"
+      "folder": "documents"
     },
     {
       "id": "downloads",
       "name": "Downloads",
       "icon": "ArrowDownToLine",
-      "path": "/home/fabian/Downloads"
+      "folder": "downloads"
     },
     {
       "id": "pictures",
       "name": "Pictures",
       "icon": "Image",
-      "path": "/home/fabian/Pictures"
+      "folder": "pictures"
     }
   ]
 }

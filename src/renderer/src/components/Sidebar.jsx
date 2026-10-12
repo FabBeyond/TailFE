@@ -31,6 +31,16 @@ export function Sidebar() {
   )
 }
 function Places() {
+  const [paths, setPaths] = useState({})
+
+  useEffect(() => {
+    data.sidebar.forEach((item) => {
+      window.api.getPath(item.folder).then((result) => {
+        if (!result.error) setPaths((prev) => ({ ...prev, [item.id]: result.path }))
+      })
+    })
+  })
+
   const sidebarIcons = {
     House: HouseIcon,
     FileText: FileTextIcon,
@@ -49,7 +59,7 @@ function Places() {
           <div
             key={item.id}
             onClick={() => {
-              changeTabPath(settings.setTabPaths, settings.activeTab, item.path)
+              changeTabPath(settings.setTabPaths, settings.activeTab, paths[item.id])
             }}
           >
             <Icon />
