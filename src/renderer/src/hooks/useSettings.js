@@ -24,6 +24,7 @@ export function useSettings() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [renaming, setRenaming] = useState(false)
   const [propertiesShown, setPropertiesShown] = useState(false)
+  const [pathWriting, setPathWriting] = useState(false)
 
   return {
     showDotFiles,
@@ -56,6 +57,8 @@ export function useSettings() {
     renaming,
     setRenaming,
     propertiesShown,
-    setPropertiesShown
+    setPropertiesShown,
+    pathWriting,
+    setPathWriting
   }
 }

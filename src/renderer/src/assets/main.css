@@ -12,6 +12,9 @@
   --text-color: #e6e7eb;
   --text-muted: #9a9ead;
   --address-bar: #1f2128;
+  --border: #262931;
+  --border-input: #2c2f38;
+  --border-raised: #31343e;
 }
 #root {
   user-select: none;
@@ -43,20 +46,22 @@ body {
   align-items: center;
   padding: 0 30px;
   gap: 30px;
+  border-bottom: 2px solid var(--border);
 }
 .address-bar {
+  display: flex;
   width: 100%;
   height: 40px;
   padding: 0 10px;
-  border: 2px solid #000000;
+  border: 2px solid var(--border-input);
   border-radius: 8px;
-  background-color: var(--address-bar);
+  align-items: center;
+  background-color: var(--menus);
   color: var(--text);
 }
 .top-bar svg {
   width: 18px;
   height: 18px;
-  color: var(--text-muted);
   flex-shrink: 0;
 }
 .mode-indicator {
@@ -72,6 +77,18 @@ body {
   justify-content: center;
   font-weight: 500;
   letter-spacing: 0.06em;
+}
+.address-bar-part {
+  display: flex;
+  background-color: var(--menu-item-hover);
+  border-radius: 8px;
+  border: none;
+  color: var(--text);
+  height: 80%;
+}
+.slash-seperator {
+  margin: 0 10px;
+  color: var(--text-muted);
 }
 .fl-folder > .fl-folder-content {
   display: flex;

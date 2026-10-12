@@ -26,3 +26,13 @@ export function readDirSafe(path, onSuccess) {
     if (!result.error) onSuccess(result)
   })
 }
+export function moveInHistory(settings, step) {
+  const { history, historyIndex, setHistoryIndex, isHistoryChangeRef, setTabPaths, activeTab } =
+    settings
+  const newIndex = historyIndex + step
+  if (newIndex < 0 || newIndex >= history.length) return
+
+  isHistoryChangeRef.current = true
+  setHistoryIndex(newIndex)
+  changeTabPath(setTabPaths, activeTab, history[newIndex])
+}

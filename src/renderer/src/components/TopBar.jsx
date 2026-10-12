@@ -1,10 +1,10 @@
-import { useContext, useState } from "react"
+import { Fragment, useContext, useState } from "react"
 import { SettingsContext } from "../hooks/useSettings"
-import { changeTabPath } from "../utils/paths"
+import { changeTabPath, moveInHistory, removeLastPathElement } from "../utils/paths"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
 
-function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
+function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths, setPathWriting }) {
   const [tempPath, setTempPath] = useState(initialPath)
 
   return (
@@ -12,6 +12,7 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
       className="address-bar"
       type="text"
       value={tempPath}
+      autoFocus
       onChange={(e) => {
         setTempPath(e.target.value)
       }}
@@ -27,27 +28,103 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths }) {
             }
             input.blur()
           })
+        } else if (e.key === "Escape") {
+          e.target.blur()
         }
+      }}
+      onBlur={() => {
+        setPathWriting(false)
       }}
     />
   )
 }
+function AddressBarPart({ part, splitPaths, idx, tabChangeParams }) {
+  return (
+    <button
+      className="address-bar-part"
+      onClick={(e) => {
+        e.stopPropagation()
+        let fullPath = "/" + splitPaths.slice(0, idx + 1).join("/")
+        changeTabPath(tabChangeParams.setTabPaths, tabChangeParams.activeTab, fullPath)
+      }}
+    >
+      {part}
+    </button>
+  )
+}
+function SlashSeperator() {
+  return (
+    <div className="slash-seperator">
+      <p>/</p>
+    </div>
+  )
+}
 
 function TopBar() {
-  const { tabPaths, setTabPaths, activeTab, insertMode } = useContext(SettingsContext)
+  const settings = useContext(SettingsContext)
+  const {
+    tabPaths,
+    setTabPaths,
+    activeTab,
+    insertMode,
+    pathWriting,
+    setPathWriting,
+    history,
+    historyIndex
+  } = useContext(SettingsContext)
+  let splitPaths = tabPaths[activeTab].split("/")
+  splitPaths = splitPaths.filter((item) => item !== "")
 
   return (
     <div className="top-bar">
-      <ChevronLeftIcon />
-      <ChevronRightIcon />
-      <ArrowUp />
-      <AddressInput
-        key={`${activeTab}-${tabPaths[activeTab]}`}
-        initialPath={tabPaths[activeTab]}
-        activeTab={activeTab}
-        tabPaths={tabPaths}
-        setTabPaths={setTabPaths}
+      <ChevronLeftIcon
+        style={{
+          color: historyIndex != 0 ? "var(--text-color)" : "var(--text-muted)"
+        }}
+        onClick={() => moveInHistory(settings, -1)}
       />
+      <ChevronRightIcon
+        style={{
+          color: history.length != historyIndex + 1 ? "var(--text-color)" : "var(--text-muted)"
+        }}
+        onClick={() => moveInHistory(settings, 1)}
+      />
+      <ArrowUp
+        style={{ color: splitPaths.length != 0 ? "var(--text-color)" : "var(--text-muted)" }}
+        onClick={() => {
+          changeTabPath(setTabPaths, activeTab, removeLastPathElement(tabPaths[activeTab]))
+        }}
+      />
+      {!pathWriting ? (
+        <div
+          className="address-bar"
+          onClick={() => {
+            setPathWriting(true)
+          }}
+        >
+          {splitPaths.length == 0 ? <SlashSeperator></SlashSeperator> : <></>}
+          {splitPaths.map((item, idx) => (
+            <Fragment key={idx}>
+              <SlashSeperator />
+              <AddressBarPart
+                part={item}
+                splitPaths={splitPaths}
+                idx={idx}
+                tabChangeParams={{ setTabPaths: setTabPaths, activeTab: activeTab }}
+              />
+            </Fragment>
+          ))}
+        </div>
+      ) : (
+        <AddressInput
+          key={`${activeTab}-${tabPaths[activeTab]}`}
+          initialPath={tabPaths[activeTab]}
+          activeTab={activeTab}
+          tabPaths={tabPaths}
+          setTabPaths={setTabPaths}
+          setPathWriting={setPathWriting}
+        />
+      )}
       <div className="mode-indicator">
         <p>{insertMode ? "INSERT" : "NORMAL"}</p>
       </div>

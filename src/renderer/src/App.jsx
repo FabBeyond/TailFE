@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { SettingsContext, useSettings } from "./hooks/useSettings"
-import { changeTabPath, concatPath, readDirSafe } from "./utils/paths"
+import { changeTabPath, concatPath, moveInHistory, readDirSafe } from "./utils/paths"
 import { startResize } from "./utils/resize"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
@@ -19,9 +19,6 @@ function handleKeyDown(e, settings) {
     tabPaths,
     setTabPaths,
     setMainZoom,
-    history,
-    historyIndex,
-    setHistoryIndex,
     setRenaming,
     selectedFile
   } = settings
@@ -64,17 +61,9 @@ function handleKeyDown(e, settings) {
         return prev + 2
       })
     } else if (e.key === "<") {
-      if (historyIndex > 0) {
-        settings.isHistoryChangeRef.current = true
-        setHistoryIndex((i) => i - 1)
-        changeTabPath(setTabPaths, activeTab, history[historyIndex - 1])
-      }
+      moveInHistory(settings, -1)
     } else if (e.key === ">") {
-      if (historyIndex + 1 < history.length) {
-        settings.isHistoryChangeRef.current = true
-        setHistoryIndex((i) => i + 1)
-        changeTabPath(setTabPaths, activeTab, history[historyIndex + 1])
-      }
+      moveInHistory(settings, 1)
     } else if (e.key === "F2") {
       if (selectedFile) setRenaming(true)
     }
