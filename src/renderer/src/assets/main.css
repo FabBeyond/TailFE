@@ -302,24 +302,47 @@ textarea:focus {
 /* ===== Context menu ===== */
 .context-menu {
   width: 200px;
-  height: 300px;
-  background-color: #292c38;
+  height: fit-content;
+  padding: 10px 0;
+  background-color: var(--menus);
   border-radius: 10px;
   position: absolute;
   list-style-type: none;
 }
 .context-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   padding: 0;
+  margin: 0 20px;
 }
-.context-menu button {
-  background-color: #393c40;
+.context-menu li {
+  padding: 5px 0;
+  border-radius: 10px;
+}
+.context-menu li > * {
+  background-color: transparent;
   width: 100%;
   text-align: left;
-  padding-left: 20px;
-  color: white;
+  color: var(--text-color);
   border: none;
-  margin-top: 0;
+  padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.context-menu li:hover {
+  background-color: var(--menu-item-hover);
+}
+.context-menu li > *.context-menu-divider {
+  padding: 0;
+  margin: 0;
+  height: 4px;
+  border-radius: 5px;
+  width: 90%;
+  background-color: var(--border-raised);
+  transform: translate(5%, 0);
 }
 
 /* ===== Toasts ===== */

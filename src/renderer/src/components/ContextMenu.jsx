@@ -3,6 +3,14 @@ import { SettingsContext } from "../hooks/useSettings"
 import { deleteFile, createFolder, openFile } from "../utils/fileActions"
 import { changeTabPath } from "../utils/paths.js"
 import data from "../data.json"
+import {
+  FolderIcon,
+  SquareArrowOutUpRightIcon,
+  PenIcon,
+  FolderPlusIcon,
+  InfoIcon,
+  TrashIcon
+} from "lucide-react"
 
 function ContextMenu() {
   const {
@@ -64,22 +72,40 @@ function ContextMenu() {
     return true
   })
 
+  const contextMenuIcons = {
+    Folder: FolderIcon,
+    SquareArrowOutUpRight: SquareArrowOutUpRightIcon,
+    PenIcon: PenIcon,
+    FolderPlus: FolderPlusIcon,
+    Info: InfoIcon,
+    Trash: TrashIcon
+  }
+
   return (
     menu && (
       <div className="context-menu" ref={menuRef} style={{ left: menu.x, top: menu.y }}>
         <ul>
-          {filteredData.map((item) => (
-            <li key={item.action}>
-              <button
-                onClick={async () => {
-                  await actions[item.action]()
-                  setMenu(null)
-                }}
-              >
-                {item.name}
-              </button>
-            </li>
-          ))}
+          {filteredData.map((item, idx) => {
+            const Icon = contextMenuIcons[item.icon]
+
+            return (
+              <li key={idx}>
+                {item.name !== "divider" ? (
+                  <button
+                    onClick={async () => {
+                      await actions[item.action]()
+                      setMenu(null)
+                    }}
+                  >
+                    <Icon />
+                    {item.name}
+                  </button>
+                ) : (
+                  <div className="context-menu-divider"></div>
+                )}
+              </li>
+            )
+          })}
         </ul>
       </div>
     )

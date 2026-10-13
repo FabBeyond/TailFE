@@ -3,27 +3,44 @@
     {
       "name": "Open",
       "action": "openDefault",
-      "condition": ["hasTarget"]
+      "condition": ["hasTarget"],
+      "icon": "Folder"
     },
     {
       "name": "Open With",
       "action": "openChoose",
-      "condition": ["hasTarget"]
+      "condition": ["hasTarget"],
+      "icon": "SquareArrowOutUpRight"
     },
     {
-      "name": "Delete",
-      "action": "delete",
-      "condition": ["hasTarget"]
+      "name": "divider",
+      "action": "",
+      "condition": "",
+      "icon": ""
     },
     {
       "name": "New Folder",
       "action": "newFolder",
-      "condition": []
+      "condition": [],
+      "icon": "FolderPlus"
     },
     {
       "name": "Properties",
       "action": "showProperties",
-      "condition": ["hasTarget"]
+      "condition": ["hasTarget"],
+      "icon": "Info"
+    },
+    {
+      "name": "divider",
+      "action": "",
+      "condition": "",
+      "icon": ""
+    },
+    {
+      "name": "Delete",
+      "action": "delete",
+      "condition": ["hasTarget"],
+      "icon": "Trash"
     }
   ],
   "sidebar": [
