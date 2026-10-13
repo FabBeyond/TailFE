@@ -10,3 +10,20 @@ export function bytesToReadable(bytes) {
   }
   return `${unit === 0 ? size : size.toFixed(1)} ${UNITS[unit]}`
 }
+export function sortFiles(files, param, foldersOnTop) {
+  let sorted = []
+  if (files.length === 0) return []
+  if (param === "name") sorted = files.toSorted((a, b) => a.name.localeCompare(b.name))
+  else if (param === "-name") sorted = files.toSorted((a, b) => b.name.localeCompare(a.name))
+  else if (param === "size") sorted = files.toSorted((a, b) => a.size - b.size)
+  else if (param === "-size") sorted = files.toSorted((a, b) => b.size - a.size)
+  else if (param === "modified") sorted = files.toSorted((a, b) => a.lastModified - b.lastModified)
+
+  if (foldersOnTop) {
+    const folders = sorted.filter((item) => item.isDirectory)
+    const nonFolders = sorted.filter((item) => !item.isDirectory)
+    return folders.concat(nonFolders)
+  }
+
+  return sorted
+}

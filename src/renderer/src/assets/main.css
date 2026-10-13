@@ -232,10 +232,18 @@ textarea:focus {
   display: flex;
   color: var(--text-muted);
 }
-.files-headers > p {
+.files-headers > .file-header {
   flex-shrink: 0;
   overflow: hidden;
   margin: 0;
+  border-radius: 10px;
+}
+.file-header {
+  display: flex;
+  flex-direction: row;
+}
+.files-headers > .file-header:hover {
+  background-color: var(--menu-item-hover);
 }
 .file-list {
   overflow-x: hidden;

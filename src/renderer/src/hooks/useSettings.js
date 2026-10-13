@@ -26,6 +26,8 @@ export function useSettings() {
   const [renaming, setRenaming] = useState(false)
   const [propertiesShown, setPropertiesShown] = useState(false)
   const [pathWriting, setPathWriting] = useState(false)
+  const [sortingMode, setSortingMode] = useState("name")
+  const [foldersOnTop, setFoldersOnTop] = useState(true)
 
   return {
     showDotFiles,
@@ -62,6 +64,10 @@ export function useSettings() {
     pathWriting,
     setPathWriting,
     sidebarWidth,
-    setSidebarWidth
+    setSidebarWidth,
+    sortingMode,
+    setSortingMode,
+    foldersOnTop,
+    setFoldersOnTop
   }
 }

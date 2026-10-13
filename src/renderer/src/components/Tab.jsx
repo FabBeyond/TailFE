@@ -3,7 +3,9 @@ import { SettingsContext } from "../hooks/useSettings"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
 import { removeLastPathElement, changeTabPath } from "../utils/paths.js"
+import { sortFiles } from "../utils/fileUtils.js"
 import File from "./File"
+import { ChevronUp } from "lucide-react"
 
 function Tab({ path, tabId }) {
   const {
@@ -19,7 +21,10 @@ function Tab({ path, tabId }) {
     refreshToken,
     setRefreshToken,
     setSelectedFile,
-    setTabPaths
+    setTabPaths,
+    sortingMode,
+    setSortingMode,
+    foldersOnTop
   } = useContext(SettingsContext)
 
   const lastRecordedPathRef = useRef(null)
@@ -62,26 +67,48 @@ function Tab({ path, tabId }) {
     setSelectedFile(null)
   }, [path, setSelectedFile])
 
-  const files = tabFiles[tabId] ?? []
+  const files = sortFiles(tabFiles[tabId], sortingMode, foldersOnTop)
   const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={tabId} />)
   return (
     <>
       <div className="files-headers" style={{ fontSize: mainZoom }}>
-        <p className="name" style={{ width: columnWidths.nameCol - 4 }}>
-          Name
-        </p>
+        <div className="file-header">
+          <p
+            className="name"
+            style={{ width: columnWidths.nameCol - 4 }}
+            onClick={() => setSortingMode(sortingMode.startsWith("-") ? "name" : "-name")}
+          >
+            Name
+          </p>
+          <ChevronUp style={{ rotate: sortingMode === "-name" ? "0deg" : "180deg" }} />
+        </div>
         <div
           className="resize-handle"
           onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "nameCol")}
         ></div>
-        <p className="size" style={{ width: columnWidths.sizeCol - 4 }}>
-          Size
-        </p>
+        <div className="file-header">
+          <p
+            className="size"
+            style={{ width: columnWidths.sizeCol - 4 }}
+            onClick={() => setSortingMode(sortingMode.startsWith("-") ? "size" : "-size")}
+          >
+            Size
+          </p>
+          <ChevronUp style={{ rotate: sortingMode === "-size" ? "0deg" : "180deg" }} />
+        </div>
         <div
           className="resize-handle"
           onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "sizeCol")}
         ></div>
-        <p className="last-modified">Last Modified</p>
+        <div className="file-header">
+          <p
+            className="last-modified"
+            onClick={() => setSortingMode(sortingMode.startsWith("-") ? "modified" : "-modified")}
+          >
+            Last Modified
+          </p>
+          <ChevronUp style={{ rotate: sortingMode === "-modified" ? "0deg" : "180deg" }} />
+        </div>
       </div>
       <ul className="file-list">{fileObjs}</ul>
     </>
