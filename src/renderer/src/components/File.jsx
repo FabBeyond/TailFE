@@ -47,7 +47,8 @@ function File({ file, tabId }) {
   return (
     <div
       className={`file ${selectedFile === path ? "selected" : ""}`}
-      data-path={path}
+      data-context="file"
+      data-id={path}
       data-is-directory={file.isDirectory}
     >
       <button

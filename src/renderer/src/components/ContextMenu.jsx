@@ -11,6 +11,7 @@ import {
   InfoIcon,
   TrashIcon
 } from "lucide-react"
+import { showToast } from "../utils/toast.js"
 
 function ContextMenu() {
   const {
@@ -25,13 +26,15 @@ function ContextMenu() {
     setPropertiesShown,
     tabFiles,
     selectedFile,
-    setTabFiles
+    setTabFiles,
+    setActiveTab
   } = useContext(SettingsContext)
   const menuRef = useRef(null)
 
   useEffect(() => {
     if (!menu) return
-    setSelectedFile(menu.target)
+    if (menu.type === "file") setSelectedFile(menu.target)
+    else if (menu.type === "tab") setActiveTab(Number(menu.target))
     function onClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenu(null)
@@ -39,7 +42,7 @@ function ContextMenu() {
     }
     window.addEventListener("click", onClick)
     return () => window.removeEventListener("click", onClick)
-  }, [menu, setMenu, setSelectedFile])
+  }, [menu, setMenu, setSelectedFile, setActiveTab])
 
   if (!menu) return null
 
@@ -65,12 +68,26 @@ function ContextMenu() {
       }
     },
     delete: () => deleteFile(menu.target, tabPaths, activeTab, setRefreshToken),
-    showProperties: () => setPropertiesShown(true)
+    showProperties: () => setPropertiesShown(true),
+    closeTab: () => {
+      console.log(tabPaths.length)
+      if (tabPaths.length == 1) {
+        showToast("Can't close Tab", "Can't close last open Tab", "error")
+        return
+      }
+      setActiveTab(() => {
+        return activeTab == 0 ? 0 : activeTab - 1
+      })
+      setTabPaths((i) => i.filter((_, idx) => idx !== activeTab))
+      setTabFiles((i) => i.filter((_, idx) => idx !== activeTab))
+    }
   }
   const conditions = {
     hasTarget: () => !!menu.target,
     isFile: () => !!menu.target && !menu.isDirectory,
-    isDirectory: () => !!menu.target && menu.isDirectory
+    isDirectory: () => !!menu.target && menu.isDirectory,
+    isTab: () => !!menu.target && menu.type === "tab",
+    isEntry: () => !!menu.target && menu.type === "file"
   }
 
   const filteredData = data["contextMenu"].filter((item) => {

@@ -3,19 +3,19 @@
     {
       "name": "Open",
       "action": "openDefault",
-      "condition": ["hasTarget"],
+      "condition": ["isEntry"],
       "icon": "Folder"
     },
     {
       "name": "Open With",
       "action": "openChoose",
-      "condition": ["hasTarget"],
+      "condition": ["isEntry"],
       "icon": "SquareArrowOutUpRight"
     },
     {
       "name": "Open in new Tab",
       "action": "openNewTab",
-      "condition": ["hasTarget", "isDirectory"],
+      "condition": ["isEntry", "isDirectory"],
       "icon": "SquareArrowOutUpRight"
     },
     {
@@ -33,7 +33,7 @@
     {
       "name": "Properties",
       "action": "showProperties",
-      "condition": ["hasTarget"],
+      "condition": ["isEntry"],
       "icon": "Info"
     },
     {
@@ -43,9 +43,15 @@
       "icon": ""
     },
     {
+      "name": "Close Tab",
+      "action": "closeTab",
+      "condition": ["isTab"],
+      "icon": "Trash"
+    },
+    {
       "name": "Delete",
       "action": "delete",
-      "condition": ["hasTarget"],
+      "condition": ["isEntry"],
       "icon": "Trash"
     }
   ],

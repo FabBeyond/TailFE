@@ -14,7 +14,9 @@ General todo:
 - style toast
 - show insert mode current typed letters
 - add context menu stuff in non file list
-- add closing tabs
+- add dragging files for moving/copying
+- stop divider from highlighting in context menu
 
 Bugs:
 - switching tabs and going back in history breaks stuff
+- root folder broken on windows

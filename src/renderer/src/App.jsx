@@ -103,11 +103,13 @@ function App() {
   useEffect(() => {
     const listener = (e) => {
       e.preventDefault()
-      const target = e.target.closest(".file")
+      const target = e.target.closest("[data-context]")
+      console.log(target)
       setMenu({
         x: e.clientX,
         y: e.clientY,
-        target: target?.dataset.path ?? null,
+        type: target?.dataset.context ?? "background",
+        target: target?.dataset.id ?? null,
         isDirectory: target?.dataset.isDirectory === "true"
       })
     }
@@ -132,6 +134,8 @@ function App() {
                   backgroundColor:
                     settings.activeTab == idx ? "var(--accent-faded)" : "var(--bars-colors)"
                 }}
+                data-id={idx}
+                data-context="tab"
               >
                 <p>{getCurrentDirName(item)}</p>
               </div>
