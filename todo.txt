@@ -15,6 +15,14 @@ General todo:
 - show insert mode current typed letters
 - add context menu stuff in non file list
 - add closing tabs
+- drag selecting
 
 Bugs:
-- switching tabs and going back in history breaks stuff
+- General
+  - switching tabs and going back in history breaks stuff
+  - new folder doesnt select after creation
+  - fix weird scaling on sidebar
+  - fix folder tree highlighting
+- Windows
+  - Fix root folder showing random drive
+  - path uses / instead of \
