@@ -331,6 +331,10 @@ textarea:focus {
   height: 100%;
   width: 100%;
 }
+.insert-typed {
+  color: var(--accent);
+  font-weight: 600;
+}
 
 /* ===== Context menu ===== */
 .context-menu {

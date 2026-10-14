@@ -37,7 +37,9 @@ function File({ file, tabId }) {
     setSelectedFile,
     renaming,
     setRenaming,
-    setRefreshToken
+    setRefreshToken,
+    insertMode,
+    kbdSearchLet
   } = useContext(SettingsContext)
 
   if (!showDotFiles && file.name.startsWith(".")) return null
@@ -77,7 +79,7 @@ function File({ file, tabId }) {
               onCancel={() => setRenaming(false)}
             />
           ) : (
-            <p>{file.name}</p>
+            <HighlightedName name={file.name} typed={insertMode ? kbdSearchLet : ""} />
           )}
         </div>
         <div className="file-size" style={{ width: columnWidths.sizeCol }}>
@@ -88,6 +90,17 @@ function File({ file, tabId }) {
         </div>
       </button>
     </div>
+  )
+}
+function HighlightedName({ name, typed }) {
+  if (!typed || !name.startsWith(typed)) {
+    return <p>{name}</p>
+  }
+  return (
+    <p>
+      <span className="insert-typed">{name.slice(0, typed.length)}</span>
+      {name.slice(typed.length)}
+    </p>
   )
 }
 

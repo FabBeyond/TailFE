@@ -5,7 +5,8 @@ import {
   concatPath,
   moveInHistory,
   readDirSafe,
-  getCurrentDirName
+  getCurrentDirName,
+  removeLastPathElement
 } from "./utils/paths"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
@@ -47,8 +48,13 @@ function handleKeyDown(e, settings) {
         return prev.slice(0, -1)
       }
       if (e.key === "Enter") {
-        if (prev === ".") {
-          // move backwards
+        if (prev.startsWith(".")) {
+          let newPath = tabPaths[activeTab]
+          for (let i = 0; i < prev.length; i++) {
+            newPath = removeLastPathElement(newPath)
+          }
+          changeTabPath(setTabPaths, activeTab, newPath)
+          return ""
         }
         changeTabPath(setTabPaths, activeTab, concatPath(tabPaths[activeTab], prev))
         setInsertMode(false)
@@ -104,7 +110,6 @@ function App() {
     const listener = (e) => {
       e.preventDefault()
       const target = e.target.closest("[data-context]")
-      console.log(target)
       setMenu({
         x: e.clientX,
         y: e.clientY,
