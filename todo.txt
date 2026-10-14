@@ -16,7 +16,15 @@ General todo:
 - add context menu stuff in non file list
 - add dragging files for moving/copying
 - stop divider from highlighting in context menu
+- add closing tabs
+- drag selecting
 
 Bugs:
-- switching tabs and going back in history breaks stuff
-- root folder broken on windows
+- General
+  - switching tabs and going back in history breaks stuff
+  - new folder doesnt select after creation
+  - fix weird scaling on sidebar
+  - fix folder tree highlighting
+- Windows
+  - Fix root folder showing random drive
+  - path uses / instead of \
