@@ -10,3 +10,11 @@ General todo:
 - add status bar
 - searching
 - add settings menu
+- finish properties menu
+- style toast
+- show insert mode current typed letters
+- add context menu stuff in non file list
+- add closing tabs
+
+Bugs:
+- switching tabs and going back in history breaks stuff

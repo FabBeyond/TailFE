@@ -13,6 +13,12 @@
       "icon": "SquareArrowOutUpRight"
     },
     {
+      "name": "Open in new Tab",
+      "action": "openNewTab",
+      "condition": ["hasTarget", "isDirectory"],
+      "icon": "SquareArrowOutUpRight"
+    },
+    {
       "name": "divider",
       "action": "",
       "condition": "",

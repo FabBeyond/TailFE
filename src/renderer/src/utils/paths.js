@@ -36,3 +36,7 @@ export function moveInHistory(settings, step) {
   setHistoryIndex(newIndex)
   changeTabPath(setTabPaths, activeTab, history[newIndex])
 }
+export function getCurrentDirName(path) {
+  const name = path.slice(path.lastIndexOf("/") + 1, path.length)
+  return name === "" ? "/" : name
+}

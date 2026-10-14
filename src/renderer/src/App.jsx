@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 import { SettingsContext, useSettings } from "./hooks/useSettings"
-import { changeTabPath, concatPath, moveInHistory, readDirSafe } from "./utils/paths"
+import {
+  changeTabPath,
+  concatPath,
+  moveInHistory,
+  readDirSafe,
+  getCurrentDirName
+} from "./utils/paths"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
 import Properties from "./components/Properties.jsx"
@@ -70,9 +76,8 @@ function handleKeyDown(e, settings) {
 }
 
 function App() {
-  const [entries, setEntries] = useState([])
+  const [, setEntries] = useState([])
   const [curPath] = useState("/")
-  const [sidebarWidth, setSidebarWidth] = useState(200)
 
   const settings = useSettings()
   const { tabPaths, setMenu } = settings
@@ -114,7 +119,26 @@ function App() {
       <TopBar />
       <div className="bottom-part">
         <Sidebar />
-        <ul className="tab-list">{tabs}</ul>
+        <div className="tabs">
+          <div className="tab-headers">
+            {tabPaths.map((item, idx) => (
+              <div
+                key={idx}
+                className="tab-header"
+                onClick={() => {
+                  settings.setActiveTab(idx)
+                }}
+                style={{
+                  backgroundColor:
+                    settings.activeTab == idx ? "var(--accent-faded)" : "var(--bars-colors)"
+                }}
+              >
+                <p>{getCurrentDirName(item)}</p>
+              </div>
+            ))}
+          </div>
+          <ul className="tab-list">{tabs}</ul>
+        </div>
       </div>
       <ContextMenu />
       <Toast />

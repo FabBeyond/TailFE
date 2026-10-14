@@ -24,7 +24,8 @@ function Tab({ path, tabId }) {
     setTabPaths,
     sortingMode,
     setSortingMode,
-    foldersOnTop
+    foldersOnTop,
+    activeTab
   } = useContext(SettingsContext)
 
   const lastRecordedPathRef = useRef(null)
@@ -66,6 +67,8 @@ function Tab({ path, tabId }) {
   useEffect(() => {
     setSelectedFile(null)
   }, [path, setSelectedFile])
+
+  if (tabId != activeTab) return
 
   const files = sortFiles(tabFiles[tabId], sortingMode, foldersOnTop)
   const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={tabId} />)
