@@ -50,20 +50,18 @@ function File({ file, tabId }) {
       data-context="file"
       data-id={path}
       data-is-directory={file.isDirectory}
+      onClick={() => {
+        setSelectedFile(path)
+      }}
+      onDoubleClick={async () => {
+        if (file.isDirectory) {
+          changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
+        } else {
+          await openFile(path)
+        }
+      }}
     >
-      <button
-        style={{ fontSize: mainZoom }}
-        onClick={() => {
-          setSelectedFile(path)
-        }}
-        onDoubleClick={async () => {
-          if (file.isDirectory) {
-            changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
-          } else {
-            await openFile(path)
-          }
-        }}
-      >
+      <button style={{ fontSize: mainZoom }}>
         <div className="file-name" style={{ width: columnWidths.nameCol }}>
           {file.isDirectory ? <FolderIcon /> : <FileTextIcon />}
           {renaming && selectedFile === path ? (
