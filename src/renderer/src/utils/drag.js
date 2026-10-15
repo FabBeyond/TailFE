@@ -30,6 +30,34 @@ export function startDrag(e, setDragBoxSize, setSelectedFiles) {
   window.addEventListener("mousemove", onMouseMove)
   window.addEventListener("mouseup", onMouseUp)
 }
+export function startFileDrag(e, setFileDraggingData) {
+  let upMostObject = null
+  document.querySelectorAll(".tab-list .file.selected").forEach((item) => {
+    if (
+      !upMostObject ||
+      upMostObject.getBoundingClientRect().top > item.getBoundingClientRect().top
+    )
+      upMostObject = item
+  })
+
+  const startOffsetX = upMostObject.getBoundingClientRect().left - e.clientX
+  const startOffsetY = upMostObject.getBoundingClientRect().top - e.clientY
+
+  function onMouseMove(moveEvent) {
+    setFileDraggingData({
+      x: moveEvent.clientX + startOffsetX,
+      y: moveEvent.clientY + startOffsetY
+    })
+  }
+
+  function onMouseUp() {
+    setFileDraggingData(null)
+    window.removeEventListener("mousemove", onMouseMove)
+    window.removeEventListener("mouseup", onMouseUp)
+  }
+  window.addEventListener("mousemove", onMouseMove)
+  window.addEventListener("mouseup", onMouseUp)
+}
 function getElementsInBox(box, selector) {
   return [...document.querySelectorAll(selector)].filter((el) => {
     const r = el.getBoundingClientRect()

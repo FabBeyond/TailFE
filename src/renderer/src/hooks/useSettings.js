@@ -29,6 +29,7 @@ export function useSettings() {
   const [sortingMode, setSortingMode] = useState("name")
   const [foldersOnTop, setFoldersOnTop] = useState(true)
   const [dragBoxSize, setDragBoxSize] = useState({ height: 0, width: 0, x: 0, y: 0 })
+  const [fileDraggingData, setFileDraggingData] = useState(null)
 
   return {
     showDotFiles,
@@ -71,6 +72,8 @@ export function useSettings() {
     foldersOnTop,
     setFoldersOnTop,
     dragBoxSize,
-    setDragBoxSize
+    setDragBoxSize,
+    fileDraggingData,
+    setFileDraggingData
   }
 }

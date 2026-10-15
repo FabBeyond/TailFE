@@ -282,6 +282,29 @@ textarea:focus {
   margin-top: 10px;
   padding-bottom: 30px;
 }
+.file-list-dragging {
+  position: fixed;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  padding: 0;
+  width: max-content;
+}
+.file-list-dragging button {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 .file-list button {
   display: flex;
   align-items: center;

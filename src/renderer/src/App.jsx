@@ -6,7 +6,8 @@ import {
   moveInHistory,
   readDirSafe,
   getCurrentDirName,
-  removeLastPathElement
+  removeLastPathElement,
+  getSelectedEntry
 } from "./utils/paths"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
@@ -14,7 +15,8 @@ import Properties from "./components/Properties.jsx"
 import Toast from "./components/Toast.jsx"
 import { Sidebar } from "./components/Sidebar"
 import ContextMenu from "./components/ContextMenu"
-import { startDrag } from "./utils/drag.js"
+import { startDrag, startFileDrag } from "./utils/drag.js"
+import File from "./components/File.jsx"
 
 function handleKeyDown(e, settings) {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return
@@ -167,9 +169,38 @@ function App() {
             onMouseDown={(e) => {
               if (!e.target.closest(".file"))
                 startDrag(e, settings.setDragBoxSize, settings.setSelectedFiles)
+              else {
+                startFileDrag(e, settings.setFileDraggingData, settings.selectedFiles)
+              }
             }}
           >
             {tabs}
+          </ul>
+          <ul
+            className="file-list-dragging"
+            style={{
+              position: "fixed",
+              left: settings.fileDraggingData?.x,
+              top: settings.fileDraggingData?.y,
+              height: "fit-content"
+            }}
+          >
+            {settings.selectedFiles.map((item, idx) => {
+              if (settings.fileDraggingData)
+                return (
+                  <File
+                    key={idx}
+                    file={getSelectedEntry(
+                      settings.tabFiles,
+                      settings.tabPaths,
+                      settings.activeTab,
+                      item
+                    )}
+                    tabId={settings.activeTab}
+                    drag={true}
+                  />
+                )
+            })}
           </ul>
         </div>
       </div>
