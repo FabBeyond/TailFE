@@ -14,6 +14,7 @@ import Properties from "./components/Properties.jsx"
 import Toast from "./components/Toast.jsx"
 import { Sidebar } from "./components/Sidebar"
 import ContextMenu from "./components/ContextMenu"
+import { startDrag } from "./utils/drag.js"
 
 function handleKeyDown(e, settings) {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return
@@ -81,6 +82,21 @@ function handleKeyDown(e, settings) {
   }
 }
 
+function Drag({ settings }) {
+  return (
+    <div
+      className="drag-box"
+      style={{
+        position: "fixed",
+        height: settings.dragBoxSize.height,
+        width: settings.dragBoxSize.width,
+        top: settings.dragBoxSize.y,
+        left: settings.dragBoxSize.x
+      }}
+    ></div>
+  )
+}
+
 function App() {
   const [, setEntries] = useState([])
   const [curPath] = useState("/")
@@ -146,12 +162,20 @@ function App() {
               </div>
             ))}
           </div>
-          <ul className="tab-list">{tabs}</ul>
+          <ul
+            className="tab-list"
+            onMouseDown={(e) => {
+              startDrag(e, settings.setDragBoxSize)
+            }}
+          >
+            {tabs}
+          </ul>
         </div>
       </div>
       <ContextMenu />
       <Toast />
       <Properties />
+      <Drag settings={settings} />
     </SettingsContext.Provider>
   )
 }
