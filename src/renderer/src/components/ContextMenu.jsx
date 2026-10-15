@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react"
 import { SettingsContext } from "../hooks/useSettings"
 import { deleteFile, createFolder, openFile } from "../utils/fileActions"
-import { changeTabPath, getSelectedEntry, concatPath } from "../utils/paths.js"
+import { changeTabPath } from "../utils/paths.js"
 import data from "../data.json"
 import {
   FolderIcon,
@@ -20,12 +20,10 @@ function ContextMenu() {
     tabPaths,
     activeTab,
     setRefreshToken,
-    setSelectedFile,
+    setSelectedFiles,
     setRenaming,
     setTabPaths,
     setPropertiesShown,
-    tabFiles,
-    selectedFile,
     setTabFiles,
     setActiveTab
   } = useContext(SettingsContext)
@@ -33,8 +31,9 @@ function ContextMenu() {
 
   useEffect(() => {
     if (!menu) return
-    if (menu.type === "file") setSelectedFile(menu.target)
-    else if (menu.type === "tab") setActiveTab(Number(menu.target))
+    if (menu.type === "file") {
+      setSelectedFiles((prev) => (prev.includes(menu.target) ? prev : [menu.target]))
+    } else if (menu.type === "tab") setActiveTab(Number(menu.target))
     function onClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenu(null)
@@ -42,7 +41,7 @@ function ContextMenu() {
     }
     window.addEventListener("click", onClick)
     return () => window.removeEventListener("click", onClick)
-  }, [menu, setMenu, setSelectedFile, setActiveTab])
+  }, [menu, setMenu, setSelectedFiles, setActiveTab])
 
   if (!menu) return null
 
@@ -56,14 +55,13 @@ function ContextMenu() {
     },
     openChoose: () => console.log("open chooser"),
     openNewTab: () => {
-      const fileName = getSelectedEntry(tabFiles, tabPaths, activeTab, selectedFile).name
-      setTabPaths((i) => [...i, concatPath(tabPaths[activeTab], fileName)])
+      setTabPaths((i) => [...i, menu.target])
       setTabFiles((i) => [...i, []])
     },
     newFolder: async () => {
       const path = await createFolder(tabPaths[activeTab], setRefreshToken)
       if (path) {
-        setSelectedFile(path)
+        setSelectedFiles([path])
         setRenaming(true)
       }
     },

@@ -27,7 +27,7 @@ function handleKeyDown(e, settings) {
     setTabPaths,
     setMainZoom,
     setRenaming,
-    selectedFile
+    selectedFiles
   } = settings
 
   // make Shift+i super insert mode where you type the full path
@@ -77,7 +77,7 @@ function handleKeyDown(e, settings) {
     } else if (e.key === ">") {
       moveInHistory(settings, 1)
     } else if (e.key === "F2") {
-      if (selectedFile) setRenaming(true)
+      if (selectedFiles.length === 1) setRenaming(true)
     }
   }
 }
@@ -165,7 +165,8 @@ function App() {
           <ul
             className="tab-list"
             onMouseDown={(e) => {
-              startDrag(e, settings.setDragBoxSize)
+              if (!e.target.closest(".file"))
+                startDrag(e, settings.setDragBoxSize, settings.setSelectedFiles)
             }}
           >
             {tabs}

@@ -4,12 +4,12 @@ import { FileIcon, FolderIcon } from "lucide-react"
 import { getSelectedEntry } from "../utils/paths.js"
 
 function Properties() {
-  const { propertiesShown, setPropertiesShown, tabFiles, tabPaths, activeTab, selectedFile } =
+  const { propertiesShown, setPropertiesShown, tabFiles, tabPaths, activeTab, selectedFiles } =
     useContext(SettingsContext)
 
   if (!propertiesShown) return
 
-  const file = getSelectedEntry(tabFiles, tabPaths, activeTab, selectedFile)
+  const file = getSelectedEntry(tabFiles, tabPaths, activeTab, selectedFiles[0])
 
   return (
     <div

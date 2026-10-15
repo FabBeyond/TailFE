@@ -22,7 +22,7 @@ export function useSettings() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [menu, setMenu] = useState(null)
   const [refreshToken, setRefreshToken] = useState(0)
-  const [selectedFile, setSelectedFile] = useState(null)
+  const [selectedFiles, setSelectedFiles] = useState([])
   const [renaming, setRenaming] = useState(false)
   const [propertiesShown, setPropertiesShown] = useState(false)
   const [pathWriting, setPathWriting] = useState(false)
@@ -56,8 +56,8 @@ export function useSettings() {
     setMenu,
     refreshToken,
     setRefreshToken,
-    selectedFile,
-    setSelectedFile,
+    selectedFiles,
+    setSelectedFiles,
     renaming,
     setRenaming,
     propertiesShown,

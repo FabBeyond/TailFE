@@ -20,7 +20,7 @@ function Tab({ path, tabId }) {
     isHistoryChangeRef,
     refreshToken,
     setRefreshToken,
-    setSelectedFile,
+    setSelectedFiles,
     setTabPaths,
     sortingMode,
     setSortingMode,
@@ -65,8 +65,8 @@ function Tab({ path, tabId }) {
     setRefreshToken
   ])
   useEffect(() => {
-    setSelectedFile(null)
-  }, [path, setSelectedFile])
+    setSelectedFiles([])
+  }, [path, setSelectedFiles])
 
   if (tabId != activeTab) return
 

@@ -33,8 +33,8 @@ function File({ file, tabId }) {
     setTabPaths,
     mainZoom,
     columnWidths,
-    selectedFile,
-    setSelectedFile,
+    selectedFiles,
+    setSelectedFiles,
     renaming,
     setRenaming,
     setRefreshToken,
@@ -48,12 +48,12 @@ function File({ file, tabId }) {
 
   return (
     <div
-      className={`file ${selectedFile === path ? "selected" : ""}`}
+      className={`file ${selectedFiles.includes(path) ? "selected" : ""}`}
       data-context="file"
       data-id={path}
       data-is-directory={file.isDirectory}
       onClick={() => {
-        setSelectedFile(path)
+        setSelectedFiles([path])
       }}
       onDoubleClick={async () => {
         if (file.isDirectory) {
@@ -66,7 +66,7 @@ function File({ file, tabId }) {
       <button style={{ fontSize: mainZoom }}>
         <div className="file-name" style={{ width: columnWidths.nameCol }}>
           {file.isDirectory ? <FolderIcon /> : <FileTextIcon />}
-          {renaming && selectedFile === path ? (
+          {renaming && selectedFiles.length === 1 && selectedFiles[0] === path ? (
             <RenameInput
               initialName={file.name}
               onSubmit={async (name) => {
@@ -74,7 +74,7 @@ function File({ file, tabId }) {
                   await rename(path, concatPath(tabPaths[tabId], name), setRefreshToken)
                 }
                 setRenaming(false)
-                setSelectedFile(concatPath(tabPaths[tabId], name))
+                setSelectedFiles([concatPath(tabPaths[tabId], name)])
               }}
               onCancel={() => setRenaming(false)}
             />
