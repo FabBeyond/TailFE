@@ -1,4 +1,4 @@
-import { join } from "node:path"
+import { join, basename } from "node:path"
 import { execFile } from "node:child_process"
 import fs from "node:fs/promises"
 import { promisify } from "node:util"
@@ -147,6 +147,22 @@ app.whenReady().then(() => {
     if (!ALLOWED_PATHS.includes(name)) return { error: "EINVAL" }
     try {
       return { path: app.getPath(name) }
+    } catch (err) {
+      return { error: err.message }
+    }
+  })
+  ipcMain.handle("move", async (_, oldPath, destDir, copy = false) => {
+    const newPath = join(destDir, basename(oldPath))
+    try {
+      await fs.access(newPath)
+      return { error: "EEXIST" }
+    } catch {}
+
+    try {
+      await fs.cp(oldPath, newPath, { recursive: true })
+      if (!copy) await fs.rm(oldPath, { recursive: true })
+
+      return { success: true }
     } catch (err) {
       return { error: err.message }
     }

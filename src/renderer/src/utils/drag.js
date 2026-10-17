@@ -30,8 +30,10 @@ export function startDrag(e, setDragBoxSize, setSelectedFiles) {
   window.addEventListener("mousemove", onMouseMove)
   window.addEventListener("mouseup", onMouseUp)
 }
-export function startFileDrag(e, setFileDraggingData) {
+export function startFileDrag(e, setFileDraggingData, settingsRef) {
+  if (settingsRef.current.selectedFiles.length == 0) return
   let upMostObject = null
+  let copy = false
   document.querySelectorAll(".tab-list .file.selected").forEach((item) => {
     if (
       !upMostObject ||
@@ -48,9 +50,21 @@ export function startFileDrag(e, setFileDraggingData) {
       x: moveEvent.clientX + startOffsetX,
       y: moveEvent.clientY + startOffsetY
     })
+    copy = moveEvent.ctrlKey
   }
 
-  function onMouseUp() {
+  async function onMouseUp(upEvent) {
+    if (Math.hypot(e.clientX - upEvent.clientX, e.clientY - upEvent.clientY) > 20) {
+      const target = upEvent.target.closest(".file")
+      const targetPath = target?.dataset.id
+      const isFolder = target?.dataset.isDirectory === "true"
+      if (isFolder) {
+        settingsRef.current.selectedFiles.forEach(async (item) => {
+          await window.api.move(item, targetPath, copy)
+        })
+        settingsRef.current.setRefreshToken(1)
+      }
+    }
     setFileDraggingData(null)
     window.removeEventListener("mousemove", onMouseMove)
     window.removeEventListener("mouseup", onMouseUp)

@@ -170,7 +170,7 @@ function App() {
               if (!e.target.closest(".file"))
                 startDrag(e, settings.setDragBoxSize, settings.setSelectedFiles)
               else {
-                startFileDrag(e, settings.setFileDraggingData, settings.selectedFiles)
+                startFileDrag(e, settings.setFileDraggingData, settingsRef)
               }
             }}
           >

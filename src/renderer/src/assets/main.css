@@ -283,6 +283,7 @@ textarea:focus {
   padding-bottom: 30px;
 }
 .file-list-dragging {
+  pointer-events: none;
   position: fixed;
   overflow-x: hidden;
   overflow-y: auto;

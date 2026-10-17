@@ -30,6 +30,7 @@ export function useSettings() {
   const [foldersOnTop, setFoldersOnTop] = useState(true)
   const [dragBoxSize, setDragBoxSize] = useState({ height: 0, width: 0, x: 0, y: 0 })
   const [fileDraggingData, setFileDraggingData] = useState(null)
+  const [dragDeadzone, setDragDeadzone] = useState(5)
 
   return {
     showDotFiles,
@@ -74,6 +75,8 @@ export function useSettings() {
     dragBoxSize,
     setDragBoxSize,
     fileDraggingData,
-    setFileDraggingData
+    setFileDraggingData,
+    dragDeadzone,
+    setDragDeadzone
   }
 }
