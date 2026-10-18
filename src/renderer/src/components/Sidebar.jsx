@@ -39,7 +39,7 @@ function Places() {
         if (!result.error) setPaths((prev) => ({ ...prev, [item.id]: result.path }))
       })
     })
-  })
+  }, [])
 
   const sidebarIcons = {
     House: HouseIcon,

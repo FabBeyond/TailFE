@@ -4,7 +4,6 @@ Things to port to other os:
 
 General todo:
 - add app picker for unknown files
-- add toast notifs for errors
 - permission popup for restricted stuff
 - add zipping features
 - add status bar
@@ -12,8 +11,8 @@ General todo:
 - add settings menu
 - finish properties menu
 - add context menu stuff in non file list
-- add dragging files for moving/copying
 - stop divider from highlighting in context menu
+- add optional confirmation for deleting
 
 Bugs:
 - General
@@ -21,6 +20,7 @@ Bugs:
   - new folder doesnt select after creation
   - fix weird scaling on sidebar
   - fix folder tree highlighting
+  - dragging when trying to click
 - Windows
   - Fix root folder showing random drive
   - path uses / instead of \

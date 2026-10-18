@@ -25,7 +25,8 @@ function ContextMenu() {
     setTabPaths,
     setPropertiesShown,
     setTabFiles,
-    setActiveTab
+    setActiveTab,
+    selectedFiles
   } = useContext(SettingsContext)
   const menuRef = useRef(null)
 
@@ -65,7 +66,7 @@ function ContextMenu() {
         setRenaming(true)
       }
     },
-    delete: () => deleteFile(menu.target, tabPaths, activeTab, setRefreshToken),
+    delete: () => deleteFile(selectedFiles, tabPaths, activeTab, setRefreshToken),
     showProperties: () => setPropertiesShown(true),
     closeTab: () => {
       console.log(tabPaths.length)

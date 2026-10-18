@@ -1,11 +1,13 @@
 import { showToast, errorMessage } from "./toast.js"
 
-export async function deleteFile(path, tabPaths, activeTab, setRefreshToken) {
-  const result = await window.api.deleteFile(path)
-  if (result.error) {
-    showToast("Couldn't delete", errorMessage(result.error), "error")
-    return
-  }
+export async function deleteFile(paths, tabPaths, activeTab, setRefreshToken) {
+  paths.forEach(async (item) => {
+    const result = await window.api.deleteFile(item)
+    if (result.error) {
+      showToast("Couldn't delete", errorMessage(result.error), "error")
+      return
+    }
+  })
   setRefreshToken(1)
 }
 export async function createFolder(dir, setRefreshToken) {

@@ -1,4 +1,6 @@
 export function startDrag(e, setDragBoxSize, setSelectedFiles) {
+  if (e.button != 0) return
+
   const startX = e.clientX
   const startY = e.clientY
   let box = { x: startX, y: startY, width: 0, height: 0 }
@@ -31,16 +33,21 @@ export function startDrag(e, setDragBoxSize, setSelectedFiles) {
   window.addEventListener("mouseup", onMouseUp)
 }
 export function startFileDrag(e, setFileDraggingData, settingsRef) {
-  if (settingsRef.current.selectedFiles.length == 0) return
-  let upMostObject = null
+  const clickedOn = e.target.closest(".file")
+
+  let selectedElements
+  if (clickedOn.classList.contains("selected")) {
+    selectedElements = [...document.querySelectorAll(".tab-list .file.selected")]
+  } else {
+    selectedElements = [clickedOn]
+    settingsRef.current.setSelectedFiles([clickedOn.dataset.id])
+  }
+
   let copy = false
-  document.querySelectorAll(".tab-list .file.selected").forEach((item) => {
-    if (
-      !upMostObject ||
-      upMostObject.getBoundingClientRect().top > item.getBoundingClientRect().top
-    )
-      upMostObject = item
-  })
+  const selectedIds = selectedElements.map((item) => item.dataset.id)
+  const upMostObject = selectedElements.reduce((top, item) =>
+    top.getBoundingClientRect().top > item.getBoundingClientRect().top ? item : top
+  )
 
   const startOffsetX = upMostObject.getBoundingClientRect().left - e.clientX
   const startOffsetY = upMostObject.getBoundingClientRect().top - e.clientY
@@ -59,7 +66,7 @@ export function startFileDrag(e, setFileDraggingData, settingsRef) {
       const targetPath = target?.dataset.id
       const isFolder = target?.dataset.isDirectory === "true"
       if (isFolder) {
-        settingsRef.current.selectedFiles.forEach(async (item) => {
+        selectedIds.forEach(async (item) => {
           await window.api.move(item, targetPath, copy)
         })
         settingsRef.current.setRefreshToken(1)

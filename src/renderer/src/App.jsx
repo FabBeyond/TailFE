@@ -46,7 +46,8 @@ function handleKeyDown(e, settings) {
 
   if (insertMode) {
     setKdbSearchLet((prev) => {
-      if (e.key === "Shift") return prev
+      if (e.key.length !== 1) return prev
+
       if (e.key === "Backspace") {
         return prev.slice(0, -1)
       }
@@ -85,6 +86,8 @@ function handleKeyDown(e, settings) {
 }
 
 function Drag({ settings }) {
+  if (settings.dragBoxSize.x == 0 && settings.dragBoxSize.y == 0) return
+
   return (
     <div
       className="drag-box"

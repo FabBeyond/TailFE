@@ -74,7 +74,11 @@ function Tab({ path, tabId }) {
   const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={tabId} />)
   return (
     <>
-      <div className="files-headers" style={{ fontSize: mainZoom }}>
+      <div
+        className="files-headers"
+        style={{ fontSize: mainZoom }}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <div className="file-header">
           <p
             className="name"

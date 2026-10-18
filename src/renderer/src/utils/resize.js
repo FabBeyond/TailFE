@@ -1,4 +1,7 @@
 export function startResize(e, startWidth, onResize) {
+  e.stopPropagation()
+  e.preventDefault()
+
   const startX = e.clientX
 
   function onMouseMove(moveEvent) {

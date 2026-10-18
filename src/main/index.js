@@ -64,7 +64,7 @@ app.whenReady().then(() => {
             const stats = await fs.stat(join(dirPath, e.name))
             return {
               name: e.name,
-              isDirectory: e.isDirectory(),
+              isDirectory: stats.isDirectory(),
               size: stats.size,
               lastModified: stats.mtime
             }
@@ -105,7 +105,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle("delete-file", async (_event, filePath) => {
     try {
-      await fs.rm(filePath, { recursive: true })
+      await shell.trashItem(filePath, { recursive: true })
       return { success: true }
     } catch (err) {
       return { error: err.code }

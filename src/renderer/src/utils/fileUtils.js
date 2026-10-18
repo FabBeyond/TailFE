@@ -18,6 +18,7 @@ export function sortFiles(files, param, foldersOnTop) {
   else if (param === "size") sorted = files.toSorted((a, b) => a.size - b.size)
   else if (param === "-size") sorted = files.toSorted((a, b) => b.size - a.size)
   else if (param === "modified") sorted = files.toSorted((a, b) => a.lastModified - b.lastModified)
+  else if (param === "-modified") sorted = files.toSorted((a, b) => b.lastModified - a.lastModified)
 
   if (foldersOnTop) {
     const folders = sorted.filter((item) => item.isDirectory)
