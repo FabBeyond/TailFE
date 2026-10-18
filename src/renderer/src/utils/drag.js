@@ -73,10 +73,8 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
       const targetPath = target?.dataset.id
       const isFolder = target?.dataset.isDirectory === "true"
       if (isFolder) {
-        selectedIds.forEach(async (item) => {
-          await window.api.move(item, targetPath, copy)
-        })
-        settingsRef.current.setRefreshToken(1)
+        await Promise.all(selectedIds.map((item) => window.api.move(item, targetPath, copy)))
+        settingsRef.current.refresh()
       }
     }
 

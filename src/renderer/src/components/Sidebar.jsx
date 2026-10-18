@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
-import { concatPath, changeTabPath, hasDirectories, readDirSafe } from "../utils/paths"
+import { concatPath, hasDirectories, readDirSafe } from "../utils/paths"
 import {
   ChevronRightIcon,
   FolderIcon,
@@ -48,7 +48,7 @@ function Places() {
     ArrowDownToLine: ArrowDownToLineIcon,
     Image: ImageIcon
   }
-  const { setTabPaths, activeTab } = useTabs()
+  const { activeTab, navigate } = useTabs()
 
   return (
     <div className="places">
@@ -61,7 +61,7 @@ function Places() {
             className="places-entry"
             key={item.id}
             onClick={() => {
-              changeTabPath(setTabPaths, activeTab, paths[item.id])
+              navigate(activeTab, paths[item.id])
             }}
           >
             <Icon />
@@ -95,7 +95,7 @@ export function FLFolder({ folderName, curPath }) {
   const [open, setOpen] = useState(false)
   const [children, setChildren] = useState([])
   const { showDotFiles } = useSettings()
-  const { activeTab, setTabPaths } = useTabs()
+  const { activeTab, navigate } = useTabs()
 
   useEffect(() => {
     readDirSafe(concatPath(curPath, folderName.name), setChildren)
@@ -121,11 +121,7 @@ export function FLFolder({ folderName, curPath }) {
           }}
         />
         <FolderIcon className="folder-icon" />
-        <button
-          onClick={() =>
-            changeTabPath(setTabPaths, activeTab, concatPath(curPath, folderName.name))
-          }
-        >
+        <button onClick={() => navigate(activeTab, concatPath(curPath, folderName.name))}>
           <p>{folderName.name}</p>
         </button>
       </div>

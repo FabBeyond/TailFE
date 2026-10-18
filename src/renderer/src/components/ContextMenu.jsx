@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
-import { deleteFile, createFolder, openFile } from "../utils/fileActions"
-import { changeTabPath } from "../utils/paths.js"
+import { createFolder, deleteFile, openFile } from "../utils/fileActions"
 import data from "../data.json"
 import {
   FolderIcon,
@@ -17,14 +16,17 @@ import { showToast } from "../utils/toast.js"
 function ContextMenu() {
   const { menu, setMenu, setRenaming, setPropertiesShown } = useUI()
   const {
-    tabPaths,
     activeTab,
-    setRefreshToken,
     setSelectedFiles,
-    setTabPaths,
-    setTabFiles,
     setActiveTab,
-    selectedFiles
+    selectedFiles,
+    navigate,
+    addTab,
+    getPath,
+    removeTab,
+    getNeighbourID,
+    refresh,
+    tabs
   } = useTabs()
   const menuRef = useRef(null)
 
@@ -32,7 +34,7 @@ function ContextMenu() {
     if (!menu) return
     if (menu.type === "file") {
       setSelectedFiles((prev) => (prev.includes(menu.target) ? prev : [menu.target]))
-    } else if (menu.type === "tab") setActiveTab(Number(menu.target))
+    } else if (menu.type === "tab") setActiveTab(menu.target)
     function onClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenu(null)
@@ -47,36 +49,34 @@ function ContextMenu() {
   const actions = {
     openDefault: async () => {
       if (menu.isDirectory) {
-        changeTabPath(setTabPaths, activeTab, menu.target)
+        navigate(activeTab, menu.target)
       } else {
         await openFile(menu.target)
       }
     },
     openChoose: () => console.log("open chooser"),
     openNewTab: () => {
-      setTabPaths((i) => [...i, menu.target])
-      setTabFiles((i) => [...i, []])
+      addTab(menu.target)
     },
     newFolder: async () => {
-      const path = await createFolder(tabPaths[activeTab], setRefreshToken)
+      const path = await createFolder(getPath(activeTab), refresh)
       if (path) {
         setSelectedFiles([path])
         setRenaming(true)
       }
     },
-    delete: () => deleteFile(selectedFiles, tabPaths, activeTab, setRefreshToken),
+    delete: () => deleteFile(selectedFiles, refresh),
     showProperties: () => setPropertiesShown(true),
     closeTab: () => {
-      console.log(tabPaths.length)
-      if (tabPaths.length == 1) {
+      if (tabs.length === 1) {
         showToast("Can't close Tab", "Can't close last open Tab", "error")
         return
       }
       setActiveTab(() => {
-        return activeTab == 0 ? 0 : activeTab - 1
+        let neighbourId = getNeighbourID(activeTab, -1)
+        return neighbourId == null ? getNeighbourID(activeTab, 1) : neighbourId
       })
-      setTabPaths((i) => i.filter((_, idx) => idx !== activeTab))
-      setTabFiles((i) => i.filter((_, idx) => idx !== activeTab))
+      removeTab(activeTab)
     }
   }
   const conditions = {

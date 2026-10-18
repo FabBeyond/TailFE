@@ -2,15 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useSettings } from "./hooks/useSettings"
 import { useTabs } from "./hooks/useTabs"
 import { useUI } from "./hooks/useUI"
-import {
-  changeTabPath,
-  concatPath,
-  moveInHistory,
-  readDirSafe,
-  getCurrentDirName,
-  removeLastPathElement,
-  getSelectedEntry
-} from "./utils/paths"
+import { concatPath, getCurrentDirName, removeLastPathElement } from "./utils/paths"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
 import Properties from "./components/Properties.jsx"
@@ -26,12 +18,13 @@ function handleKeyDown(e, settings) {
     insertMode,
     setInsertMode,
     setKdbSearchLet,
-    activeTab,
-    tabPaths,
-    setTabPaths,
     setMainZoom,
     setRenaming,
-    selectedFiles
+    activeTab,
+    getPath,
+    navigate,
+    selectedFiles,
+    moveInHistory
   } = settings
 
   // make Shift+i super insert mode where you type the full path
@@ -55,14 +48,14 @@ function handleKeyDown(e, settings) {
       }
       if (e.key === "Enter") {
         if (prev.startsWith(".")) {
-          let newPath = tabPaths[activeTab]
+          let newPath = getPath(activeTab)
           for (let i = 0; i < prev.length; i++) {
             newPath = removeLastPathElement(newPath)
           }
-          changeTabPath(setTabPaths, activeTab, newPath)
+          navigate(activeTab, newPath)
           return ""
         }
-        changeTabPath(setTabPaths, activeTab, concatPath(tabPaths[activeTab], prev))
+        navigate(activeTab, concatPath(getPath(activeTab), prev))
         setInsertMode(false)
         return ""
       }
@@ -78,9 +71,9 @@ function handleKeyDown(e, settings) {
         return prev + 2
       })
     } else if (e.key === "<") {
-      moveInHistory(settings, -1)
+      moveInHistory(activeTab, -1)
     } else if (e.key === ">") {
-      moveInHistory(settings, 1)
+      moveInHistory(activeTab, 1)
     } else if (e.key === "F2") {
       if (selectedFiles.length === 1) setRenaming(true)
     }
@@ -88,23 +81,22 @@ function handleKeyDown(e, settings) {
 }
 
 function App() {
-  const [, setEntries] = useState([])
-  const [curPath] = useState("/")
   const [isFileDragging, setIsFileDragging] = useState(false)
 
   const settings = useSettings()
-  const tabs = useTabs()
+  const usedTabs = useTabs()
   const ui = useUI()
-  const { tabPaths, activeTab, setActiveTab, tabFiles, selectedFiles, setSelectedFiles } = tabs
+  const { activeTab, setActiveTab, selectedFiles, setSelectedFiles, getSelectedEntry, tabs } =
+    usedTabs
   const { setMenu } = ui
 
   // merged view of all contexts for window listeners and drag handlers
-  const settingsRef = useRef({ ...settings, ...tabs, ...ui })
+  const settingsRef = useRef({ ...settings, ...usedTabs, ...ui })
   const dragBoxRef = useRef(null)
   const dragPreviewRef = useRef(null)
 
   useEffect(() => {
-    settingsRef.current = { ...settings, ...tabs, ...ui }
+    settingsRef.current = { ...settings, ...usedTabs, ...ui }
   })
 
   useEffect(() => {
@@ -113,11 +105,7 @@ function App() {
     return () => window.removeEventListener("keydown", listener)
   }, [])
 
-  useEffect(() => {
-    readDirSafe(curPath, setEntries)
-  }, [curPath])
-
-  const tabElements = tabPaths.map((path, idx) => <Tab key={idx} path={path} tabId={idx} />)
+  const tabElements = tabs.map((tab) => <Tab key={tab.id} path={tab.path} tabId={tab.id} />)
 
   useEffect(() => {
     const listener = (e) => {
@@ -141,20 +129,21 @@ function App() {
         <Sidebar />
         <div className="tabs">
           <div className="tab-headers">
-            {tabPaths.map((item, idx) => (
+            {tabs.map((item) => (
               <div
-                key={idx}
+                key={item.id}
                 className="tab-header"
                 onClick={() => {
-                  setActiveTab(idx)
+                  setActiveTab(item.id)
                 }}
                 style={{
-                  backgroundColor: activeTab == idx ? "var(--accent-faded)" : "var(--bars-colors)"
+                  backgroundColor:
+                    activeTab == item.id ? "var(--accent-faded)" : "var(--bars-colors)"
                 }}
-                data-id={idx}
+                data-id={item.id}
                 data-context="tab"
               >
-                <p>{getCurrentDirName(item)}</p>
+                <p>{getCurrentDirName(item.path)}</p>
               </div>
             ))}
           </div>
@@ -184,7 +173,7 @@ function App() {
                 return (
                   <File
                     key={idx}
-                    file={getSelectedEntry(tabFiles, tabPaths, activeTab, item)}
+                    file={getSelectedEntry(activeTab, item)}
                     tabId={activeTab}
                     drag={true}
                   />

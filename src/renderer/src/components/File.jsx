@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
-import { concatPath, changeTabPath } from "../utils/paths"
+import { concatPath } from "../utils/paths"
 import { FileTextIcon, FolderIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
 import { rename, openFile } from "../utils/fileActions.js"
@@ -30,12 +30,12 @@ function RenameInput({ initialName, onSubmit, onCancel }) {
 
 function File({ file, tabId }) {
   const { showDotFiles, mainZoom, columnWidths } = useSettings()
-  const { tabPaths, setTabPaths, selectedFiles, setSelectedFiles, setRefreshToken } = useTabs()
+  const { selectedFiles, setSelectedFiles, refresh, getPath, navigate } = useTabs()
   const { renaming, setRenaming, insertMode, kbdSearchLet } = useUI()
 
   if (!showDotFiles && file.name.startsWith(".")) return null
 
-  const path = concatPath(tabPaths[tabId], file.name)
+  const path = concatPath(getPath(tabId), file.name)
 
   return (
     <div
@@ -48,7 +48,7 @@ function File({ file, tabId }) {
       }}
       onDoubleClick={async () => {
         if (file.isDirectory) {
-          changeTabPath(setTabPaths, tabId, concatPath(tabPaths[tabId], file.name))
+          navigate(tabId, concatPath(getPath(tabId), file.name))
         } else {
           await openFile(path)
         }
@@ -62,10 +62,10 @@ function File({ file, tabId }) {
               initialName={file.name}
               onSubmit={async (name) => {
                 if (name && name !== file.name) {
-                  await rename(path, concatPath(tabPaths[tabId], name), setRefreshToken)
+                  await rename(path, concatPath(getPath(tabId), name), refresh)
                 }
                 setRenaming(false)
-                setSelectedFiles([concatPath(tabPaths[tabId], name)])
+                setSelectedFiles([concatPath(getPath(tabId), name)])
               }}
               onCancel={() => setRenaming(false)}
             />

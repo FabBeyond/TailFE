@@ -1,11 +1,11 @@
 import { Fragment, useState } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
-import { changeTabPath, moveInHistory, removeLastPathElement } from "../utils/paths"
+import { removeLastPathElement } from "../utils/paths"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
 
-function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths, setPathWriting }) {
+function AddressInput({ initialPath, activeTab, setPathWriting, getPath, navigate }) {
   const [tempPath, setTempPath] = useState(initialPath)
 
   return (
@@ -23,9 +23,9 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths, setPathWr
           window.api.readDir(tempPath).then((result) => {
             if (result.error) {
               showToast("Can't open folder", `${tempPath}: ${errorMessage(result.error)}`, "error")
-              setTempPath(tabPaths[activeTab])
+              setTempPath(getPath(activeTab))
             } else {
-              changeTabPath(setTabPaths, activeTab, tempPath)
+              navigate(activeTab, tempPath)
             }
             input.blur()
           })
@@ -39,14 +39,14 @@ function AddressInput({ initialPath, activeTab, tabPaths, setTabPaths, setPathWr
     />
   )
 }
-function AddressBarPart({ part, splitPaths, idx, tabChangeParams }) {
+function AddressBarPart({ part, splitPaths, idx, activeTab, navigate }) {
   return (
     <button
       className="address-bar-part"
       onClick={(e) => {
         e.stopPropagation()
         let fullPath = "/" + splitPaths.slice(0, idx + 1).join("/")
-        changeTabPath(tabChangeParams.setTabPaths, tabChangeParams.activeTab, fullPath)
+        navigate(activeTab, fullPath)
       }}
     >
       {part}
@@ -62,30 +62,29 @@ function SlashSeperator() {
 }
 
 function TopBar() {
-  const tabs = useTabs()
-  const { tabPaths, setTabPaths, activeTab, history, historyIndex } = tabs
+  const { activeTab, moveInHistory, getPath, canMoveHistory, navigate } = useTabs()
   const { insertMode, pathWriting, setPathWriting } = useUI()
-  let splitPaths = tabPaths[activeTab].split("/")
+  let splitPaths = getPath(activeTab).split("/")
   splitPaths = splitPaths.filter((item) => item !== "")
 
   return (
     <div className="top-bar">
       <ChevronLeftIcon
         style={{
-          color: historyIndex != 0 ? "var(--text-color)" : "var(--text-muted)"
+          color: canMoveHistory(activeTab).backwards ? "var(--text-color)" : "var(--text-muted)"
         }}
-        onClick={() => moveInHistory(tabs, -1)}
+        onClick={() => moveInHistory(activeTab, -1)}
       />
       <ChevronRightIcon
         style={{
-          color: history.length != historyIndex + 1 ? "var(--text-color)" : "var(--text-muted)"
+          color: canMoveHistory(activeTab).forwards ? "var(--text-color)" : "var(--text-muted)"
         }}
-        onClick={() => moveInHistory(tabs, 1)}
+        onClick={() => moveInHistory(activeTab, 1)}
       />
       <ArrowUp
         style={{ color: splitPaths.length != 0 ? "var(--text-color)" : "var(--text-muted)" }}
         onClick={() => {
-          changeTabPath(setTabPaths, activeTab, removeLastPathElement(tabPaths[activeTab]))
+          navigate(activeTab, removeLastPathElement(getPath(activeTab)))
         }}
       />
       {!pathWriting ? (
@@ -103,18 +102,19 @@ function TopBar() {
                 part={item}
                 splitPaths={splitPaths}
                 idx={idx}
-                tabChangeParams={{ setTabPaths: setTabPaths, activeTab: activeTab }}
+                activeTab={activeTab}
+                navigate={navigate}
               />
             </Fragment>
           ))}
         </div>
       ) : (
         <AddressInput
-          key={`${activeTab}-${tabPaths[activeTab]}`}
-          initialPath={tabPaths[activeTab]}
+          key={`${activeTab}-${getPath(activeTab)}`}
+          initialPath={getPath(activeTab)}
           activeTab={activeTab}
-          tabPaths={tabPaths}
-          setTabPaths={setTabPaths}
+          navigate={navigate}
+          getPath={getPath}
           setPathWriting={setPathWriting}
         />
       )}

@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
-import { removeLastPathElement, changeTabPath } from "../utils/paths.js"
+import { removeLastPathElement } from "../utils/paths.js"
 import { sortFiles } from "../utils/fileUtils.js"
 import File from "./File"
 import { ChevronUp } from "lucide-react"
@@ -11,21 +11,7 @@ import { ChevronUp } from "lucide-react"
 function Tab({ path, tabId }) {
   const { mainZoom, columnWidths, setColumnWidths, sortingMode, setSortingMode, foldersOnTop } =
     useSettings()
-  const {
-    tabFiles,
-    setTabFiles,
-    setHistory,
-    historyIndex,
-    setHistoryIndex,
-    isHistoryChangeRef,
-    refreshToken,
-    setRefreshToken,
-    setSelectedFiles,
-    setTabPaths,
-    activeTab
-  } = useTabs()
-
-  const lastRecordedPathRef = useRef(null)
+  const { refreshToken, setSelectedFiles, activeTab, navigate, getFiles, setTabFiles } = useTabs()
 
   // re-render every minute so "Last Modified" times stay current
   const [, setTick] = useState(0)
@@ -37,44 +23,21 @@ function Tab({ path, tabId }) {
   useEffect(() => {
     window.api.readDir(path).then((result) => {
       if (result.error) {
-        changeTabPath(setTabPaths, tabId, removeLastPathElement(path))
+        navigate(tabId, removeLastPathElement(path))
         showToast("Can't open folder", errorMessage(result.error), "error")
         return
       }
-      setTabFiles((prev) => {
-        const next = [...prev]
-        next[tabId] = result
-        return next
-      })
+      setTabFiles(tabId, result)
     })
-  }, [path, refreshToken, tabId, setTabPaths, setTabFiles])
+  }, [path, refreshToken, tabId, navigate, setTabFiles])
 
-  useEffect(() => {
-    setRefreshToken(0)
-    if (isHistoryChangeRef.current) {
-      lastRecordedPathRef.current = path
-      isHistoryChangeRef.current = false
-    } else if (lastRecordedPathRef.current !== path) {
-      lastRecordedPathRef.current = path
-      setHistory((prev) => [...prev.slice(0, historyIndex + 1), path])
-      setHistoryIndex((i) => i + 1)
-    }
-  }, [
-    path,
-    refreshToken,
-    historyIndex,
-    isHistoryChangeRef,
-    setHistory,
-    setHistoryIndex,
-    setRefreshToken
-  ])
   useEffect(() => {
     setSelectedFiles([])
   }, [path, setSelectedFiles])
 
   if (tabId != activeTab) return
 
-  const files = sortFiles(tabFiles[tabId], sortingMode, foldersOnTop)
+  const files = sortFiles(getFiles(tabId), sortingMode, foldersOnTop)
   const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={tabId} />)
   return (
     <>

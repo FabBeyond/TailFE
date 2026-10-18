@@ -1,15 +1,14 @@
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
 import { FileIcon, FolderIcon } from "lucide-react"
-import { getSelectedEntry } from "../utils/paths.js"
 
 function Properties() {
   const { propertiesShown, setPropertiesShown } = useUI()
-  const { tabFiles, tabPaths, activeTab, selectedFiles } = useTabs()
+  const { activeTab, selectedFiles, getSelectedEntry } = useTabs()
 
   if (!propertiesShown) return
 
-  const file = getSelectedEntry(tabFiles, tabPaths, activeTab, selectedFiles[0])
+  const file = getSelectedEntry(activeTab, selectedFiles[0])
 
   return (
     <div

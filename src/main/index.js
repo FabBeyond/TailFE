@@ -127,7 +127,9 @@ app.whenReady().then(() => {
     try {
       await fs.access(newPath)
       return { error: "EEXIST" }
-    } catch {}
+    } catch {
+      // target doesn't exist yet, which is what we want
+    }
 
     try {
       await fs.rename(path, newPath)
@@ -156,7 +158,9 @@ app.whenReady().then(() => {
     try {
       await fs.access(newPath)
       return { error: "EEXIST" }
-    } catch {}
+    } catch {
+      // target doesn't exist yet, which is what we want
+    }
 
     try {
       await fs.cp(oldPath, newPath, { recursive: true })
