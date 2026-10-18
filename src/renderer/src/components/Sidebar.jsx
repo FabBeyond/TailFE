@@ -1,5 +1,6 @@
-import { useContext, useEffect, useState } from "react"
-import { SettingsContext } from "../hooks/useSettings"
+import { useEffect, useState } from "react"
+import { useSettings } from "../hooks/useSettings"
+import { useTabs } from "../hooks/useTabs"
 import { concatPath, changeTabPath, hasDirectories, readDirSafe } from "../utils/paths"
 import {
   ChevronRightIcon,
@@ -13,10 +14,10 @@ import { startResize } from "../utils/resize"
 import data from "../data.json"
 
 export function Sidebar() {
-  const settings = useContext(SettingsContext)
+  const { sidebarWidth, setSidebarWidth } = useSettings()
 
   return (
-    <div className="sidebar" style={{ width: settings.sidebarWidth, flexShrink: 0 }}>
+    <div className="sidebar" style={{ width: sidebarWidth, flexShrink: 0 }}>
       <div className="sidebar-content">
         <Places />
         <RootFolderList />
@@ -24,7 +25,7 @@ export function Sidebar() {
       <div
         className="resize-handle sidebar-resize-handle"
         onMouseDown={(e) => {
-          startResize(e, settings.sidebarWidth, settings.setSidebarWidth)
+          startResize(e, sidebarWidth, setSidebarWidth)
         }}
       ></div>
     </div>
@@ -47,7 +48,7 @@ function Places() {
     ArrowDownToLine: ArrowDownToLineIcon,
     Image: ImageIcon
   }
-  const settings = useContext(SettingsContext)
+  const { setTabPaths, activeTab } = useTabs()
 
   return (
     <div className="places">
@@ -60,7 +61,7 @@ function Places() {
             className="places-entry"
             key={item.id}
             onClick={() => {
-              changeTabPath(settings.setTabPaths, settings.activeTab, paths[item.id])
+              changeTabPath(setTabPaths, activeTab, paths[item.id])
             }}
           >
             <Icon />
@@ -93,7 +94,8 @@ export function FolderList({ files, curPath }) {
 export function FLFolder({ folderName, curPath }) {
   const [open, setOpen] = useState(false)
   const [children, setChildren] = useState([])
-  const { showDotFiles, activeTab, setTabPaths } = useContext(SettingsContext)
+  const { showDotFiles } = useSettings()
+  const { activeTab, setTabPaths } = useTabs()
 
   useEffect(() => {
     readDirSafe(concatPath(curPath, folderName.name), setChildren)

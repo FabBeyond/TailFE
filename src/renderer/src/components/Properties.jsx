@@ -1,11 +1,11 @@
-import { useContext } from "react"
-import { SettingsContext } from "../hooks/useSettings.js"
+import { useTabs } from "../hooks/useTabs"
+import { useUI } from "../hooks/useUI"
 import { FileIcon, FolderIcon } from "lucide-react"
 import { getSelectedEntry } from "../utils/paths.js"
 
 function Properties() {
-  const { propertiesShown, setPropertiesShown, tabFiles, tabPaths, activeTab, selectedFiles } =
-    useContext(SettingsContext)
+  const { propertiesShown, setPropertiesShown } = useUI()
+  const { tabFiles, tabPaths, activeTab, selectedFiles } = useTabs()
 
   if (!propertiesShown) return
 

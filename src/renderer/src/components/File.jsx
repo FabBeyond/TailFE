@@ -1,5 +1,7 @@
-import { useContext, useState } from "react"
-import { SettingsContext } from "../hooks/useSettings"
+import { useState } from "react"
+import { useSettings } from "../hooks/useSettings"
+import { useTabs } from "../hooks/useTabs"
+import { useUI } from "../hooks/useUI"
 import { concatPath, changeTabPath } from "../utils/paths"
 import { FileTextIcon, FolderIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
@@ -27,20 +29,9 @@ function RenameInput({ initialName, onSubmit, onCancel }) {
 }
 
 function File({ file, tabId }) {
-  const {
-    showDotFiles,
-    tabPaths,
-    setTabPaths,
-    mainZoom,
-    columnWidths,
-    selectedFiles,
-    setSelectedFiles,
-    renaming,
-    setRenaming,
-    setRefreshToken,
-    insertMode,
-    kbdSearchLet
-  } = useContext(SettingsContext)
+  const { showDotFiles, mainZoom, columnWidths } = useSettings()
+  const { tabPaths, setTabPaths, selectedFiles, setSelectedFiles, setRefreshToken } = useTabs()
+  const { renaming, setRenaming, insertMode, kbdSearchLet } = useUI()
 
   if (!showDotFiles && file.name.startsWith(".")) return null
 

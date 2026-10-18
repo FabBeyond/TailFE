@@ -1,14 +1,9 @@
-export function startDrag(e, setDragBoxSize, setSelectedFiles) {
+export function startDrag(e, boxElement, setSelectedFiles) {
   if (e.button != 0) return
 
   const startX = e.clientX
   const startY = e.clientY
   let box = { x: startX, y: startY, width: 0, height: 0 }
-  setDragBoxSize((i) => ({
-    ...i,
-    x: e.clientX,
-    y: e.clientY
-  }))
 
   function onMouseMove(moveEvent) {
     const currentX = moveEvent.clientX
@@ -20,20 +15,27 @@ export function startDrag(e, setDragBoxSize, setSelectedFiles) {
       width: Math.abs(currentX - startX),
       height: Math.abs(currentY - startY)
     }
-    setDragBoxSize(box)
+    Object.assign(boxElement.style, {
+      display: "block",
+      left: box.x + "px",
+      top: box.y + "px",
+      width: box.width + "px",
+      height: box.height + "px"
+    })
   }
   function onMouseUp() {
     window.removeEventListener("mousemove", onMouseMove)
     window.removeEventListener("mouseup", onMouseUp)
 
     setSelectedFiles(getElementsInBox(box, ".file").map((el) => el.dataset.id))
-    setDragBoxSize({ width: 0, height: 0, x: 0, y: 0 })
+    boxElement.style.display = "none"
   }
   window.addEventListener("mousemove", onMouseMove)
   window.addEventListener("mouseup", onMouseUp)
 }
-export function startFileDrag(e, setFileDraggingData, settingsRef) {
+export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef) {
   const clickedOn = e.target.closest(".file")
+  let draggingFile = false
 
   let selectedElements
   if (clickedOn.classList.contains("selected")) {
@@ -53,14 +55,19 @@ export function startFileDrag(e, setFileDraggingData, settingsRef) {
   const startOffsetY = upMostObject.getBoundingClientRect().top - e.clientY
 
   function onMouseMove(moveEvent) {
-    setFileDraggingData({
-      x: moveEvent.clientX + startOffsetX,
-      y: moveEvent.clientY + startOffsetY
-    })
+    previelElement.style.transform = `translate(${moveEvent.clientX + startOffsetX}px, ${moveEvent.clientY + startOffsetY}px)`
+    if (
+      Math.hypot(e.clientX - moveEvent.clientX, e.clientY - moveEvent.clientY) > 20 &&
+      !draggingFile
+    ) {
+      draggingFile = true
+      setIsFileDragging(true)
+    }
     copy = moveEvent.ctrlKey
   }
 
   async function onMouseUp(upEvent) {
+    setIsFileDragging(false)
     if (Math.hypot(e.clientX - upEvent.clientX, e.clientY - upEvent.clientY) > 20) {
       const target = upEvent.target.closest(".file")
       const targetPath = target?.dataset.id
@@ -72,7 +79,7 @@ export function startFileDrag(e, setFileDraggingData, settingsRef) {
         settingsRef.current.setRefreshToken(1)
       }
     }
-    setFileDraggingData(null)
+
     window.removeEventListener("mousemove", onMouseMove)
     window.removeEventListener("mouseup", onMouseUp)
   }

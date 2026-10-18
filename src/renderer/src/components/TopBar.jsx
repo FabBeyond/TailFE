@@ -1,5 +1,6 @@
-import { Fragment, useContext, useState } from "react"
-import { SettingsContext } from "../hooks/useSettings"
+import { Fragment, useState } from "react"
+import { useTabs } from "../hooks/useTabs"
+import { useUI } from "../hooks/useUI"
 import { changeTabPath, moveInHistory, removeLastPathElement } from "../utils/paths"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
@@ -61,17 +62,9 @@ function SlashSeperator() {
 }
 
 function TopBar() {
-  const settings = useContext(SettingsContext)
-  const {
-    tabPaths,
-    setTabPaths,
-    activeTab,
-    insertMode,
-    pathWriting,
-    setPathWriting,
-    history,
-    historyIndex
-  } = useContext(SettingsContext)
+  const tabs = useTabs()
+  const { tabPaths, setTabPaths, activeTab, history, historyIndex } = tabs
+  const { insertMode, pathWriting, setPathWriting } = useUI()
   let splitPaths = tabPaths[activeTab].split("/")
   splitPaths = splitPaths.filter((item) => item !== "")
 
@@ -81,13 +74,13 @@ function TopBar() {
         style={{
           color: historyIndex != 0 ? "var(--text-color)" : "var(--text-muted)"
         }}
-        onClick={() => moveInHistory(settings, -1)}
+        onClick={() => moveInHistory(tabs, -1)}
       />
       <ChevronRightIcon
         style={{
           color: history.length != historyIndex + 1 ? "var(--text-color)" : "var(--text-muted)"
         }}
-        onClick={() => moveInHistory(settings, 1)}
+        onClick={() => moveInHistory(tabs, 1)}
       />
       <ArrowUp
         style={{ color: splitPaths.length != 0 ? "var(--text-color)" : "var(--text-muted)" }}

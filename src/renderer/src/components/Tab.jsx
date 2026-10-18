@@ -1,5 +1,6 @@
-import { useContext, useEffect, useRef } from "react"
-import { SettingsContext } from "../hooks/useSettings"
+import { useEffect, useRef, useState } from "react"
+import { useSettings } from "../hooks/useSettings"
+import { useTabs } from "../hooks/useTabs"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
 import { removeLastPathElement, changeTabPath } from "../utils/paths.js"
@@ -8,12 +9,11 @@ import File from "./File"
 import { ChevronUp } from "lucide-react"
 
 function Tab({ path, tabId }) {
+  const { mainZoom, columnWidths, setColumnWidths, sortingMode, setSortingMode, foldersOnTop } =
+    useSettings()
   const {
     tabFiles,
     setTabFiles,
-    mainZoom,
-    columnWidths,
-    setColumnWidths,
     setHistory,
     historyIndex,
     setHistoryIndex,
@@ -22,13 +22,17 @@ function Tab({ path, tabId }) {
     setRefreshToken,
     setSelectedFiles,
     setTabPaths,
-    sortingMode,
-    setSortingMode,
-    foldersOnTop,
     activeTab
-  } = useContext(SettingsContext)
+  } = useTabs()
 
   const lastRecordedPathRef = useRef(null)
+
+  // re-render every minute so "Last Modified" times stay current
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60000)
+    return () => clearInterval(id)
+  }, [])
 
   useEffect(() => {
     window.api.readDir(path).then((result) => {

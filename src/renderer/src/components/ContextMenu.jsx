@@ -1,5 +1,6 @@
-import { useContext, useEffect, useRef } from "react"
-import { SettingsContext } from "../hooks/useSettings"
+import { useEffect, useRef } from "react"
+import { useTabs } from "../hooks/useTabs"
+import { useUI } from "../hooks/useUI"
 import { deleteFile, createFolder, openFile } from "../utils/fileActions"
 import { changeTabPath } from "../utils/paths.js"
 import data from "../data.json"
@@ -14,20 +15,17 @@ import {
 import { showToast } from "../utils/toast.js"
 
 function ContextMenu() {
+  const { menu, setMenu, setRenaming, setPropertiesShown } = useUI()
   const {
-    menu,
-    setMenu,
     tabPaths,
     activeTab,
     setRefreshToken,
     setSelectedFiles,
-    setRenaming,
     setTabPaths,
-    setPropertiesShown,
     setTabFiles,
     setActiveTab,
     selectedFiles
-  } = useContext(SettingsContext)
+  } = useTabs()
   const menuRef = useRef(null)
 
   useEffect(() => {

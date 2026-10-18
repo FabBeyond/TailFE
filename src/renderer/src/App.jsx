@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import { SettingsContext, useSettings } from "./hooks/useSettings"
+import { useSettings } from "./hooks/useSettings"
+import { useTabs } from "./hooks/useTabs"
+import { useUI } from "./hooks/useUI"
 import {
   changeTabPath,
   concatPath,
@@ -85,34 +87,24 @@ function handleKeyDown(e, settings) {
   }
 }
 
-function Drag({ settings }) {
-  if (settings.dragBoxSize.x == 0 && settings.dragBoxSize.y == 0) return
-
-  return (
-    <div
-      className="drag-box"
-      style={{
-        position: "fixed",
-        height: settings.dragBoxSize.height,
-        width: settings.dragBoxSize.width,
-        top: settings.dragBoxSize.y,
-        left: settings.dragBoxSize.x
-      }}
-    ></div>
-  )
-}
-
 function App() {
   const [, setEntries] = useState([])
   const [curPath] = useState("/")
+  const [isFileDragging, setIsFileDragging] = useState(false)
 
   const settings = useSettings()
-  const { tabPaths, setMenu } = settings
+  const tabs = useTabs()
+  const ui = useUI()
+  const { tabPaths, activeTab, setActiveTab, tabFiles, selectedFiles, setSelectedFiles } = tabs
+  const { setMenu } = ui
 
-  const settingsRef = useRef(settings)
+  // merged view of all contexts for window listeners and drag handlers
+  const settingsRef = useRef({ ...settings, ...tabs, ...ui })
+  const dragBoxRef = useRef(null)
+  const dragPreviewRef = useRef(null)
 
   useEffect(() => {
-    settingsRef.current = settings
+    settingsRef.current = { ...settings, ...tabs, ...ui }
   })
 
   useEffect(() => {
@@ -125,7 +117,7 @@ function App() {
     readDirSafe(curPath, setEntries)
   }, [curPath])
 
-  const tabs = tabPaths.map((path, idx) => <Tab key={idx} path={path} tabId={idx} />)
+  const tabElements = tabPaths.map((path, idx) => <Tab key={idx} path={path} tabId={idx} />)
 
   useEffect(() => {
     const listener = (e) => {
@@ -143,7 +135,7 @@ function App() {
     return () => window.removeEventListener("contextmenu", listener)
   }, [setMenu])
   return (
-    <SettingsContext.Provider value={settings}>
+    <>
       <TopBar />
       <div className="bottom-part">
         <Sidebar />
@@ -154,11 +146,10 @@ function App() {
                 key={idx}
                 className="tab-header"
                 onClick={() => {
-                  settings.setActiveTab(idx)
+                  setActiveTab(idx)
                 }}
                 style={{
-                  backgroundColor:
-                    settings.activeTab == idx ? "var(--accent-faded)" : "var(--bars-colors)"
+                  backgroundColor: activeTab == idx ? "var(--accent-faded)" : "var(--bars-colors)"
                 }}
                 data-id={idx}
                 data-context="tab"
@@ -170,36 +161,31 @@ function App() {
           <ul
             className="tab-list"
             onMouseDown={(e) => {
-              if (!e.target.closest(".file"))
-                startDrag(e, settings.setDragBoxSize, settings.setSelectedFiles)
+              if (!e.target.closest(".file")) startDrag(e, dragBoxRef.current, setSelectedFiles)
               else {
-                startFileDrag(e, settings.setFileDraggingData, settingsRef)
+                startFileDrag(e, setIsFileDragging, dragPreviewRef.current, settingsRef)
               }
             }}
           >
-            {tabs}
+            {tabElements}
           </ul>
           <ul
             className="file-list-dragging"
             style={{
               position: "fixed",
-              left: settings.fileDraggingData?.x,
-              top: settings.fileDraggingData?.y,
+              left: 0,
+              top: 0,
               height: "fit-content"
             }}
+            ref={dragPreviewRef}
           >
-            {settings.selectedFiles.map((item, idx) => {
-              if (settings.fileDraggingData)
+            {selectedFiles.map((item, idx) => {
+              if (isFileDragging)
                 return (
                   <File
                     key={idx}
-                    file={getSelectedEntry(
-                      settings.tabFiles,
-                      settings.tabPaths,
-                      settings.activeTab,
-                      item
-                    )}
-                    tabId={settings.activeTab}
+                    file={getSelectedEntry(tabFiles, tabPaths, activeTab, item)}
+                    tabId={activeTab}
                     drag={true}
                   />
                 )
@@ -210,8 +196,12 @@ function App() {
       <ContextMenu />
       <Toast />
       <Properties />
-      <Drag settings={settings} />
-    </SettingsContext.Provider>
+      <div
+        className="drag-box"
+        ref={dragBoxRef}
+        style={{ position: "fixed", display: "none" }}
+      ></div>
+    </>
   )
 }
 
