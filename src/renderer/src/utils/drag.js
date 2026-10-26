@@ -1,4 +1,5 @@
 import trackPointer from "./pointer.js"
+import { moveFiles } from "./fileActions.js"
 
 export function startDrag(e, boxElement, setSelectedFiles) {
   if (e.button != 0) return
@@ -73,7 +74,7 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
       const targetPath = target?.dataset.id
       const isFolder = target?.dataset.isDirectory === "true"
       if (isFolder) {
-        await Promise.all(selectedIds.map((item) => window.api.move(item, targetPath, copy)))
+        moveFiles(selectedIds, targetPath, copy)
         settingsRef.current.refresh()
       }
     }

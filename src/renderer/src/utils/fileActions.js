@@ -35,3 +35,12 @@ export async function openFile(path) {
     showToast("Couldn't open file", result.error, "error")
   }
 }
+export async function moveFiles(selectedIds, targetPath, copy) {
+  selectedIds.map(async (item) => {
+    if (!item.includes(targetPath)) {
+      const result = await window.api.move(item, targetPath, copy)
+      if (result.error)
+        showToast(`Couldn't ${copy ? "copy" : "move"} file`, errorMessage(result.error), "error")
+    }
+  })
+}

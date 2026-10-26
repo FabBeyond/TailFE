@@ -62,8 +62,8 @@ export function registerIpcHandlers() {
         const stats = await fs.stat(join(dirPath, e.name)).catch(() => null)
         return {
           name: e.name,
-          isDirectory: stats.isDirectory(),
-          size: stats.size,
+          isDirectory: stats.isDirectory() ?? e.isDirectory(),
+          size: stats.size ?? null,
           lastModified: stats.mtime
         }
       })
@@ -99,13 +99,18 @@ export function registerIpcHandlers() {
   handle("move", async (oldPath, destDir, copy = false) => {
     const newPath = join(destDir, basename(oldPath))
     if (await exists(newPath)) return { error: "EEXIST" }
+    if (copy) {
+      await fs.cp(oldPath, newPath, { recursive: true })
+      if (!copy) await fs.rm(oldPath, { recursive: true })
+      return
+    }
     try {
       await fs.rename(oldPath, newPath)
     } catch (err) {
       if (err.code === "EXDEV") {
         await fs.cp(oldPath, newPath, { recursive: true })
         if (!copy) await fs.rm(oldPath, { recursive: true })
-      }
+      } else throw err
     }
   })
 }

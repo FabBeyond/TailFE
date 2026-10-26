@@ -41,8 +41,6 @@ function handleKeyDown(e, settings) {
 
   if (insertMode) {
     setKdbSearchLet((prev) => {
-      if (e.key.length !== 1) return prev
-
       if (e.key === "Backspace") {
         return prev.slice(0, -1)
       }
@@ -59,6 +57,8 @@ function handleKeyDown(e, settings) {
         setInsertMode(false)
         return ""
       }
+
+      if (e.key.length !== 1) return prev
       return prev + e.key
     })
   } else {
