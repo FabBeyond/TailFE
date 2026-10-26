@@ -1,9 +1,13 @@
+import trackPointer from "./pointer.js"
+
 export function startDrag(e, boxElement, setSelectedFiles) {
   if (e.button != 0) return
 
   const startX = e.clientX
   const startY = e.clientY
   let box = { x: startX, y: startY, width: 0, height: 0 }
+
+  trackPointer(onMouseMove, onMouseUp)
 
   function onMouseMove(moveEvent) {
     const currentX = moveEvent.clientX
@@ -24,14 +28,9 @@ export function startDrag(e, boxElement, setSelectedFiles) {
     })
   }
   function onMouseUp() {
-    window.removeEventListener("mousemove", onMouseMove)
-    window.removeEventListener("mouseup", onMouseUp)
-
     setSelectedFiles(getElementsInBox(box, ".file").map((el) => el.dataset.id))
     boxElement.style.display = "none"
   }
-  window.addEventListener("mousemove", onMouseMove)
-  window.addEventListener("mouseup", onMouseUp)
 }
 export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef) {
   const clickedOn = e.target.closest(".file")
@@ -54,6 +53,7 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
   const startOffsetX = upMostObject.getBoundingClientRect().left - e.clientX
   const startOffsetY = upMostObject.getBoundingClientRect().top - e.clientY
 
+  trackPointer(onMouseMove, onMouseUp)
   function onMouseMove(moveEvent) {
     previelElement.style.transform = `translate(${moveEvent.clientX + startOffsetX}px, ${moveEvent.clientY + startOffsetY}px)`
     if (
@@ -77,12 +77,7 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
         settingsRef.current.refresh()
       }
     }
-
-    window.removeEventListener("mousemove", onMouseMove)
-    window.removeEventListener("mouseup", onMouseUp)
   }
-  window.addEventListener("mousemove", onMouseMove)
-  window.addEventListener("mouseup", onMouseUp)
 }
 function getElementsInBox(box, selector) {
   return [...document.querySelectorAll(selector)].filter((el) => {
