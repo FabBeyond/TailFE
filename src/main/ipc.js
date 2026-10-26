@@ -16,9 +16,9 @@ const FILE_MANAGER_DESKTOP_IDS = [
   "thunar.desktop",
   "io.elementary.files.desktop"
 ]
+const ALLOWED_PATHS = ["home", "desktop", "documents", "downloads", "music", "pictures", "videos"]
 
 const execFileAsync = promisify(execFile)
-const ALLOWED_PATHS = ["home", "desktop", "documents", "downloads", "music", "pictures", "videos"]
 
 async function hasDefaultProgram(path) {
   try {
@@ -35,45 +35,42 @@ async function hasDefaultProgram(path) {
     return false
   }
 }
-export function registerIpcHandlers() {
-  ipcMain.handle("read-dir", async (_event, dirPath) => {
-    try {
-      const entries = await fs.readdir(dirPath, { withFileTypes: true })
-      const detailed = await Promise.all(
-        entries.map(async (e) => {
-          try {
-            const stats = await fs.stat(join(dirPath, e.name))
-            return {
-              name: e.name,
-              isDirectory: stats.isDirectory(),
-              size: stats.size,
-              lastModified: stats.mtime
-            }
-          } catch {
-            return {
-              name: e.name,
-              isDirectory: e.isDirectory(),
-              size: null,
-              lastModified: null
-            }
-          }
-        })
-      )
-      return detailed
-    } catch (err) {
-      return { error: err.code }
-    }
-  })
 
-  ipcMain.handle("delete-file", async (_event, filePath) => {
+async function exists(path) {
+  return fs.access(path).then(
+    () => true,
+    () => false
+  )
+}
+
+// Thrown errors become { error: code }, so the renderer can map them with errorMessage()
+function handle(channel, fn) {
+  ipcMain.handle(channel, async (_event, ...args) => {
     try {
-      await shell.trashItem(filePath, { recursive: true })
-      return { success: true }
+      return (await fn(...args)) ?? { success: true }
     } catch (err) {
-      return { error: err.code }
+      return { error: err.code ?? err.message }
     }
   })
-  ipcMain.handle("create-folder", async (_event, dir) => {
+}
+
+export function registerIpcHandlers() {
+  handle("read-dir", async (dirPath) => {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true })
+    return Promise.all(
+      entries.map(async (e) => {
+        const stats = await fs.stat(join(dirPath, e.name)).catch(() => null)
+        return {
+          name: e.name,
+          isDirectory: stats.isDirectory(),
+          size: stats.size,
+          lastModified: stats.mtime
+        }
+      })
+    )
+  })
+  handle("delete-file", (filePath) => shell.trashItem(filePath))
+  handle("create-folder", async (dir) => {
     for (let i = 1; ; i++) {
       const name = i === 1 ? "New Folder" : `New Folder (${i})`
       const path = join(dir, name)
@@ -81,56 +78,34 @@ export function registerIpcHandlers() {
         await fs.mkdir(path)
         return { path }
       } catch (err) {
-        if (err.code !== "EEXIST") return { error: err.code }
+        if (err.code !== "EEXIST") throw err
       }
     }
   })
-  ipcMain.handle("rename", async (_event, path, newPath) => {
-    try {
-      await fs.access(newPath)
-      return { error: "EEXIST" }
-    } catch {
-      // target doesn't exist yet, which is what we want
-    }
-
-    try {
-      await fs.rename(path, newPath)
-      return { success: true }
-    } catch (err) {
-      return { error: err.code ?? err.message }
-    }
+  handle("rename", async (path, newPath) => {
+    if (await exists(newPath)) return { error: "EEXIST" }
+    await fs.rename(path, newPath)
   })
-  ipcMain.handle("open-file", async (_event, path) => {
-    if (!(await hasDefaultProgram(path))) {
-      return { noProgram: true }
-    }
+  handle("open-file", async (path) => {
+    if (!(await hasDefaultProgram(path))) return { noProgram: true }
+    // openPath resolves with an error string instead of throwing
     const result = await shell.openPath(path)
-    return result ? { error: result } : { success: true }
+    if (result) return { error: result }
   })
-  ipcMain.handle("get-path", (_, name) => {
+  handle("get-path", (name) => {
     if (!ALLOWED_PATHS.includes(name)) return { error: "EINVAL" }
-    try {
-      return { path: app.getPath(name) }
-    } catch (err) {
-      return { error: err.message }
-    }
+    return { path: app.getPath(name) }
   })
-  ipcMain.handle("move", async (_, oldPath, destDir, copy = false) => {
+  handle("move", async (oldPath, destDir, copy = false) => {
     const newPath = join(destDir, basename(oldPath))
+    if (await exists(newPath)) return { error: "EEXIST" }
     try {
-      await fs.access(newPath)
-      return { error: "EEXIST" }
-    } catch {
-      // target doesn't exist yet, which is what we want
-    }
-
-    try {
-      await fs.cp(oldPath, newPath, { recursive: true })
-      if (!copy) await fs.rm(oldPath, { recursive: true })
-
-      return { success: true }
+      await fs.rename(oldPath, newPath)
     } catch (err) {
-      return { error: err.message }
+      if (err.code === "EXDEV") {
+        await fs.cp(oldPath, newPath, { recursive: true })
+        if (!copy) await fs.rm(oldPath, { recursive: true })
+      }
     }
   })
 }
