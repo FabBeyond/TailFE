@@ -1,74 +1,79 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { showToast, errorMessage } from "../utils/toast.js"
-import { concatPath } from "../utils/paths.js"
+import { concatPath, removeLastPathElement } from "../utils/paths.js"
 
 const TabsContext = createContext(null)
 
 export function TabsProvider({ children }) {
   const [activeTab, setActiveTabState] = useState("1")
-  const [refreshToken, setRefreshToken] = useState(0)
   const [selectedFiles, setSelectedFiles] = useState([])
   const [tabs, setTabs] = useState([
-    { id: "1", path: "/", files: [], loadedPath: null, history: ["/"], historyIndex: 0 }
+    { id: "1", path: "/", files: [], history: ["/"], historyIndex: 0 }
   ])
 
-  const navigate = useCallback(async (id, path) => {
-    const result = await window.api.readDir(path)
+  const loadTab = useCallback(async (id, path, update = (tab) => tab, climb = false) => {
+    let loadedPath = path
+    let result = await window.api.readDir(path)
+    const firstError = result.error
+    while (climb && result.error && loadedPath !== "/") {
+      loadedPath = removeLastPathElement(loadedPath)
+      result = await window.api.readDir(loadedPath)
+    }
     if (result.error) {
       showToast("Can't open folder", `"${path}" - ${errorMessage(result.error)}`, "error")
       return false
     }
+    if (loadedPath !== path) {
+      showToast("Folder no longer exists", `"${path}" - ${errorMessage(firstError)}`, "error")
+    }
+
     setTabs((prev) =>
       prev.map((tab) => {
         if (tab.id !== id) return tab
-        if (path === tab.path) return { ...tab, files: result, loadedPath: path }
-        const history = [...tab.history.slice(0, tab.historyIndex + 1), path]
-        return {
-          ...tab,
-          path,
-          files: result,
-          loadedPath: path,
-          history,
-          historyIndex: history.length - 1
-        }
+        const next = update(tab, loadedPath)
+        return next ? { ...next, path: loadedPath, files: result } : tab
       })
     )
     return true
   }, [])
-  const moveInHistory = useCallback((id, step) => {
-    setTabs((prev) =>
-      prev.map((tab) => {
-        if (tab.id !== id) return tab
-        const newIdx = tab.historyIndex + step
-        if (newIdx < 0 || newIdx >= tab.history.length) return tab
-        return { ...tab, path: tab.history[newIdx], historyIndex: newIdx }
+  const navigate = useCallback(
+    async (id, path) => {
+      if (path.length > 1) path = path.replace(/\/+$/, "")
+
+      const ok = await loadTab(id, path, (tab) => {
+        if (path === tab.path) return tab
+        const history = [...tab.history.slice(0, tab.historyIndex + 1), path]
+        return { ...tab, history, historyIndex: history.length - 1 }
       })
-    )
-  }, [])
-  const addTab = useCallback((path = "/") => {
-    setTabs((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        path: path,
-        files: [],
-        loadedPath: null,
-        history: [path],
-        historyIndex: 0
-      }
-    ])
-  }, [])
+      if (ok) setSelectedFiles([])
+      return ok
+    },
+    [loadTab]
+  )
+  const addTab = useCallback(
+    (path = "/") => {
+      const id = crypto.randomUUID()
+      setTabs((prev) => [...prev, { id, path, files: [], history: [path], historyIndex: 0 }])
+      loadTab(id, path)
+    },
+    [loadTab]
+  )
   const removeTab = useCallback((id) => {
     setTabs((prev) => prev.filter((tab) => tab.id !== id))
-  }, [])
-  const setTabFiles = useCallback((id, files, path) => {
-    setTabs((prev) =>
-      prev.map((tab) => (tab.id === id ? { ...tab, files, loadedPath: path } : tab))
-    )
   }, [])
 
   const getTab = useCallback((id) => tabs.find((tab) => tab.id === id), [tabs])
   const getPath = useCallback((id) => getTab(id).path, [getTab])
+  const moveInHistory = useCallback(
+    async (id, step) => {
+      const tab = getTab(id)
+      const historyIndex = tab.historyIndex + step
+      if (historyIndex < 0 || historyIndex >= tab.history.length) return
+      const ok = await loadTab(id, tab.history[historyIndex], (tab) => ({ ...tab, historyIndex }))
+      if (ok) setSelectedFiles([])
+    },
+    [getTab, loadTab]
+  )
   const getFiles = useCallback((id) => getTab(id).files, [getTab])
   const getSelectedEntry = useCallback(
     (id, selectedFile) => {
@@ -79,10 +84,9 @@ export function TabsProvider({ children }) {
   )
   const getNeighbourID = useCallback(
     (id, idx) => {
-      const curTab = tabs.find((i) => i.id === id)
-      return tabs[tabs.indexOf(curTab) + idx]?.id ?? null
+      return tabs[tabs.indexOf(getTab(id)) + idx]?.id ?? null
     },
-    [tabs]
+    [tabs, getTab]
   )
   const canMoveHistory = useCallback(
     (id) => {
@@ -95,8 +99,24 @@ export function TabsProvider({ children }) {
     [getTab]
   )
   const refresh = useCallback(() => {
-    setRefreshToken((i) => i + 1)
-  }, [])
+    tabs.forEach(({ id, path: startPath }) =>
+      loadTab(
+        id,
+        startPath,
+        (tab, loaded) => {
+          if (tab.path !== startPath) return null
+          if (loaded === startPath) return tab
+          return { ...tab, history: tab.history.with(tab.historyIndex, loaded) }
+        },
+        true
+      )
+    )
+  }, [tabs, loadTab])
+
+  useEffect(() => {
+    //eslint-disable-next-line react-hooks/set-state-in-effect -- setTabs runs after await
+    loadTab("1", "/")
+  }, [loadTab])
 
   const setActiveTab = useCallback((id) => {
     setActiveTabState(id)
@@ -107,9 +127,9 @@ export function TabsProvider({ children }) {
     () => ({
       activeTab,
       setActiveTab,
-      refreshToken,
       selectedFiles,
       setSelectedFiles,
+      getTab,
       navigate,
       addTab,
       getPath,
@@ -118,14 +138,12 @@ export function TabsProvider({ children }) {
       getFiles,
       moveInHistory,
       canMoveHistory,
-      setTabFiles,
       getNeighbourID,
       refresh,
       tabs
     }),
     [
       activeTab,
-      refreshToken,
       selectedFiles,
       navigate,
       addTab,
@@ -135,11 +153,11 @@ export function TabsProvider({ children }) {
       getFiles,
       moveInHistory,
       canMoveHistory,
-      setTabFiles,
       getNeighbourID,
       refresh,
       tabs,
-      setActiveTab
+      setActiveTab,
+      getTab
     ]
   )
 

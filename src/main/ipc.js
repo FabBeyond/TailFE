@@ -28,9 +28,9 @@ async function hasDefaultProgram(path) {
       "default",
       mimeType.trim()
     ])
-    const app = defaultApp.trim()
-    if (!app) return false
-    return !FILE_MANAGER_DESKTOP_IDS.includes(app)
+    const appDefault = defaultApp.trim()
+    if (!appDefault) return false
+    return !FILE_MANAGER_DESKTOP_IDS.includes(appDefault)
   } catch {
     return false
   }
@@ -99,18 +99,16 @@ export function registerIpcHandlers() {
   handle("move", async (oldPath, destDir, copy = false) => {
     const newPath = join(destDir, basename(oldPath))
     if (await exists(newPath)) return { error: "EEXIST" }
-    if (copy) {
-      await fs.cp(oldPath, newPath, { recursive: true })
-      return
+
+    if (!copy) {
+      try {
+        return await fs.rename(oldPath, newPath)
+      } catch (err) {
+        if (err.code !== "EXDEV") throw err
+      }
     }
 
-    try {
-      await fs.rename(oldPath, newPath)
-    } catch (err) {
-      if (err.code === "EXDEV") {
-        await fs.cp(oldPath, newPath, { recursive: true })
-        if (!copy) await fs.rm(oldPath, { recursive: true })
-      } else throw err
-    }
+    await fs.cp(oldPath, newPath, { recursive: true })
+    if (!copy) await fs.rm(oldPath, { recursive: true })
   })
 }

@@ -47,9 +47,9 @@ function AddressBarPart({ part, splitPaths, idx, activeTab, navigate }) {
     </button>
   )
 }
-function SlashSeperator() {
+function SlashSeparator() {
   return (
-    <div className="slash-seperator">
+    <div className="slash-separator">
       <p>/</p>
     </div>
   )
@@ -58,20 +58,22 @@ function SlashSeperator() {
 function TopBar() {
   const { activeTab, moveInHistory, getPath, canMoveHistory, navigate } = useTabs()
   const { insertMode, pathWriting, setPathWriting } = useUI()
-  let splitPaths = getPath(activeTab).split("/")
-  splitPaths = splitPaths.filter((item) => item !== "")
+  const splitPaths = getPath(activeTab)
+    .split("/")
+    .filter((item) => item !== "")
+  const historyMove = canMoveHistory(activeTab)
 
   return (
     <div className="top-bar">
       <ChevronLeftIcon
         style={{
-          color: canMoveHistory(activeTab).backwards ? "var(--text-color)" : "var(--text-muted)"
+          color: historyMove.backwards ? "var(--text-color)" : "var(--text-muted)"
         }}
         onClick={() => moveInHistory(activeTab, -1)}
       />
       <ChevronRightIcon
         style={{
-          color: canMoveHistory(activeTab).forwards ? "var(--text-color)" : "var(--text-muted)"
+          color: historyMove.forwards ? "var(--text-color)" : "var(--text-muted)"
         }}
         onClick={() => moveInHistory(activeTab, 1)}
       />
@@ -88,10 +90,10 @@ function TopBar() {
             setPathWriting(true)
           }}
         >
-          {splitPaths.length == 0 ? <SlashSeperator></SlashSeperator> : <></>}
+          {splitPaths.length == 0 && <SlashSeparator />}
           {splitPaths.map((item, idx) => (
             <Fragment key={idx}>
-              <SlashSeperator />
+              <SlashSeparator />
               <AddressBarPart
                 part={item}
                 splitPaths={splitPaths}

@@ -33,7 +33,8 @@ export function startDrag(e, boxElement, setSelectedFiles) {
     boxElement.style.display = "none"
   }
 }
-export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef) {
+export function startFileDrag(e, setIsFileDragging, previewElement, statesRef) {
+  if (e.button != 0) return
   const clickedOn = e.target.closest(".file")
   let draggingFile = false
 
@@ -42,43 +43,36 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
     selectedElements = [...document.querySelectorAll(".tab-list .file.selected")]
   } else {
     selectedElements = [clickedOn]
-    settingsRef.current.setSelectedFiles([clickedOn.dataset.id])
+    statesRef.current.setSelectedFiles([clickedOn.dataset.id])
   }
 
-  let copy = false
   const selectedIds = selectedElements.map((item) => item.dataset.id)
-  const upMostObject = selectedElements.reduce((top, item) =>
-    top.getBoundingClientRect().top > item.getBoundingClientRect().top ? item : top
-  )
+  const upMostObject = selectedElements[0]
 
   const startOffsetX = upMostObject.getBoundingClientRect().left - e.clientX
   const startOffsetY = upMostObject.getBoundingClientRect().top - e.clientY
 
   trackPointer(onMouseMove, onMouseUp)
   function onMouseMove(moveEvent) {
-    previelElement.style.transform = `translate(${moveEvent.clientX + startOffsetX}px, ${moveEvent.clientY + startOffsetY}px)`
+    previewElement.style.transform = `translate(${moveEvent.clientX + startOffsetX}px, ${moveEvent.clientY + startOffsetY}px)`
     if (
       Math.hypot(e.clientX - moveEvent.clientX, e.clientY - moveEvent.clientY) >
-        settingsRef.current.dragDeadZone &&
+        statesRef.current.dragDeadzone &&
       !draggingFile
     ) {
       draggingFile = true
       setIsFileDragging(true)
     }
-    copy = moveEvent.ctrlKey
   }
 
-  async function onMouseUp(upEvent) {
+  function onMouseUp(upEvent) {
     setIsFileDragging(false)
-    if (
-      Math.hypot(e.clientX - upEvent.clientX, e.clientY - upEvent.clientY) >
-      settingsRef.current.dragDeadZone
-    ) {
+    if (draggingFile) {
       const target = upEvent.target.closest(".file")
       const targetPath = target?.dataset.id
       const isFolder = target?.dataset.isDirectory === "true"
       if (isFolder) {
-        moveFiles(selectedIds, targetPath, copy, settingsRef.current.refresh)
+        moveFiles(selectedIds, targetPath, upEvent.ctrlKey, statesRef.current.refresh)
       }
     }
   }

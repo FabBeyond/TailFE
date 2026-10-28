@@ -100,7 +100,7 @@ textarea:focus {
   color: var(--text-color);
   height: 80%;
 }
-.slash-seperator {
+.slash-separator {
   margin: 0 10px;
   color: var(--text-muted);
 }

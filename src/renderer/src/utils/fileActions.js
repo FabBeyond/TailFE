@@ -36,12 +36,14 @@ export async function openFile(path) {
   }
 }
 export async function moveFiles(selectedIds, targetPath, copy, refresh) {
-  selectedIds.map(async (item) => {
-    if (item !== targetPath) {
-      const result = await window.api.move(item, targetPath, copy)
-      if (result.error)
-        showToast(`Couldn't ${copy ? "copy" : "move"} file`, errorMessage(result.error), "error")
-    }
-  })
+  await Promise.all(
+    selectedIds.map(async (item) => {
+      if (item !== targetPath) {
+        const result = await window.api.move(item, targetPath, copy)
+        if (result.error)
+          showToast(`Couldn't ${copy ? "copy" : "move"} file`, errorMessage(result.error), "error")
+      }
+    })
+  )
   refresh()
 }

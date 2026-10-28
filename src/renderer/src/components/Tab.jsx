@@ -1,9 +1,7 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
-import { showToast, errorMessage } from "../utils/toast.js"
 import { startColumnResize } from "../utils/resize"
-import { removeLastPathElement } from "../utils/paths.js"
 import { sortFiles } from "../utils/fileUtils.js"
 import File from "./File"
 import { ChevronUp } from "lucide-react"
@@ -14,9 +12,9 @@ const COLUMNS = [
   { key: "modified", label: "Last Modified", className: "last-modified" }
 ]
 
-function Tab({ path, tabId, loadedPath }) {
+function Tab() {
   const { mainZoom, sortingMode, foldersOnTop } = useSettings()
-  const { refreshToken, setSelectedFiles, activeTab, navigate, getFiles, setTabFiles } = useTabs()
+  const { getFiles, activeTab } = useTabs()
 
   const [, setTick] = useState(0)
   useEffect(() => {
@@ -24,29 +22,8 @@ function Tab({ path, tabId, loadedPath }) {
     return () => clearInterval(id)
   }, [])
 
-  const lastRefresh = useRef(refreshToken)
-  useEffect(() => {
-    const isRefresh = lastRefresh.current !== refreshToken
-    lastRefresh.current = refreshToken
-    if (!isRefresh && loadedPath === path) return
-    window.api.readDir(path).then((result) => {
-      if (result.error) {
-        navigate(tabId, removeLastPathElement(path))
-        showToast("Can't open folder", errorMessage(result.error), "error")
-        return
-      }
-      setTabFiles(tabId, result, path)
-    })
-  }, [path, refreshToken, tabId, navigate, setTabFiles, loadedPath])
-
-  useEffect(() => {
-    setSelectedFiles([])
-  }, [path, setSelectedFiles])
-
-  if (tabId != activeTab) return
-
-  const files = sortFiles(getFiles(tabId), sortingMode, foldersOnTop)
-  const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={tabId} />)
+  const files = sortFiles(getFiles(activeTab), sortingMode, foldersOnTop)
+  const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={activeTab} />)
   return (
     <>
       <div
@@ -78,7 +55,7 @@ function FileHeader({ column }) {
         >
           {label}
         </p>
-        {active && <ChevronUp style={{ rotate: active && sortingMode.desc ? "0deg" : "180deg" }} />}
+        {active && <ChevronUp style={{ rotate: sortingMode.desc ? "0deg" : "180deg" }} />}
       </div>
       {widthKey && (
         <div
