@@ -105,7 +105,7 @@ function ContextMenu() {
             showToast("Can't close Tab", "Can't close last open Tab", "error")
             return
           }
-          let neighbourId = getNeighbourID(activeTab, -1) ?? getNeighbourID(activeTab, 1)
+          const neighbourId = getNeighbourID(menu.target, -1) ?? getNeighbourID(menu.target, 1)
           setActiveTab(neighbourId)
           removeTab(menu.target)
         }

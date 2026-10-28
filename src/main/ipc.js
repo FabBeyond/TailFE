@@ -101,9 +101,9 @@ export function registerIpcHandlers() {
     if (await exists(newPath)) return { error: "EEXIST" }
     if (copy) {
       await fs.cp(oldPath, newPath, { recursive: true })
-      if (!copy) await fs.rm(oldPath, { recursive: true })
       return
     }
+
     try {
       await fs.rename(oldPath, newPath)
     } catch (err) {

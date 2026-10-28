@@ -11,7 +11,13 @@ import {
   ImageIcon
 } from "lucide-react"
 import { startResize } from "../utils/resize"
-import data from "../data.json"
+
+const PLACES = [
+  { name: "Home", icon: HouseIcon, folder: "home" },
+  { name: "Documents", icon: FileTextIcon, folder: "documents" },
+  { name: "Downloads", icon: ArrowDownToLineIcon, folder: "downloads" },
+  { name: "Pictures", icon: ImageIcon, folder: "pictures" }
+]
 
 export function Sidebar() {
   const { sidebarWidth, setSidebarWidth } = useSettings()
@@ -35,40 +41,30 @@ function Places() {
   const [paths, setPaths] = useState({})
 
   useEffect(() => {
-    data.sidebar.forEach((item) => {
-      window.api.getPath(item.folder).then((result) => {
-        if (!result.error) setPaths((prev) => ({ ...prev, [item.id]: result.path }))
+    PLACES.forEach(({ folder }) => {
+      window.api.getPath(folder).then((result) => {
+        if (!result.error) setPaths((prev) => ({ ...prev, [folder]: result.path }))
       })
     })
   }, [])
 
-  const sidebarIcons = {
-    House: HouseIcon,
-    FileText: FileTextIcon,
-    ArrowDownToLine: ArrowDownToLineIcon,
-    Image: ImageIcon
-  }
   const { activeTab, navigate } = useTabs()
 
   return (
     <div className="places">
       <p>PLACES</p>
-      {data["sidebar"].map((item) => {
-        const Icon = sidebarIcons[item.icon] ?? FolderIcon
-
-        return (
-          <div
-            className="places-entry"
-            key={item.id}
-            onClick={() => {
-              navigate(activeTab, paths[item.id])
-            }}
-          >
-            <Icon />
-            <p>{item.name}</p>
-          </div>
-        )
-      })}
+      {PLACES.map(({ name, icon: Icon, folder }) => (
+        <div
+          className="places-entry"
+          key={folder}
+          onClick={() => {
+            navigate(activeTab, paths[folder])
+          }}
+        >
+          <Icon />
+          <p>{name}</p>
+        </div>
+      ))}
     </div>
   )
 }

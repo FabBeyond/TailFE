@@ -73,7 +73,7 @@ export function TabsProvider({ children }) {
   const getSelectedEntry = useCallback(
     (id, selectedFile) => {
       const dir = getPath(id)
-      return (getFiles(id) ?? []).find((file) => concatPath(dir, file.name) === selectedFile)
+      return getFiles(id).find((file) => concatPath(dir, file.name) === selectedFile)
     },
     [getPath, getFiles]
   )

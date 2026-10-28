@@ -1,6 +1,6 @@
 const UNITS = ["Bytes", "KB", "MB", "GB", "TB"]
 const COMPARE = {
-  name: (a, b) => a.name.localeCompare(b.name),
+  name: (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }),
   size: (a, b) => a.size - b.size,
   modified: (a, b) => a.lastModified - b.lastModified
 }
@@ -16,13 +16,9 @@ export function bytesToReadable(bytes) {
   return `${unit === 0 ? size : size.toFixed(1)} ${UNITS[unit]}`
 }
 export function sortFiles(files, { key, desc }, foldersOnTop) {
-  const sorted = files.toSorted((a, b) => (desc ? COMPARE[key](b, a) : COMPARE[key](a, b)))
-
-  if (foldersOnTop) {
-    const folders = sorted.filter((item) => item.isDirectory)
-    const nonFolders = sorted.filter((item) => !item.isDirectory)
-    return folders.concat(nonFolders)
-  }
-
-  return sorted
+  return files.toSorted(
+    (a, b) =>
+      (foldersOnTop && b.isDirectory - a.isDirectory) ||
+      (desc ? COMPARE[key](b, a) : COMPARE[key](a, b))
+  )
 }

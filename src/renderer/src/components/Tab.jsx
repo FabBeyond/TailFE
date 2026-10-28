@@ -78,7 +78,7 @@ function FileHeader({ column }) {
         >
           {label}
         </p>
-        <ChevronUp style={{ rotate: active && sortingMode.desc ? "0deg" : "180deg" }} />
+        {active && <ChevronUp style={{ rotate: active && sortingMode.desc ? "0deg" : "180deg" }} />}
       </div>
       {widthKey && (
         <div

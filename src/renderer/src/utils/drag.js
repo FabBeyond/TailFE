@@ -58,7 +58,8 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
   function onMouseMove(moveEvent) {
     previelElement.style.transform = `translate(${moveEvent.clientX + startOffsetX}px, ${moveEvent.clientY + startOffsetY}px)`
     if (
-      Math.hypot(e.clientX - moveEvent.clientX, e.clientY - moveEvent.clientY) > 20 &&
+      Math.hypot(e.clientX - moveEvent.clientX, e.clientY - moveEvent.clientY) >
+        settingsRef.current.dragDeadZone &&
       !draggingFile
     ) {
       draggingFile = true
@@ -69,13 +70,15 @@ export function startFileDrag(e, setIsFileDragging, previelElement, settingsRef)
 
   async function onMouseUp(upEvent) {
     setIsFileDragging(false)
-    if (Math.hypot(e.clientX - upEvent.clientX, e.clientY - upEvent.clientY) > 20) {
+    if (
+      Math.hypot(e.clientX - upEvent.clientX, e.clientY - upEvent.clientY) >
+      settingsRef.current.dragDeadZone
+    ) {
       const target = upEvent.target.closest(".file")
       const targetPath = target?.dataset.id
       const isFolder = target?.dataset.isDirectory === "true"
       if (isFolder) {
-        moveFiles(selectedIds, targetPath, copy)
-        settingsRef.current.refresh()
+        moveFiles(selectedIds, targetPath, copy, settingsRef.current.refresh)
       }
     }
   }
