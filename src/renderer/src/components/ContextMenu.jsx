@@ -1,12 +1,10 @@
-import { useEffect, useRef } from "react"
+import { Fragment, useEffect, useRef } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
 import { createFolder, deleteFile, openFile } from "../utils/fileActions"
-import data from "../data.json"
 import {
   FolderIcon,
   SquareArrowOutUpRightIcon,
-  PenIcon,
   FolderPlusIcon,
   InfoIcon,
   TrashIcon
@@ -46,91 +44,106 @@ function ContextMenu() {
 
   if (!menu) return null
 
-  const actions = {
-    openDefault: async () => {
-      if (menu.isDirectory) {
-        navigate(activeTab, menu.target)
-      } else {
-        await openFile(menu.target)
-      }
-    },
-    openChoose: () => console.log("open chooser"),
-    openNewTab: () => {
-      addTab(menu.target)
-    },
-    newFolder: async () => {
-      const path = await createFolder(getPath(activeTab), refresh)
-      if (path) {
-        setSelectedFiles([path])
-        setRenaming(true)
-      }
-    },
-    delete: () => deleteFile(selectedFiles, refresh),
-    showProperties: () => setPropertiesShown(true),
-    closeTab: () => {
-      if (tabs.length === 1) {
-        showToast("Can't close Tab", "Can't close last open Tab", "error")
-        return
-      }
-      setActiveTab(() => {
-        let neighbourId = getNeighbourID(activeTab, -1)
-        return neighbourId == null ? getNeighbourID(activeTab, 1) : neighbourId
-      })
-      removeTab(activeTab)
-    }
-  }
-  const conditions = {
-    hasTarget: () => !!menu.target,
-    isFile: () => !!menu.target && !menu.isDirectory,
-    isDirectory: () => !!menu.target && menu.isDirectory,
-    isTab: () => !!menu.target && menu.type === "tab",
-    isEntry: () => !!menu.target && menu.type === "file"
-  }
+  const isEntry = !!menu.target && menu.type === "file"
+  const isDirectory = isEntry && menu.isDirectory
+  const isTab = !!menu.target && menu.type === "tab"
 
-  const filteredData = data["contextMenu"].filter((item) => {
-    for (const name of item.condition) {
-      if (!conditions[name]()) return false
-    }
-    return true
-  })
-
-  const contextMenuIcons = {
-    Folder: FolderIcon,
-    SquareArrowOutUpRight: SquareArrowOutUpRightIcon,
-    PenIcon: PenIcon,
-    FolderPlus: FolderPlusIcon,
-    Info: InfoIcon,
-    Trash: TrashIcon
-  }
+  const groups = [
+    [
+      {
+        name: "Open",
+        icon: FolderIcon,
+        show: isEntry,
+        action: async () => {
+          if (menu.isDirectory) {
+            navigate(activeTab, menu.target)
+          } else {
+            await openFile(menu.target)
+          }
+        }
+      },
+      {
+        name: "Open With",
+        icon: SquareArrowOutUpRightIcon,
+        show: isEntry,
+        action: () => console.log("open chooser")
+      },
+      {
+        name: "Open in new Tab",
+        icon: SquareArrowOutUpRightIcon,
+        show: isDirectory,
+        action: () => addTab(menu.target)
+      }
+    ],
+    [
+      {
+        name: "New Folder",
+        icon: FolderPlusIcon,
+        show: true,
+        action: async () => {
+          const path = await createFolder(getPath(activeTab), refresh)
+          if (path) {
+            setSelectedFiles([path])
+            setRenaming(true)
+          }
+        }
+      },
+      {
+        name: "Properties",
+        icon: InfoIcon,
+        show: isEntry,
+        action: () => setPropertiesShown(true)
+      }
+    ],
+    [
+      {
+        name: "Close Tab",
+        icon: TrashIcon,
+        show: isTab,
+        action: () => {
+          if (tabs.length === 1) {
+            showToast("Can't close Tab", "Can't close last open Tab", "error")
+            return
+          }
+          let neighbourId = getNeighbourID(activeTab, -1) ?? getNeighbourID(activeTab, 1)
+          setActiveTab(neighbourId)
+          removeTab(menu.target)
+        }
+      },
+      {
+        name: "Delete",
+        icon: TrashIcon,
+        show: isEntry,
+        action: () => deleteFile(selectedFiles, refresh)
+      }
+    ]
+  ]
+    .map((group) => group.filter((item) => item.show))
+    .filter((group) => group.length > 0)
 
   return (
-    menu && (
-      <div className="context-menu" ref={menuRef} style={{ left: menu.x, top: menu.y }}>
-        <ul>
-          {filteredData.map((item, idx) => {
-            const Icon = contextMenuIcons[item.icon]
-
-            return (
-              <li key={idx}>
-                {item.name !== "divider" ? (
-                  <button
-                    onClick={async () => {
-                      await actions[item.action]()
-                      setMenu(null)
-                    }}
-                  >
-                    <Icon />
-                    {item.name}
-                  </button>
-                ) : (
-                  <div className="context-menu-divider"></div>
-                )}
+    <div className="context-menu" ref={menuRef} style={{ left: menu.x, top: menu.y }}>
+      {groups.map((group, idx) => (
+        <Fragment key={idx}>
+          {idx > 0 && <div className="context-menu-divider"></div>}
+          <ul>
+            {group.map(({ name, icon: Icon, action }) => (
+              <li key={name}>
+                <button
+                  onClick={async () => {
+                    await action()
+                    setMenu(null)
+                  }}
+                >
+                  <Icon />
+                  {name}
+                </button>
               </li>
-            )
-          })}
-        </ul>
-      </div>
-    )
+            ))}
+          </ul>
+        </Fragment>
+      ))}
+    </div>
   )
 }
 

@@ -5,27 +5,35 @@ import { concatPath } from "../utils/paths.js"
 const TabsContext = createContext(null)
 
 export function TabsProvider({ children }) {
-  const [activeTab, setActiveTab] = useState("1")
+  const [activeTab, setActiveTabState] = useState("1")
   const [refreshToken, setRefreshToken] = useState(0)
   const [selectedFiles, setSelectedFiles] = useState([])
   const [tabs, setTabs] = useState([
-    { id: "1", path: "/", files: [], history: ["/"], historyIndex: 0 }
+    { id: "1", path: "/", files: [], loadedPath: null, history: ["/"], historyIndex: 0 }
   ])
 
   const navigate = useCallback(async (id, path) => {
     const result = await window.api.readDir(path)
     if (result.error) {
-      showToast("Can't open folder", errorMessage(result.error), "error")
-      return
+      showToast("Can't open folder", `"${path}" - ${errorMessage(result.error)}`, "error")
+      return false
     }
     setTabs((prev) =>
       prev.map((tab) => {
         if (tab.id !== id) return tab
-        if (path === tab.path) return tab
+        if (path === tab.path) return { ...tab, files: result, loadedPath: path }
         const history = [...tab.history.slice(0, tab.historyIndex + 1), path]
-        return { ...tab, path, history, historyIndex: history.length - 1 }
+        return {
+          ...tab,
+          path,
+          files: result,
+          loadedPath: path,
+          history,
+          historyIndex: history.length - 1
+        }
       })
     )
+    return true
   }, [])
   const moveInHistory = useCallback((id, step) => {
     setTabs((prev) =>
@@ -40,14 +48,23 @@ export function TabsProvider({ children }) {
   const addTab = useCallback((path = "/") => {
     setTabs((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), path: path, files: [], history: [path], historyIndex: 0 }
+      {
+        id: crypto.randomUUID(),
+        path: path,
+        files: [],
+        loadedPath: null,
+        history: [path],
+        historyIndex: 0
+      }
     ])
   }, [])
   const removeTab = useCallback((id) => {
     setTabs((prev) => prev.filter((tab) => tab.id !== id))
   }, [])
-  const setTabFiles = useCallback((id, files) => {
-    setTabs((prev) => prev.map((tab) => (tab.id === id ? { ...tab, files } : tab)))
+  const setTabFiles = useCallback((id, files, path) => {
+    setTabs((prev) =>
+      prev.map((tab) => (tab.id === id ? { ...tab, files, loadedPath: path } : tab))
+    )
   }, [])
 
   const getTab = useCallback((id) => tabs.find((tab) => tab.id === id), [tabs])
@@ -62,12 +79,8 @@ export function TabsProvider({ children }) {
   )
   const getNeighbourID = useCallback(
     (id, idx) => {
-      try {
-        const curTab = tabs.find((i) => i.id === id)
-        return tabs[tabs.indexOf(curTab) + idx].id
-      } catch {
-        return null
-      }
+      const curTab = tabs.find((i) => i.id === id)
+      return tabs[tabs.indexOf(curTab) + idx]?.id ?? null
     },
     [tabs]
   )
@@ -83,6 +96,11 @@ export function TabsProvider({ children }) {
   )
   const refresh = useCallback(() => {
     setRefreshToken((i) => i + 1)
+  }, [])
+
+  const setActiveTab = useCallback((id) => {
+    setActiveTabState(id)
+    setSelectedFiles([])
   }, [])
 
   const value = useMemo(
@@ -120,7 +138,8 @@ export function TabsProvider({ children }) {
       setTabFiles,
       getNeighbourID,
       refresh,
-      tabs
+      tabs,
+      setActiveTab
     ]
   )
 

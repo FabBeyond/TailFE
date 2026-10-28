@@ -62,9 +62,9 @@ export function registerIpcHandlers() {
         const stats = await fs.stat(join(dirPath, e.name)).catch(() => null)
         return {
           name: e.name,
-          isDirectory: stats.isDirectory() ?? e.isDirectory(),
-          size: stats.size ?? null,
-          lastModified: stats.mtime
+          isDirectory: stats?.isDirectory() ?? e.isDirectory(),
+          size: stats?.size ?? null,
+          lastModified: stats?.mtime ?? null
         }
       })
     )

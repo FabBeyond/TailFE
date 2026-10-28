@@ -101,12 +101,6 @@ export function FLFolder({ folderName, curPath }) {
     readDirSafe(concatPath(curPath, folderName.name), setChildren)
   }, [open, folderName.name, curPath])
 
-  useEffect(() => {
-    if (open) {
-      readDirSafe(concatPath(curPath, folderName.name), setChildren)
-    }
-  }, [open, curPath, folderName.name])
-
   if (!showDotFiles && folderName.name.startsWith(".")) return
 
   return (
@@ -116,8 +110,7 @@ export function FLFolder({ folderName, curPath }) {
           className={`${open ? "arrow-open" : ""} ${!hasDirectories(children) ? "hide" : ""}`}
           style={{ cursor: "pointer" }}
           onClick={() => {
-            const next = !open
-            setOpen(next)
+            setOpen((i) => !i)
           }}
         />
         <FolderIcon className="folder-icon" />

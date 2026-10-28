@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
 import { showToast, errorMessage } from "../utils/toast.js"
@@ -8,28 +8,36 @@ import { sortFiles } from "../utils/fileUtils.js"
 import File from "./File"
 import { ChevronUp } from "lucide-react"
 
-function Tab({ path, tabId }) {
-  const { mainZoom, columnWidths, setColumnWidths, sortingMode, setSortingMode, foldersOnTop } =
-    useSettings()
+const COLUMNS = [
+  { key: "name", label: "Name", className: "name", widthKey: "nameCol" },
+  { key: "size", label: "Size", className: "size", widthKey: "sizeCol" },
+  { key: "modified", label: "Last Modified", className: "last-modified" }
+]
+
+function Tab({ path, tabId, loadedPath }) {
+  const { mainZoom, sortingMode, foldersOnTop } = useSettings()
   const { refreshToken, setSelectedFiles, activeTab, navigate, getFiles, setTabFiles } = useTabs()
 
-  // re-render every minute so "Last Modified" times stay current
   const [, setTick] = useState(0)
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 60000)
     return () => clearInterval(id)
   }, [])
 
+  const lastRefresh = useRef(refreshToken)
   useEffect(() => {
+    const isRefresh = lastRefresh.current !== refreshToken
+    lastRefresh.current = refreshToken
+    if (!isRefresh && loadedPath === path) return
     window.api.readDir(path).then((result) => {
       if (result.error) {
         navigate(tabId, removeLastPathElement(path))
         showToast("Can't open folder", errorMessage(result.error), "error")
         return
       }
-      setTabFiles(tabId, result)
+      setTabFiles(tabId, result, path)
     })
-  }, [path, refreshToken, tabId, navigate, setTabFiles])
+  }, [path, refreshToken, tabId, navigate, setTabFiles, loadedPath])
 
   useEffect(() => {
     setSelectedFiles([])
@@ -46,45 +54,38 @@ function Tab({ path, tabId }) {
         style={{ fontSize: mainZoom }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="file-header">
-          <p
-            className="name"
-            style={{ width: columnWidths.nameCol - 4 }}
-            onClick={() => setSortingMode(sortingMode.startsWith("-") ? "name" : "-name")}
-          >
-            Name
-          </p>
-          <ChevronUp style={{ rotate: sortingMode === "-name" ? "0deg" : "180deg" }} />
-        </div>
-        <div
-          className="resize-handle"
-          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "nameCol")}
-        ></div>
-        <div className="file-header">
-          <p
-            className="size"
-            style={{ width: columnWidths.sizeCol - 4 }}
-            onClick={() => setSortingMode(sortingMode.startsWith("-") ? "size" : "-size")}
-          >
-            Size
-          </p>
-          <ChevronUp style={{ rotate: sortingMode === "-size" ? "0deg" : "180deg" }} />
-        </div>
-        <div
-          className="resize-handle"
-          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, "sizeCol")}
-        ></div>
-        <div className="file-header">
-          <p
-            className="last-modified"
-            onClick={() => setSortingMode(sortingMode.startsWith("-") ? "modified" : "-modified")}
-          >
-            Last Modified
-          </p>
-          <ChevronUp style={{ rotate: sortingMode === "-modified" ? "0deg" : "180deg" }} />
-        </div>
+        {COLUMNS.map((column) => (
+          <FileHeader key={column.key} column={column} />
+        ))}
       </div>
       <ul className="file-list">{fileObjs}</ul>
+    </>
+  )
+}
+
+function FileHeader({ column }) {
+  const { columnWidths, setColumnWidths, sortingMode, setSortingMode } = useSettings()
+  const { key, label, className, widthKey } = column
+  const active = sortingMode.key === key
+
+  return (
+    <>
+      <div className="file-header">
+        <p
+          className={className}
+          style={widthKey && { width: columnWidths[widthKey] - 4 }}
+          onClick={() => setSortingMode({ key, desc: active && !sortingMode.desc })}
+        >
+          {label}
+        </p>
+        <ChevronUp style={{ rotate: active && sortingMode.desc ? "0deg" : "180deg" }} />
+      </div>
+      {widthKey && (
+        <div
+          className="resize-handle"
+          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, widthKey)}
+        ></div>
+      )}
     </>
   )
 }

@@ -7,9 +7,9 @@ export function SettingsProvider({ children }) {
   const [mainZoom, setMainZoom] = useState(20)
   const [columnWidths, setColumnWidths] = useState({ nameCol: 300, sizeCol: 150 })
   const [sidebarWidth, setSidebarWidth] = useState(200)
-  const [sortingMode, setSortingMode] = useState("name")
   const [foldersOnTop, setFoldersOnTop] = useState(true)
-  const [dragDeadzone, setDragDeadzone] = useState(5)
+  const [dragDeadzone, setDragDeadzone] = useState(20)
+  const [sortingMode, setSortingMode] = useState({ key: "name", desc: false })
 
   const value = useMemo(
     () => ({

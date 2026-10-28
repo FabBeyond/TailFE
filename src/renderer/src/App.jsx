@@ -105,7 +105,9 @@ function App() {
     return () => window.removeEventListener("keydown", listener)
   }, [])
 
-  const tabElements = tabs.map((tab) => <Tab key={tab.id} path={tab.path} tabId={tab.id} />)
+  const tabElements = tabs.map((tab) => (
+    <Tab key={tab.id} path={tab.path} loadedPath={tab.loadedPath} tabId={tab.id} />
+  ))
 
   useEffect(() => {
     const listener = (e) => {

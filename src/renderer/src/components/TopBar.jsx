@@ -2,7 +2,6 @@ import { Fragment, useState } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
 import { removeLastPathElement } from "../utils/paths"
-import { showToast, errorMessage } from "../utils/toast.js"
 import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
 
 function AddressInput({ initialPath, activeTab, setPathWriting, getPath, navigate }) {
@@ -20,13 +19,8 @@ function AddressInput({ initialPath, activeTab, setPathWriting, getPath, navigat
       onKeyUp={(e) => {
         if (e.key === "Enter") {
           const input = e.target
-          window.api.readDir(tempPath).then((result) => {
-            if (result.error) {
-              showToast("Can't open folder", `${tempPath}: ${errorMessage(result.error)}`, "error")
-              setTempPath(getPath(activeTab))
-            } else {
-              navigate(activeTab, tempPath)
-            }
+          navigate(activeTab, tempPath).then((ok) => {
+            if (!ok) setTempPath(getPath(activeTab))
             input.blur()
           })
         } else if (e.key === "Escape") {

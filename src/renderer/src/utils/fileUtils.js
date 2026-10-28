@@ -1,4 +1,9 @@
 const UNITS = ["Bytes", "KB", "MB", "GB", "TB"]
+const COMPARE = {
+  name: (a, b) => a.name.localeCompare(b.name),
+  size: (a, b) => a.size - b.size,
+  modified: (a, b) => a.lastModified - b.lastModified
+}
 
 export function bytesToReadable(bytes) {
   let size = bytes
@@ -10,15 +15,8 @@ export function bytesToReadable(bytes) {
   }
   return `${unit === 0 ? size : size.toFixed(1)} ${UNITS[unit]}`
 }
-export function sortFiles(files, param, foldersOnTop) {
-  let sorted = []
-  if (files.length === 0) return []
-  if (param === "name") sorted = files.toSorted((a, b) => a.name.localeCompare(b.name))
-  else if (param === "-name") sorted = files.toSorted((a, b) => b.name.localeCompare(a.name))
-  else if (param === "size") sorted = files.toSorted((a, b) => a.size - b.size)
-  else if (param === "-size") sorted = files.toSorted((a, b) => b.size - a.size)
-  else if (param === "modified") sorted = files.toSorted((a, b) => a.lastModified - b.lastModified)
-  else if (param === "-modified") sorted = files.toSorted((a, b) => b.lastModified - a.lastModified)
+export function sortFiles(files, { key, desc }, foldersOnTop) {
+  const sorted = files.toSorted((a, b) => (desc ? COMPARE[key](b, a) : COMPARE[key](a, b)))
 
   if (foldersOnTop) {
     const folders = sorted.filter((item) => item.isDirectory)
