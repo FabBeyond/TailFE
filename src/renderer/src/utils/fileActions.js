@@ -23,9 +23,10 @@ export async function rename(path, newPath, refresh) {
   const result = await window.api.rename(path, newPath)
   if (result.error) {
     showToast("Couldn't rename", errorMessage(result.error), "error")
-    return
+    return false
   }
   refresh()
+  return true
 }
 export async function openFile(path) {
   const result = await window.api.openFile(path)

@@ -1,17 +1,27 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useRef } from "react"
 import { showToast, errorMessage } from "../utils/toast.js"
 import { concatPath, removeLastPathElement } from "../utils/paths.js"
 
 const TabsContext = createContext(null)
+const INITIAL_TAB = {
+  id: "1",
+  path: "/",
+  files: [],
+  history: ["/"],
+  historyIndex: 0
+}
 
 export function TabsProvider({ children }) {
-  const [activeTab, setActiveTabState] = useState("1")
+  const [activeTab, setActiveTabState] = useState(INITIAL_TAB.id)
   const [selectedFiles, setSelectedFiles] = useState([])
-  const [tabs, setTabs] = useState([
-    { id: "1", path: "/", files: [], history: ["/"], historyIndex: 0 }
-  ])
+  const [tabs, setTabs] = useState([INITIAL_TAB])
+  const [treeVersion, setTreeVersion] = useState(0)
+  const loadIds = useRef(new Map())
 
   const loadTab = useCallback(async (id, path, update = (tab) => tab, climb = false) => {
+    const loadId = (loadIds.current.get(id) ?? 0) + 1
+    loadIds.current.set(id, loadId)
+
     let loadedPath = path
     let result = await window.api.readDir(path)
     const firstError = result.error
@@ -19,6 +29,8 @@ export function TabsProvider({ children }) {
       loadedPath = removeLastPathElement(loadedPath)
       result = await window.api.readDir(loadedPath)
     }
+    if (loadIds.current.get(id) !== loadId) return false
+
     if (result.error) {
       showToast("Can't open folder", `"${path}" - ${errorMessage(result.error)}`, "error")
       return false
@@ -34,6 +46,12 @@ export function TabsProvider({ children }) {
         return next ? { ...next, path: loadedPath, files: result } : tab
       })
     )
+
+    const existing = new Set(result.map((file) => concatPath(loadedPath, file.name)))
+    setSelectedFiles((prev) => {
+      const next = prev.filter((p) => removeLastPathElement(p) !== loadedPath || existing.has(p))
+      return next.length === prev.length ? prev : next
+    })
     return true
   }, [])
   const navigate = useCallback(
@@ -111,11 +129,12 @@ export function TabsProvider({ children }) {
         true
       )
     )
+    setTreeVersion((prev) => prev + 1)
   }, [tabs, loadTab])
 
   useEffect(() => {
     //eslint-disable-next-line react-hooks/set-state-in-effect -- setTabs runs after await
-    loadTab("1", "/")
+    loadTab(INITIAL_TAB.id, INITIAL_TAB.path)
   }, [loadTab])
 
   const setActiveTab = useCallback((id) => {
@@ -140,7 +159,8 @@ export function TabsProvider({ children }) {
       canMoveHistory,
       getNeighbourID,
       refresh,
-      tabs
+      tabs,
+      treeVersion
     }),
     [
       activeTab,
@@ -157,7 +177,8 @@ export function TabsProvider({ children }) {
       refresh,
       tabs,
       setActiveTab,
-      getTab
+      getTab,
+      treeVersion
     ]
   )
 

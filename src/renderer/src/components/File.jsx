@@ -20,7 +20,7 @@ function RenameInput({ initialName, onSubmit, onCancel }) {
       onChange={(e) => setName(e.target.value)}
       onDoubleClick={(e) => e.stopPropagation()}
       onBlur={onCancel}
-      onKeyUp={(e) => {
+      onKeyDown={(e) => {
         if (e.key === "Enter") onSubmit(name)
         else if (e.key === "Escape") onCancel()
       }}
@@ -28,14 +28,12 @@ function RenameInput({ initialName, onSubmit, onCancel }) {
   )
 }
 
-function File({ file, tabId }) {
-  const { showDotFiles, mainZoom, columnWidths } = useSettings()
-  const { selectedFiles, setSelectedFiles, refresh, getPath, navigate } = useTabs()
+function File({ file, tabId, tabPath }) {
+  const { mainZoom, columnWidths } = useSettings()
+  const { selectedFiles, setSelectedFiles, refresh, navigate } = useTabs()
   const { renaming, setRenaming, insertMode, kbdSearchLet } = useUI()
 
-  if (!showDotFiles && file.name.startsWith(".")) return null
-
-  const path = concatPath(getPath(tabId), file.name)
+  const path = concatPath(tabPath, file.name)
 
   return (
     <div
@@ -48,7 +46,7 @@ function File({ file, tabId }) {
       }}
       onDoubleClick={async () => {
         if (file.isDirectory) {
-          navigate(tabId, concatPath(getPath(tabId), file.name))
+          navigate(tabId, path)
         } else {
           await openFile(path)
         }
@@ -61,11 +59,10 @@ function File({ file, tabId }) {
             <RenameInput
               initialName={file.name}
               onSubmit={async (name) => {
-                if (name && name !== file.name) {
-                  await rename(path, concatPath(getPath(tabId), name), refresh)
-                }
+                const newPath = concatPath(tabPath, name)
+                const ok = name && name !== file.name && (await rename(path, newPath, refresh))
                 setRenaming(false)
-                setSelectedFiles([concatPath(getPath(tabId), name)])
+                if (ok) setSelectedFiles([newPath])
               }}
               onCancel={() => setRenaming(false)}
             />

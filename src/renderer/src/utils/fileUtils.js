@@ -22,3 +22,6 @@ export function sortFiles(files, { key, desc }, foldersOnTop) {
       (desc ? COMPARE[key](b, a) : COMPARE[key](a, b))
   )
 }
+export function visibleFiles(files, showDotFiles) {
+  return showDotFiles ? files : files.filter((f) => !f.name.startsWith("."))
+}

@@ -4,7 +4,7 @@ import { useUI } from "../hooks/useUI"
 import { removeLastPathElement } from "../utils/paths"
 import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
 
-function AddressInput({ initialPath, activeTab, setPathWriting, getPath, navigate }) {
+function AddressInput({ initialPath, activeTab, setPathWriting, navigate }) {
   const [tempPath, setTempPath] = useState(initialPath)
 
   return (
@@ -19,10 +19,7 @@ function AddressInput({ initialPath, activeTab, setPathWriting, getPath, navigat
       onKeyUp={(e) => {
         if (e.key === "Enter") {
           const input = e.target
-          navigate(activeTab, tempPath).then((ok) => {
-            if (!ok) setTempPath(getPath(activeTab))
-            input.blur()
-          })
+          navigate(activeTab, tempPath).then(() => input.blur())
         } else if (e.key === "Escape") {
           e.target.blur()
         }
@@ -33,17 +30,17 @@ function AddressInput({ initialPath, activeTab, setPathWriting, getPath, navigat
     />
   )
 }
-function AddressBarPart({ part, splitPaths, idx, activeTab, navigate }) {
+function AddressBarPart({ label, fullPath }) {
+  const { navigate, activeTab } = useTabs()
   return (
     <button
       className="address-bar-part"
       onClick={(e) => {
         e.stopPropagation()
-        let fullPath = "/" + splitPaths.slice(0, idx + 1).join("/")
         navigate(activeTab, fullPath)
       }}
     >
-      {part}
+      {label}
     </button>
   )
 }
@@ -91,18 +88,16 @@ function TopBar() {
           }}
         >
           {splitPaths.length == 0 && <SlashSeparator />}
-          {splitPaths.map((item, idx) => (
-            <Fragment key={idx}>
-              <SlashSeparator />
-              <AddressBarPart
-                part={item}
-                splitPaths={splitPaths}
-                idx={idx}
-                activeTab={activeTab}
-                navigate={navigate}
-              />
-            </Fragment>
-          ))}
+          {splitPaths.map((item, idx) => {
+            const fullPath = "/" + splitPaths.slice(0, idx + 1).join("/")
+
+            return (
+              <Fragment key={fullPath}>
+                <SlashSeparator />
+                <AddressBarPart label={item} fullPath={fullPath} />
+              </Fragment>
+            )
+          })}
         </div>
       ) : (
         <AddressInput
@@ -110,7 +105,6 @@ function TopBar() {
           initialPath={getPath(activeTab)}
           activeTab={activeTab}
           navigate={navigate}
-          getPath={getPath}
           setPathWriting={setPathWriting}
         />
       )}

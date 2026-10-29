@@ -69,16 +69,8 @@ function App() {
   const usedTabs = useTabs()
   const ui = useUI()
   const { sortingMode, foldersOnTop } = settings
-  const {
-    activeTab,
-    setActiveTab,
-    selectedFiles,
-    getFiles,
-    setSelectedFiles,
-    getPath,
-    tabs,
-    getTab
-  } = usedTabs
+  const { activeTab, setActiveTab, selectedFiles, getFiles, setSelectedFiles, getPath, tabs } =
+    usedTabs
   const { setMenu } = ui
 
   // merged view of all contexts for window listeners and drag handlers
@@ -96,7 +88,6 @@ function App() {
     return () => window.removeEventListener("keydown", listener)
   }, [])
 
-  const tabInfo = getTab(activeTab)
   const dir = getPath(activeTab)
 
   useEffect(() => {
@@ -148,7 +139,7 @@ function App() {
               }
             }}
           >
-            <Tab key={tabInfo.id} path={tabInfo.path} tabId={tabInfo.id} />
+            <Tab key={activeTab} />
           </div>
           <ul
             className="file-list-dragging"

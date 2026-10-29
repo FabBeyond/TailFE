@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
 import { startColumnResize } from "../utils/resize"
-import { sortFiles } from "../utils/fileUtils.js"
+import { sortFiles, visibleFiles } from "../utils/fileUtils.js"
 import File from "./File"
 import { ChevronUp } from "lucide-react"
 
@@ -13,8 +13,8 @@ const COLUMNS = [
 ]
 
 function Tab() {
-  const { mainZoom, sortingMode, foldersOnTop } = useSettings()
-  const { getFiles, activeTab } = useTabs()
+  const { mainZoom, sortingMode, foldersOnTop, showDotFiles } = useSettings()
+  const { getFiles, activeTab, getPath } = useTabs()
 
   const [, setTick] = useState(0)
   useEffect(() => {
@@ -22,8 +22,15 @@ function Tab() {
     return () => clearInterval(id)
   }, [])
 
-  const files = sortFiles(getFiles(activeTab), sortingMode, foldersOnTop)
-  const fileObjs = files.map((file) => <File key={file.name} file={file} tabId={activeTab} />)
+  const dir = getPath(activeTab)
+  const files = sortFiles(
+    visibleFiles(getFiles(activeTab), showDotFiles),
+    sortingMode,
+    foldersOnTop
+  )
+  const fileObjs = files.map((file) => (
+    <File key={file.name} file={file} tabId={activeTab} tabPath={dir} />
+  ))
   return (
     <>
       <div

@@ -6,9 +6,9 @@ function Properties() {
   const { propertiesShown, setPropertiesShown } = useUI()
   const { activeTab, selectedFiles, getSelectedEntry } = useTabs()
 
-  if (!propertiesShown) return
-
   const file = getSelectedEntry(activeTab, selectedFiles[0])
+
+  if (!propertiesShown || !file) return null
 
   return (
     <div

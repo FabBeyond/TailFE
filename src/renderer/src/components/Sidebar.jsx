@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
-import { concatPath, hasDirectories, readDirSafe } from "../utils/paths"
+import { concatPath, readDirSafe } from "../utils/paths"
 import {
   ChevronRightIcon,
   FolderIcon,
@@ -11,6 +11,7 @@ import {
   ImageIcon
 } from "lucide-react"
 import { startResize } from "../utils/resize"
+import { visibleFiles } from "../utils/fileUtils"
 
 const PLACES = [
   { name: "Home", icon: HouseIcon, folder: "home" },
@@ -57,9 +58,7 @@ function Places() {
         <div
           className="places-entry"
           key={folder}
-          onClick={() => {
-            navigate(activeTab, paths[folder])
-          }}
+          onClick={() => paths[folder] && navigate(activeTab, paths[folder])}
         >
           <Icon />
           <p>{name}</p>
@@ -80,30 +79,27 @@ export function RootFolderList() {
   )
 }
 export function FolderList({ files, curPath }) {
-  files = files.filter((file) => file.isDirectory)
-  const flFolders = files.map((file) => (
-    <FLFolder key={file.name} folderName={file} curPath={curPath} />
-  ))
+  const { showDotFiles } = useSettings()
+  const flFolders = visibleFiles(files, showDotFiles)
+    .filter((f) => f.isDirectory)
+    .map((file) => <FLFolder key={file.name} folderName={file} curPath={curPath} />)
 
   return <ul className="folder-list">{flFolders}</ul>
 }
 export function FLFolder({ folderName, curPath }) {
   const [open, setOpen] = useState(false)
   const [children, setChildren] = useState([])
-  const { showDotFiles } = useSettings()
-  const { activeTab, navigate } = useTabs()
+  const { activeTab, navigate, treeVersion } = useTabs()
 
   useEffect(() => {
-    readDirSafe(concatPath(curPath, folderName.name), setChildren)
-  }, [open, folderName.name, curPath])
-
-  if (!showDotFiles && folderName.name.startsWith(".")) return
+    if (open) readDirSafe(concatPath(curPath, folderName.name), setChildren)
+  }, [open, folderName.name, curPath, treeVersion])
 
   return (
     <div className="fl-folder">
       <div className="fl-folder-content">
         <ChevronRightIcon
-          className={`${open ? "arrow-open" : ""} ${!hasDirectories(children) ? "hide" : ""}`}
+          className={`${open ? "arrow-open" : ""}`}
           style={{ cursor: "pointer" }}
           onClick={() => {
             setOpen((i) => !i)
