@@ -1,5 +1,6 @@
 import trackPointer from "./pointer.js"
 import { moveFiles } from "./fileActions.js"
+import { IS_WIN } from "./paths.js"
 
 export function startDrag(e, boxElement, setSelectedFiles) {
   if (e.button != 0) return
@@ -35,6 +36,8 @@ export function startDrag(e, boxElement, setSelectedFiles) {
 }
 export function startFileDrag(e, setIsFileDragging, previewElement, statesRef) {
   if (e.button != 0) return
+  const { getPath, activeTab } = statesRef.current
+  if (IS_WIN && getPath(activeTab) === "/") return
   const clickedOn = e.target.closest(".file")
   let draggingFile = false
 

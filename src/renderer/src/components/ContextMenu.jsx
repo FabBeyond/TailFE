@@ -10,6 +10,7 @@ import {
   TrashIcon
 } from "lucide-react"
 import { showToast } from "../utils/toast.js"
+import { IS_WIN } from "../utils/paths"
 
 function ContextMenu() {
   const { menu, setMenu, setRenaming, setPropertiesShown } = useUI()
@@ -47,6 +48,8 @@ function ContextMenu() {
   const isEntry = !!menu.target && menu.type === "file"
   const isDirectory = isEntry && menu.isDirectory
   const isTab = !!menu.target && menu.type === "tab"
+  const isDriveRoot = IS_WIN && /^[A-Z]:\/$/.test(menu.target)
+  const atThisPC = IS_WIN && getPath(activeTab) === "/"
 
   const groups = [
     [
@@ -79,7 +82,7 @@ function ContextMenu() {
       {
         name: "New Folder",
         icon: FolderPlusIcon,
-        show: true,
+        show: !atThisPC,
         action: async () => {
           const path = await createFolder(getPath(activeTab), refresh)
           if (path) {
@@ -113,7 +116,7 @@ function ContextMenu() {
       {
         name: "Delete",
         icon: TrashIcon,
-        show: isEntry,
+        show: isEntry && !isDriveRoot,
         action: () => deleteFile(selectedFiles, refresh)
       }
     ]

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
-import { concatPath, readDirSafe } from "../utils/paths"
+import { concatPath, getCurrentDirName, readDirSafe } from "../utils/paths"
 import {
   ChevronRightIcon,
   FolderIcon,
@@ -73,7 +73,7 @@ export function RootFolderList() {
     <div className="folder-tree">
       <p>FOLDERS</p>
       <ul className="folder-list">
-        <FLFolder folderName={{ name: "/", isDirectory: true }} curPath="/" />
+        <FLFolder path="/" />
       </ul>
     </div>
   )
@@ -82,18 +82,18 @@ export function FolderList({ files, curPath }) {
   const { showDotFiles } = useSettings()
   const flFolders = visibleFiles(files, showDotFiles)
     .filter((f) => f.isDirectory)
-    .map((file) => <FLFolder key={file.name} folderName={file} curPath={curPath} />)
+    .map((file) => <FLFolder key={file.name} path={concatPath(curPath, file.name)} />)
 
   return <ul className="folder-list">{flFolders}</ul>
 }
-export function FLFolder({ folderName, curPath }) {
+export function FLFolder({ path }) {
   const [open, setOpen] = useState(false)
   const [children, setChildren] = useState([])
   const { activeTab, navigate, treeVersion } = useTabs()
 
   useEffect(() => {
-    if (open) readDirSafe(concatPath(curPath, folderName.name), setChildren)
-  }, [open, folderName.name, curPath, treeVersion])
+    if (open) readDirSafe(path, setChildren)
+  }, [open, path, treeVersion])
 
   return (
     <div className="fl-folder">
@@ -106,11 +106,11 @@ export function FLFolder({ folderName, curPath }) {
           }}
         />
         <FolderIcon className="folder-icon" />
-        <button onClick={() => navigate(activeTab, concatPath(curPath, folderName.name))}>
-          <p>{folderName.name}</p>
+        <button onClick={() => navigate(activeTab, path)}>
+          <p>{getCurrentDirName(path)}</p>
         </button>
       </div>
-      {open && <FolderList files={children} curPath={concatPath(curPath, folderName.name)} />}
+      {open && <FolderList files={children} curPath={path} />}
     </div>
   )
 }

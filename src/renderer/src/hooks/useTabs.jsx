@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useRef } from "react"
 import { showToast, errorMessage } from "../utils/toast.js"
-import { concatPath, removeLastPathElement } from "../utils/paths.js"
+import { concatPath, normalizePath, removeLastPathElement } from "../utils/paths.js"
 
 const TabsContext = createContext(null)
 const INITIAL_TAB = {
@@ -56,7 +56,7 @@ export function TabsProvider({ children }) {
   }, [])
   const navigate = useCallback(
     async (id, path) => {
-      if (path.length > 1) path = path.replace(/\/+$/, "")
+      path = normalizePath(path)
 
       const ok = await loadTab(id, path, (tab) => {
         if (path === tab.path) return tab

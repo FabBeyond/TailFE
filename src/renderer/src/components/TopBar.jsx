@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
-import { removeLastPathElement } from "../utils/paths"
+import { removeLastPathElement, pathParts } from "../utils/paths"
 import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
 
 function AddressInput({ initialPath, activeTab, setPathWriting, navigate }) {
@@ -55,9 +55,7 @@ function SlashSeparator() {
 function TopBar() {
   const { activeTab, moveInHistory, getPath, canMoveHistory, navigate } = useTabs()
   const { insertMode, pathWriting, setPathWriting } = useUI()
-  const splitPaths = getPath(activeTab)
-    .split("/")
-    .filter((item) => item !== "")
+  const splitPaths = pathParts(getPath(activeTab))
   const historyMove = canMoveHistory(activeTab)
 
   return (
@@ -88,16 +86,12 @@ function TopBar() {
           }}
         >
           {splitPaths.length == 0 && <SlashSeparator />}
-          {splitPaths.map((item, idx) => {
-            const fullPath = "/" + splitPaths.slice(0, idx + 1).join("/")
-
-            return (
-              <Fragment key={fullPath}>
-                <SlashSeparator />
-                <AddressBarPart label={item} fullPath={fullPath} />
-              </Fragment>
-            )
-          })}
+          {splitPaths.map((item) => (
+            <Fragment key={item.path}>
+              <SlashSeparator />
+              <AddressBarPart label={item.label} fullPath={item.path} />
+            </Fragment>
+          ))}
         </div>
       ) : (
         <AddressInput

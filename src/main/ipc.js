@@ -54,8 +54,24 @@ function handle(channel, fn) {
   })
 }
 
+async function listDrives() {
+  const letters = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
+  const found = await Promise.all(letters.map(async (l) => ((await exists(`${l}:/`)) ? l : null)))
+  return found
+    .filter(Boolean)
+    .map((l) => ({ name: `${l}:`, isDirectory: true, size: null, lastModified: null }))
+}
+function toPosix(path) {
+  if (process.platform === "win32") return path.replaceAll("\\", "/")
+  return path
+}
+function isDriveRoot(path) {
+  return process.platform === "win32" && /^[A-Za-z]:[\\/]?$/.test(path)
+}
+
 export function registerIpcHandlers() {
   handle("read-dir", async (dirPath) => {
+    if (process.platform === "win32" && dirPath === "/") return listDrives()
     const entries = await fs.readdir(dirPath, { withFileTypes: true })
     return Promise.all(
       entries.map(async (e) => {
@@ -69,11 +85,14 @@ export function registerIpcHandlers() {
       })
     )
   })
-  handle("delete-file", (filePath) => shell.trashItem(filePath))
+  handle("delete-file", (filePath) => {
+    if (isDriveRoot(filePath)) return { error: "EPERM" }
+    return shell.trashItem(filePath)
+  })
   handle("create-folder", async (dir) => {
     for (let i = 1; ; i++) {
       const name = i === 1 ? "New Folder" : `New Folder (${i})`
-      const path = join(dir, name)
+      const path = toPosix(join(dir, name))
       try {
         await fs.mkdir(path)
         return { path }
@@ -83,6 +102,7 @@ export function registerIpcHandlers() {
     }
   })
   handle("rename", async (path, newPath) => {
+    if (isDriveRoot(path)) return { error: "EPERM" }
     if (await exists(newPath)) return { error: "EEXIST" }
     await fs.rename(path, newPath)
   })
@@ -94,9 +114,10 @@ export function registerIpcHandlers() {
   })
   handle("get-path", (name) => {
     if (!ALLOWED_PATHS.includes(name)) return { error: "EINVAL" }
-    return { path: app.getPath(name) }
+    return { path: toPosix(app.getPath(name)) }
   })
   handle("move", async (oldPath, destDir, copy = false) => {
+    if (isDriveRoot(oldPath)) return { error: "EPERM" }
     const newPath = join(destDir, basename(oldPath))
     if (await exists(newPath)) return { error: "EEXIST" }
 
