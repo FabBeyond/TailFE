@@ -32,7 +32,7 @@ export function normalizePath(path) {
     if (/^[A-Z]:$/.test(path)) path += "/"
   }
   const isRoot = path === "/" || (IS_WIN && /^[A-Z]:\/$/.test(path))
-  return isRoot ? path : path.replace(/\/+$/, "")
+  return isRoot ? path : path.replace(/\/+$/, "") || "/"
 }
 export function pathParts(path) {
   const parts = []
