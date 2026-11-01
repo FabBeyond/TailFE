@@ -11,16 +11,11 @@ General todo:
 - add settings menu
 - finish properties menu
 - add context menu stuff in non file list
-- stop divider from highlighting in context menu
 - add optional confirmation for deleting
 
 Bugs:
 - General
-  - switching tabs and going back in history breaks stuff
-  - new folder doesnt select after creation
   - fix weird scaling on sidebar
   - fix folder tree highlighting
   - dragging when trying to click
-- Windows
-  - Fix root folder showing random drive
-  - path uses / instead of \
+  - Long paths overflow into next line in topbar

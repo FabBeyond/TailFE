@@ -71,10 +71,10 @@ function File({ file, tabId, tabPath }) {
           )}
         </div>
         <div className="file-size" style={{ width: columnWidths.sizeCol }}>
-          {!file.isDirectory && <p>{bytesToReadable(file.size)}</p>}
+          {!file.isDirectory && file.size != null && <p>{bytesToReadable(file.size)}</p>}
         </div>
         <div className="file-last-modified">
-          <p>{timeAgo.format(file.lastModified)}</p>
+          {file.lastModified && <p>{timeAgo.format(file.lastModified)}</p>}
         </div>
       </button>
     </div>
