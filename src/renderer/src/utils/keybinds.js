@@ -1,14 +1,19 @@
 import { removeLastPathElement, concatPath } from "./paths"
 
 const NORMAL_KEYS = {
-  // make Shift+i super insert mode where you type the full path
   i: ({ setInsertMode }) => setInsertMode(true),
+  I: ({ setPathWriting }) => setPathWriting(true),
   ",": ({ setMainZoom }) => setMainZoom((prev) => prev - 2),
   ".": ({ setMainZoom }) => setMainZoom((prev) => prev + 2),
   "<": ({ moveInHistory, activeTab }) => moveInHistory(activeTab, -1),
   ">": ({ moveInHistory, activeTab }) => moveInHistory(activeTab, 1),
   F2: ({ selectedFiles, setRenaming }) => {
     if (selectedFiles.length === 1) setRenaming(true)
+  },
+  j: (states) => states.moveSelection(1),
+  k: (states) => states.moveSelection(-1),
+  Enter: ({ navigate, activeTab, selectedFiles }) => {
+    navigate(activeTab, selectedFiles[0])
   }
 }
 

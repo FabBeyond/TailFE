@@ -131,6 +131,18 @@ export function TabsProvider({ children }) {
     )
     setTreeVersion((prev) => prev + 1)
   }, [tabs, loadTab])
+  const moveSelection = useCallback(
+    (delta) => {
+      const items = [...document.querySelectorAll(".file-list > .file")]
+      const current = items.findIndex((el) => el.dataset.id === selectedFiles.at(-1))
+      const next = items[Math.max(0, Math.min(current + delta, items.length - 1))]
+      if (!next) return
+
+      setSelectedFiles([next.dataset.id])
+      next.scrollIntoView({ block: "nearest" })
+    },
+    [selectedFiles]
+  )
 
   useEffect(() => {
     //eslint-disable-next-line react-hooks/set-state-in-effect -- setTabs runs after await
@@ -160,7 +172,8 @@ export function TabsProvider({ children }) {
       getNeighbourID,
       refresh,
       tabs,
-      treeVersion
+      treeVersion,
+      moveSelection
     }),
     [
       activeTab,
@@ -178,7 +191,8 @@ export function TabsProvider({ children }) {
       tabs,
       setActiveTab,
       getTab,
-      treeVersion
+      treeVersion,
+      moveSelection
     ]
   )
 
