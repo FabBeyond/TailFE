@@ -23,8 +23,13 @@ function Properties() {
       }}
     >
       <div className="properties-container" onClick={(e) => e.stopPropagation()}>
-        {file.isDirectory ? <FolderIcon /> : <FileIcon />}
-        <p className="properties-name">{file.name}</p>
+        <div className="top-part">
+          <div className="properties-icon">{file.isDirectory ? <FolderIcon /> : <FileIcon />}</div>
+          <div className="properties-top-infos">
+            <p className="properties-name">{file.name}</p>
+            <p className="properties-type">{file.isDirectory ? "Folder" : "File"}</p>
+          </div>
+        </div>
       </div>
     </div>
   )

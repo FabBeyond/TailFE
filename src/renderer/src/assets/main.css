@@ -466,20 +466,45 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   position: absolute;
-  width: 400px;
-  height: 800px;
+  width: 600px;
+  height: 400px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #000000;
+  background-color: var(--menus);
+  border: 2px solid var(--border-raised);
+  border-radius: 20px;
+  padding: 25px;
 }
-.properties-container > svg {
-  width: 150px;
-  height: 150px;
-  color: white;
+.properties-icon > svg {
+  color: var(--accent);
+  height: 60%;
+  width: 60%;
 }
-.properties-name {
-  color: white;
+.properties-icon {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background-color: var(--accent-faded);
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+}
+.properties-name,
+.properties-type {
+  color: var(--text-color);
+  font-size: 22px;
+  font-weight: 650;
+}
+.properties-type {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.top-part {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 /* ===== Confirmation ===== */
