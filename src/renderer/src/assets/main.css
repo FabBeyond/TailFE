@@ -481,3 +481,44 @@ textarea:focus {
 .properties-name {
   color: white;
 }
+
+/* ===== Confirmation ===== */
+.confirmation {
+  position: absolute;
+  width: fit-content;
+  height: fit-content;
+  background-color: var(--menus);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 15px;
+  border: 2px solid var(--border-raised);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--text-color);
+}
+.confirmation .title {
+  font-size: 30px;
+}
+.confirmation .msg {
+  font-size: 20px;
+}
+.confirm-buttons {
+  display: flex;
+  gap: 20px;
+}
+.confirm-buttons > * {
+  color: var(--text-color);
+  width: 150px;
+  height: 50px;
+  border-radius: 10px;
+  background-color: var(--menu-item-hover);
+  border: 2px solid var(--border-raised);
+  cursor: pointer;
+}
+.confirm-buttons > *:hover {
+  background-color: var(--border-raised);
+}

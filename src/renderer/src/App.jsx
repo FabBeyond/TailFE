@@ -13,6 +13,7 @@ import { startDrag, startFileDrag } from "./utils/drag.js"
 import File from "./components/File.jsx"
 import { sortFiles } from "./utils/fileUtils.js"
 import { handleKeybinds } from "./utils/keybinds.js"
+import Confirmation from "./components/Confirmation.jsx"
 
 function App() {
   const [isFileDragging, setIsFileDragging] = useState(false)
@@ -118,6 +119,7 @@ function App() {
         ref={dragBoxRef}
         style={{ position: "fixed", display: "none" }}
       ></div>
+      <Confirmation />
     </>
   )
 }

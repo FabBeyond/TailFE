@@ -1,6 +1,10 @@
 import { showToast, errorMessage } from "./toast.js"
+import { confirm } from "./confirmation.js"
 
 export async function deleteFile(paths, refresh) {
+  const ok = await confirm(`Delete ${paths.length} item(s)?`, { confirmText: "Delete" })
+  if (!ok) return
+
   await Promise.all(
     paths.map(async (item) => {
       const result = await window.api.deleteFile(item)
