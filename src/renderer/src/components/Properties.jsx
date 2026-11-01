@@ -1,12 +1,62 @@
+import { useEffect, useState } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
-import { FileIcon, FolderIcon } from "lucide-react"
+import { FileIcon, FolderIcon, XIcon } from "lucide-react"
+import { timeAgo } from "../utils/timeAgo"
+import { bytesToReadable } from "../utils/fileUtils"
+
+const PROPERTIES = [
+  {
+    Name: "Location",
+    Data: (file, path) => path
+  },
+  {
+    Name: "Size",
+    Data: (file) => (file.isDirectory ? "None" : bytesToReadable(file.size))
+  },
+  {
+    Name: "Last Modified",
+    Data: (file) => timeAgo.format(file.lastModified)
+  }
+]
+
+function Property({ item, file, path }) {
+  const [loaded, setLoaded] = useState(null)
+
+  useEffect(() => {
+    if (!item.Load) return
+    let stale = false
+
+    //eslint-disable-next-line
+    setLoaded(null)
+    item
+      .Load(file, path)
+      .catch(() => "Unknown")
+      .then((value) => {
+        if (!stale) setLoaded(value)
+      })
+
+    return () => {
+      stale = true
+    }
+  }, [file, item, path])
+
+  const value = item.Load ? (loaded ?? "Loading...") : item.Data(file, path)
+
+  return (
+    <div className="property">
+      <p className="property-label">{item.Name}</p>
+      <p>{value}</p>
+    </div>
+  )
+}
 
 function Properties() {
   const { propertiesShown, setPropertiesShown } = useUI()
   const { activeTab, selectedFiles, getSelectedEntry } = useTabs()
 
-  const file = getSelectedEntry(activeTab, selectedFiles[0])
+  const path = selectedFiles[0]
+  const file = getSelectedEntry(activeTab, path)
 
   if (!propertiesShown || !file) return null
 
@@ -14,21 +64,25 @@ function Properties() {
     <div
       className="properties-blocker"
 
-      onClick={() => {
-        setPropertiesShown(false)
-      }}
+      onClick={() => setPropertiesShown(false)}
       style={{
         display: propertiesShown ? "block" : "none",
         pointerEvents: propertiesShown ? "auto" : "none"
       }}
     >
       <div className="properties-container" onClick={(e) => e.stopPropagation()}>
+        <XIcon onClick={() => setPropertiesShown(false)} />
         <div className="top-part">
           <div className="properties-icon">{file.isDirectory ? <FolderIcon /> : <FileIcon />}</div>
           <div className="properties-top-infos">
             <p className="properties-name">{file.name}</p>
             <p className="properties-type">{file.isDirectory ? "Folder" : "File"}</p>
           </div>
+        </div>
+        <div className="properties-infos">
+          {PROPERTIES.map((item) => (
+            <Property key={item.Name} item={item} file={file} path={path} />
+          ))}
         </div>
       </div>
     </div>

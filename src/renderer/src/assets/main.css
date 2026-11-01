@@ -475,6 +475,14 @@ textarea:focus {
   border: 2px solid var(--border-raised);
   border-radius: 20px;
   padding: 25px;
+  gap: 20px;
+}
+.properties-container > svg {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
 }
 .properties-icon > svg {
   color: var(--accent);
@@ -505,6 +513,24 @@ textarea:focus {
   display: flex;
   flex-direction: row;
   gap: 10px;
+}
+.properties-infos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.property {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+.property > * {
+  color: var(--text-color);
+  font-weight: 450;
+}
+.property-label {
+  color: var(--text-muted);
+  width: 150px;
 }
 
 /* ===== Confirmation ===== */
