@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useSettings } from "./hooks/useSettings"
 import { useTabs } from "./hooks/useTabs"
 import { useUI } from "./hooks/useUI"
-import { concatPath, getCurrentDirName, removeLastPathElement } from "./utils/paths"
+import { concatPath, getCurrentDirName } from "./utils/paths"
 import TopBar from "./components/TopBar"
 import Tab from "./components/Tab"
 import Properties from "./components/Properties.jsx"
@@ -12,55 +12,7 @@ import ContextMenu from "./components/ContextMenu"
 import { startDrag, startFileDrag } from "./utils/drag.js"
 import File from "./components/File.jsx"
 import { sortFiles } from "./utils/fileUtils.js"
-
-const NORMAL_KEYS = {
-  // make Shift+i super insert mode where you type the full path
-  i: ({ setInsertMode }) => setInsertMode(true),
-  ",": ({ setMainZoom }) => setMainZoom((prev) => prev - 2),
-  ".": ({ setMainZoom }) => setMainZoom((prev) => prev + 2),
-  "<": ({ moveInHistory, activeTab }) => moveInHistory(activeTab, -1),
-  ">": ({ moveInHistory, activeTab }) => moveInHistory(activeTab, 1),
-  F2: ({ selectedFiles, setRenaming }) => {
-    if (selectedFiles.length === 1) setRenaming(true)
-  }
-}
-
-const INSERT_KEYS = {
-  Escape: ({ setInsertMode, setKdbSearchLet }) => {
-    setInsertMode(false)
-    setKdbSearchLet("")
-  },
-  Backspace: ({ kbdSearchLet, setKdbSearchLet }) => setKdbSearchLet(kbdSearchLet.slice(0, -1)),
-  Enter: ({ kbdSearchLet, setKdbSearchLet, setInsertMode, activeTab, getPath, navigate }) => {
-    if (kbdSearchLet === "") return
-
-    let newPath = getPath(activeTab)
-    if (/^\.+$/.test(kbdSearchLet)) {
-      for (let i = 0; i < kbdSearchLet.length; i++) {
-        newPath = removeLastPathElement(newPath)
-      }
-    } else {
-      newPath = concatPath(newPath, kbdSearchLet)
-      setInsertMode(false)
-    }
-    navigate(activeTab, newPath)
-    setKdbSearchLet("")
-  }
-}
-
-function handleKeyDown(e, states) {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return
-  if (e.ctrlKey || e.altKey || e.metaKey) return
-  const { insertMode, kbdSearchLet, setKdbSearchLet } = states
-
-  const action = (insertMode ? INSERT_KEYS : NORMAL_KEYS)[e.key]
-  if (action) {
-    e.preventDefault()
-    action(states)
-  } else if (insertMode && e.key.length === 1) {
-    setKdbSearchLet(kbdSearchLet + e.key)
-  }
-}
+import { handleKeybinds } from "./utils/keybinds.js"
 
 function App() {
   const [isFileDragging, setIsFileDragging] = useState(false)
@@ -83,7 +35,7 @@ function App() {
   })
 
   useEffect(() => {
-    const listener = (e) => handleKeyDown(e, statesRef.current)
+    const listener = (e) => handleKeybinds(e, statesRef.current)
     window.addEventListener("keydown", listener)
     return () => window.removeEventListener("keydown", listener)
   }, [])
