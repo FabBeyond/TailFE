@@ -34,4 +34,5 @@ export function SettingsProvider({ children }) {
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
 }
 
+//eslint-disable-next-line
 export const useSettings = () => useContext(SettingsContext)

@@ -1,27 +1,40 @@
 import { useEffect, useState } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
-import { FileIcon, FolderIcon, XIcon } from "lucide-react"
+import { FileIcon, FolderIcon, XIcon, CopyIcon, CheckIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
 import { bytesToReadable } from "../utils/fileUtils"
 
 const PROPERTIES = [
   {
     Name: "Location",
-    Data: (file, path) => path
+    Copy: true,
+    Data: (_, path) => path
+  },
+  {
+    Name: "Contents",
+    Copy: false,
+    Load: async (_, path) => {
+      const result = await window.api.readDir(path)
+      if (result.error) throw ""
+      return result.length
+    }
   },
   {
     Name: "Size",
+    Copy: false,
     Data: (file) => (file.isDirectory ? "None" : bytesToReadable(file.size))
   },
   {
     Name: "Last Modified",
+    Copy: false,
     Data: (file) => timeAgo.format(file.lastModified)
   }
 ]
 
 function Property({ item, file, path }) {
   const [loaded, setLoaded] = useState(null)
+  const [copyActive, setCopyActive] = useState(true)
 
   useEffect(() => {
     if (!item.Load) return
@@ -46,7 +59,20 @@ function Property({ item, file, path }) {
   return (
     <div className="property">
       <p className="property-label">{item.Name}</p>
-      <p>{value}</p>
+      <p className="property-value">{value}</p>
+      {item.Copy && (
+        <div
+          className="property-copy-button"
+          onClick={async () => {
+            setCopyActive(false)
+            setTimeout(() => {
+              setCopyActive(true)
+            }, 2000)
+          }}
+        >
+          {copyActive ? <CopyIcon /> : <CheckIcon />}
+        </div>
+      )}
     </div>
   )
 }

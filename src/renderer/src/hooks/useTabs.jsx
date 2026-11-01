@@ -199,4 +199,5 @@ export function TabsProvider({ children }) {
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>
 }
 
+//eslint-disable-next-line
 export const useTabs = () => useContext(TabsContext)

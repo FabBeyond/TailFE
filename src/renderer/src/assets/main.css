@@ -467,7 +467,7 @@ textarea:focus {
   flex-direction: column;
   position: absolute;
   width: 600px;
-  height: 400px;
+  height: fit-content;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -479,10 +479,17 @@ textarea:focus {
 }
 .properties-container > svg {
   position: fixed;
-  right: 20px;
-  top: 20px;
+  right: 10px;
+  top: 10px;
   color: var(--text-muted);
   cursor: pointer;
+  padding: 5px;
+  height: 30px;
+  width: 30px;
+  border-radius: 10px;
+}
+.properties-container > svg:hover {
+  background-color: var(--menu-item-hover);
 }
 .properties-icon > svg {
   color: var(--accent);
@@ -503,6 +510,7 @@ textarea:focus {
   color: var(--text-color);
   font-size: 22px;
   font-weight: 650;
+  user-select: text;
 }
 .properties-type {
   color: var(--text-muted);
@@ -517,12 +525,14 @@ textarea:focus {
 .properties-infos {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .property {
   display: flex;
   flex-direction: row;
-  gap: 30px;
+  gap: 10px;
+  align-items: center;
+  height: 30px;
 }
 .property > * {
   color: var(--text-color);
@@ -531,6 +541,26 @@ textarea:focus {
 .property-label {
   color: var(--text-muted);
   width: 150px;
+}
+.property-value {
+  user-select: text;
+}
+.property-copy-button {
+  padding: 0;
+  margin: 0;
+  height: 30px;
+  width: 30px;
+}
+.property-copy-button > svg {
+  height: 1.15em;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 10px;
+}
+.property-copy-button > svg:hover {
+  background-color: var(--menu-item-hover);
 }
 
 /* ===== Confirmation ===== */
