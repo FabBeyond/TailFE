@@ -21,7 +21,7 @@ const PLACES = [
 ]
 
 export function Sidebar() {
-  const { sidebarWidth, setSidebarWidth } = useSettings()
+  const { sidebarWidth, updateSetting } = useSettings()
 
   return (
     <div className="sidebar" style={{ width: sidebarWidth, flexShrink: 0 }}>
@@ -32,7 +32,7 @@ export function Sidebar() {
       <div
         className="resize-handle sidebar-resize-handle"
         onMouseDown={(e) => {
-          startResize(e, sidebarWidth, setSidebarWidth)
+          startResize(e, sidebarWidth, (width) => updateSetting("sidebarWidth", width))
         }}
       ></div>
     </div>

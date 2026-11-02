@@ -13,8 +13,8 @@ describe("useSettings", () => {
       sortingMode: { key: "name", desc: false }
     })
 
-    act(() => result.current.setShowDotFiles(true))
-    act(() => result.current.setSortingMode({ key: "size", desc: true }))
+    act(() => result.current.updateSetting("showDotFiles", true))
+    act(() => result.current.updateSetting("sortingMode", { key: "size", desc: true }))
     expect(result.current.showDotFiles).toBe(true)
     expect(result.current.sortingMode).toEqual({ key: "size", desc: true })
   })

@@ -1,34 +1,32 @@
-import { createContext, useContext, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useMemo, useState } from "react"
 
 const SettingsContext = createContext(null)
+const DEFAULT_SETTINGS = {
+  showDotFiles: false,
+  mainZoom: 20,
+  columnWidths: { nameCol: 300, sizeCol: 150 },
+  sidebarWidth: 200,
+  foldersOnTop: true,
+  dragDeadzone: 20,
+  sortingMode: { key: "name", desc: false }
+}
 
 export function SettingsProvider({ children }) {
-  const [showDotFiles, setShowDotFiles] = useState(false)
-  const [mainZoom, setMainZoom] = useState(20)
-  const [columnWidths, setColumnWidths] = useState({ nameCol: 300, sizeCol: 150 })
-  const [sidebarWidth, setSidebarWidth] = useState(200)
-  const [foldersOnTop, setFoldersOnTop] = useState(true)
-  const [dragDeadzone, setDragDeadzone] = useState(20)
-  const [sortingMode, setSortingMode] = useState({ key: "name", desc: false })
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+
+  const updateSetting = useCallback((key, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      [key]: typeof value === "function" ? value(prev[key]) : value
+    }))
+  }, [])
 
   const value = useMemo(
     () => ({
-      showDotFiles,
-      setShowDotFiles,
-      mainZoom,
-      setMainZoom,
-      columnWidths,
-      setColumnWidths,
-      sidebarWidth,
-      setSidebarWidth,
-      sortingMode,
-      setSortingMode,
-      foldersOnTop,
-      setFoldersOnTop,
-      dragDeadzone,
-      setDragDeadzone
+      ...settings,
+      updateSetting
     }),
-    [showDotFiles, mainZoom, columnWidths, sidebarWidth, sortingMode, foldersOnTop, dragDeadzone]
+    [settings, updateSetting]
   )
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

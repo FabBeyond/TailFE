@@ -48,7 +48,7 @@ function Tab() {
 }
 
 function FileHeader({ column }) {
-  const { columnWidths, setColumnWidths, sortingMode, setSortingMode } = useSettings()
+  const { columnWidths, updateSetting, sortingMode } = useSettings()
   const { key, label, className, widthKey } = column
   const active = sortingMode.key === key
 
@@ -58,7 +58,7 @@ function FileHeader({ column }) {
         <p
           className={className}
           style={widthKey && { width: columnWidths[widthKey] - 4 }}
-          onClick={() => setSortingMode({ key, desc: active && !sortingMode.desc })}
+          onClick={() => updateSetting("sortingMode", { key, desc: active && !sortingMode.desc })}
         >
           {label}
         </p>
@@ -67,7 +67,14 @@ function FileHeader({ column }) {
       {widthKey && (
         <div
           className="resize-handle"
-          onMouseDown={(e) => startColumnResize(e, columnWidths, setColumnWidths, widthKey)}
+          onMouseDown={(e) =>
+            startColumnResize(
+              e,
+              columnWidths,
+              (updater) => updateSetting("columnWidths", updater),
+              widthKey
+            )
+          }
         ></div>
       )}
     </>

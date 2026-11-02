@@ -3,8 +3,8 @@ import { removeLastPathElement, concatPath } from "./paths"
 const NORMAL_KEYS = {
   i: ({ setInsertMode }) => setInsertMode(true),
   I: ({ setPathWriting }) => setPathWriting(true),
-  ",": ({ setMainZoom }) => setMainZoom((prev) => prev - 2),
-  ".": ({ setMainZoom }) => setMainZoom((prev) => prev + 2),
+  ",": ({ updateSetting }) => updateSetting("mainZoom", (prev) => prev - 2),
+  ".": ({ updateSetting }) => updateSetting("mainZoom", (prev) => prev + 2),
   "<": ({ moveInHistory, activeTab }) => moveInHistory(activeTab, -1),
   ">": ({ moveInHistory, activeTab }) => moveInHistory(activeTab, 1),
   F2: ({ selectedFiles, setRenaming }) => {
