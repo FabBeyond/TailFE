@@ -1,4 +1,5 @@
 import { removeLastPathElement, concatPath } from "./paths"
+import { openFile } from "./fileActions"
 
 const NORMAL_KEYS = {
   i: ({ setInsertMode }) => setInsertMode(true),
@@ -12,8 +13,13 @@ const NORMAL_KEYS = {
   },
   j: (states) => states.moveSelection(1),
   k: (states) => states.moveSelection(-1),
-  Enter: ({ navigate, activeTab, selectedFiles }) => {
-    navigate(activeTab, selectedFiles[0])
+  Enter: async ({ navigate, activeTab, getSelectedEntry, selectedFiles }) => {
+    const path = selectedFiles[0]
+    const entry = getSelectedEntry(activeTab, path)
+    if (!entry) return
+
+    if (entry.isDirectory) navigate(activeTab, path)
+    else await openFile(path)
   }
 }
 
