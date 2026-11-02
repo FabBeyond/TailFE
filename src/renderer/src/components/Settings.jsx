@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
-import { PlusIcon, MinusIcon } from "lucide-react"
+import { PlusIcon, MinusIcon, XIcon } from "lucide-react"
 import { useSettings } from "../hooks/useSettings"
+import { useUI } from "../hooks/useUI"
 
 const settingsSchema = [
   {
@@ -20,22 +21,35 @@ const settingsSchema = [
 const controls = { toggle: ToggleControl, number: NumberControl }
 
 function Settings() {
+  const { setSettingsOpen, settingsOpen } = useUI()
   const [activeId, setActiveId] = useState(settingsSchema[0].id)
   const active = settingsSchema.find((c) => c.id === activeId)
 
   return (
-    <div className="settings">
-      <div className="categories">
-        {settingsSchema.map((item) => (
-          <p key={item.id} onClick={() => setActiveId(item.id)}>
-            {item.label}
-          </p>
-        ))}
-      </div>
-      <div className="settings-content">
-        {active.settings.map((item) => (
-          <SettingsRow key={item.key} setting={item} />
-        ))}
+    <div
+      className="properties-blocker"
+      onClick={() => setSettingsOpen(false)}
+      style={{
+        display: settingsOpen ? "block" : "none",
+        pointerEvents: settingsOpen ? "auto" : "none"
+      }}
+    >
+      <div>
+        <div className="settings" onClick={(e) => e.stopPropagation()}>
+          <XIcon onClick={() => setSettingsOpen(false)} className="close-button" />
+          <div className="categories">
+            {settingsSchema.map((item) => (
+              <p key={item.id} onClick={() => setActiveId(item.id)}>
+                {item.label}
+              </p>
+            ))}
+          </div>
+          <div className="settings-content">
+            {active.settings.map((item) => (
+              <SettingsRow key={item.key} setting={item} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

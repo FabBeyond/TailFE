@@ -487,7 +487,7 @@ textarea:focus {
   padding: 25px;
   gap: 20px;
 }
-.properties-container > svg {
+.close-button {
   position: fixed;
   right: 10px;
   top: 10px;
@@ -498,7 +498,7 @@ textarea:focus {
   width: 30px;
   border-radius: 10px;
 }
-.properties-container > svg:hover {
+.close-button:hover {
   background-color: var(--menu-item-hover);
 }
 .properties-icon > svg {
