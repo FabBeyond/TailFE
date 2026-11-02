@@ -4,6 +4,7 @@ import { useUI } from "../hooks/useUI"
 import { FileIcon, FolderIcon, XIcon, CopyIcon, CheckIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
 import { bytesToReadable } from "../utils/fileUtils"
+import { showToast } from "../utils/toast"
 
 const PROPERTIES = [
   {
@@ -64,6 +65,13 @@ function Property({ item, file, path }) {
         <div
           className="property-copy-button"
           onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(value)
+            } catch {
+              showToast("Couldn't copy", "The clipboard isn't available", "error")
+              return
+            }
+
             setCopyActive(false)
             setTimeout(() => {
               setCopyActive(true)
