@@ -28,7 +28,7 @@ const PROPERTIES = [
   {
     Name: "Last Modified",
     Copy: false,
-    Data: (file) => timeAgo.format(file.lastModified)
+    Data: (file) => timeAgo.format(file.lastModified ?? 0)
   }
 ]
 
