@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { PlusIcon, MinusIcon, XIcon } from "lucide-react"
 import { useSettings } from "../hooks/useSettings"
 import { useUI } from "../hooks/useUI"
@@ -77,17 +77,15 @@ function NumberControl({ setting }) {
   const min = setting.min ?? -Infinity
   const max = setting.max ?? Infinity
 
-  useEffect(() => {
-    updateSetting(setting.key, tempValue)
-  }, [tempValue, setting.key, updateSetting])
+  const commit = (value) => {
+    const clamped = Math.max(min, Math.min(value, max))
+    setTempValue(clamped)
+    updateSetting(setting.key, clamped)
+  }
 
   return (
     <div className="number-control">
-      <button
-        onClick={() => {
-          setTempValue(Math.max(min, Math.min(tempValue - 1, max)))
-        }}
-      >
+      <button onClick={() => commit(tempValue - 1)}>
         <MinusIcon />
       </button>
       <input
@@ -95,19 +93,11 @@ function NumberControl({ setting }) {
         value={tempValue}
         onChange={(e) => {
           const newValue = Number(e.target.value)
-          if (isNaN(newValue)) return
-          setTempValue(newValue)
+          if (!isNaN(newValue)) setTempValue(newValue)
         }}
-        onBlur={(e) => {
-          const newValue = Number(e.target.value)
-          setTempValue(Math.max(min, Math.min(newValue, max)))
-        }}
+        onBlur={(e) => commit(Number(e.target.value))}
       ></input>
-      <button
-        onClick={() => {
-          setTempValue(Math.max(min, Math.min(tempValue + 1, max)))
-        }}
-      >
+      <button onClick={() => commit(tempValue + 1)}>
         <PlusIcon />
       </button>
     </div>
