@@ -1,0 +1,40 @@
+.context-menu {
+  width: 200px;
+  height: fit-content;
+  padding: 10px 0;
+  background-color: var(--menus);
+  border-radius: var(--radius-md);
+  position: absolute;
+  list-style-type: none;
+}
+.context-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0;
+  margin: 0 20px;
+}
+.context-menu li {
+  padding: 5px 0;
+  border-radius: var(--radius-md);
+}
+.context-menu li > * {
+  background-color: transparent;
+  width: 100%;
+  text-align: left;
+  color: var(--text-color);
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+}
+.context-menu li:hover {
+  background-color: var(--menu-item-hover);
+}
+.context-menu-divider {
+  height: 4px;
+  margin: 5px 20px;
+  border-radius: var(--radius-sm);
+  background-color: var(--border-raised);
+}

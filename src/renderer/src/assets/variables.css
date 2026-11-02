@@ -1,0 +1,20 @@
+:root {
+  --background: #16171c;
+  --bars-colors: #1a1c22;
+  --accent: #7aa2f7;
+  --menu-item-hover: #2c2f39;
+  --menus: #22252d;
+  --text-color: #e6e7eb;
+  --text-muted: #9a9ead;
+  --address-bar: #1f2128;
+  --border: #262931;
+  --border-input: #2c2f38;
+  --border-raised: #31343e;
+  --accent-faded: rgba(122, 162, 247, 0.16);
+  --error: #ff7777;
+  --warning: #fcc200;
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --border-width: 2px;
+}

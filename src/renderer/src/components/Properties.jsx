@@ -96,7 +96,7 @@ function Properties() {
         pointerEvents: propertiesShown ? "auto" : "none"
       }}
     >
-      <div className="properties-container" onClick={(e) => e.stopPropagation()}>
+      <div className="modal properties-container" onClick={(e) => e.stopPropagation()}>
         <XIcon onClick={() => setPropertiesShown(false)} className="close-button" />
         <div className="top-part">
           <div className="properties-icon">{file.isDirectory ? <FolderIcon /> : <FileIcon />}</div>

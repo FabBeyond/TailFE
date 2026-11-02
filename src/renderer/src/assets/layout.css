@@ -1,0 +1,14 @@
+.bottom-part {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.resize-handle {
+  width: 4px;
+  transform: translate(-4px, 0);
+  cursor: col-resize;
+  background: transparent;
+}
+.resize-handle:hover {
+  background: var(--text-color);
+}

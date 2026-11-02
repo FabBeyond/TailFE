@@ -7,7 +7,7 @@ function Confirmation() {
 
   return (
     <div className="properties-blocker">
-      <div className="confirmation">
+      <div className="modal confirmation">
         <p className="title">{data.title}</p>
         <p className="msg">{data.message}</p>
         <div className="confirm-buttons">

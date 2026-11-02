@@ -1,0 +1,33 @@
+.confirmation {
+  width: fit-content;
+  height: fit-content;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--text-color);
+}
+.confirmation .title {
+  font-size: 30px;
+}
+.confirmation .msg {
+  font-size: 20px;
+}
+.confirm-buttons {
+  display: flex;
+  gap: 20px;
+}
+.confirm-buttons > * {
+  color: var(--text-color);
+  width: 150px;
+  height: 50px;
+  border-radius: var(--radius-md);
+  background-color: var(--menu-item-hover);
+  border: var(--border-width) solid var(--border-raised);
+  cursor: pointer;
+}
+.confirm-buttons > *:hover {
+  background-color: var(--border-raised);
+}

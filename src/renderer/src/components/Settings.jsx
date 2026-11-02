@@ -35,7 +35,7 @@ function Settings() {
       }}
     >
       <div>
-        <div className="settings" onClick={(e) => e.stopPropagation()}>
+        <div className="modal settings" onClick={(e) => e.stopPropagation()}>
           <XIcon onClick={() => setSettingsOpen(false)} className="close-button" />
           <div className="categories">
             {settingsSchema.map((item) => (
@@ -84,7 +84,6 @@ function NumberControl({ setting }) {
   return (
     <div className="number-control">
       <button
-        className="nc-left"
         onClick={() => {
           setTempValue(Math.max(min, Math.min(tempValue - 1, max)))
         }}
@@ -93,7 +92,6 @@ function NumberControl({ setting }) {
       </button>
       <input
         type="text"
-        className="nc-middle"
         value={tempValue}
         onChange={(e) => {
           const newValue = Number(e.target.value)
@@ -106,7 +104,6 @@ function NumberControl({ setting }) {
         }}
       ></input>
       <button
-        className="nc-right"
         onClick={() => {
           setTempValue(Math.max(min, Math.min(tempValue + 1, max)))
         }}

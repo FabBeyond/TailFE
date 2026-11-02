@@ -1,0 +1,130 @@
+.tabs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.tab-headers {
+  display: flex;
+  height: fit-content;
+  width: 100%;
+  margin-left: 30px;
+  margin-top: 20px;
+  gap: 30px;
+}
+.tab-header {
+  display: flex;
+  align-items: center;
+  background-color: var(--bars-colors);
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  width: 200px;
+  color: var(--text-color);
+}
+.tab-header:hover {
+  background-color: var(--menu-item-hover) !important;
+}
+.tab-list {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-right: 20px;
+}
+.files-headers {
+  padding-left: 11px;
+  display: flex;
+  color: var(--text-muted);
+}
+.files-headers > .file-header {
+  flex-shrink: 0;
+  overflow: hidden;
+  margin: 0;
+  border-radius: var(--radius-md);
+}
+.file-header {
+  display: flex;
+}
+.files-headers > .file-header:hover {
+  background-color: var(--menu-item-hover);
+}
+.file-list,
+.file-list-dragging {
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+}
+.file-list {
+  margin-top: 10px;
+  padding-bottom: 30px;
+}
+.file-list-dragging {
+  pointer-events: none;
+  position: fixed;
+  width: max-content;
+}
+.file-list button,
+.file-list-dragging button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.file-list-dragging button {
+  overflow: hidden;
+}
+.file {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: var(--radius-md);
+}
+.file:hover {
+  background-color: var(--menu-item-hover);
+}
+.file.selected {
+  background-color: var(--accent-faded);
+}
+.file svg {
+  width: 1.5em;
+  height: 1.5em;
+  flex-shrink: 0;
+  color: var(--text-color);
+}
+.file p {
+  color: var(--text-color);
+  text-align: left;
+}
+.file-name {
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+  align-items: center;
+}
+.file-last-modified {
+  flex: 1;
+}
+.rename-input {
+  border: none;
+  background-color: transparent;
+  color: var(--text-color);
+  height: 100%;
+  width: 100%;
+}
+.insert-typed {
+  color: var(--accent);
+  font-weight: 600;
+}
+.drag-box {
+  background-color: var(--accent-faded);
+  border: var(--border-width) solid var(--accent);
+}

@@ -1,0 +1,48 @@
+.settings {
+  width: 80vw;
+  height: 80vh;
+  border-radius: var(--radius-lg);
+  display: flex;
+}
+.categories {
+  height: 100%;
+  width: 200px;
+  border-right: var(--border-width) solid var(--border-raised);
+}
+
+.number-control {
+  display: flex;
+  width: 150px;
+  height: 50px;
+  border: var(--border-width) solid var(--border-raised);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.number-control > * {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background-color: var(--menu-item-hover);
+}
+.number-control button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+}
+.number-control button:hover {
+  background-color: var(--border-raised);
+}
+.number-control input {
+  text-align: center;
+  color: var(--text-color);
+}
+.setting-label {
+  width: fit-content;
+  min-width: 200px;
+  color: var(--text-color);
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+}

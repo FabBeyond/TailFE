@@ -1,0 +1,77 @@
+.properties-container {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  height: fit-content;
+  border-radius: var(--radius-lg);
+  padding: 25px;
+  gap: 20px;
+}
+.properties-icon > svg {
+  color: var(--accent);
+  height: 60%;
+  width: 60%;
+}
+.properties-icon {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background-color: var(--accent-faded);
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-lg);
+}
+.properties-name,
+.properties-type {
+  color: var(--text-color);
+  font-size: 22px;
+  font-weight: 650;
+  user-select: text;
+}
+.properties-type {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.top-part {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+.properties-infos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.property {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 30px;
+}
+.property > * {
+  color: var(--text-color);
+  font-weight: 450;
+}
+.property-label {
+  color: var(--text-muted);
+  width: 150px;
+}
+.property-value {
+  user-select: text;
+}
+.property-copy-button {
+  padding: 0;
+  margin: 0;
+  height: 30px;
+  width: 30px;
+}
+.property-copy-button > svg {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  border-radius: var(--radius-md);
+}
+.property-copy-button > svg:hover {
+  background-color: var(--menu-item-hover);
+}
