@@ -9,6 +9,7 @@ export function UIProvider({ children }) {
   const [pathWriting, setPathWriting] = useState(false)
   const [insertMode, setInsertMode] = useState(false)
   const [kbdSearchLet, setKdbSearchLet] = useState("")
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const value = useMemo(
     () => ({
@@ -23,9 +24,11 @@ export function UIProvider({ children }) {
       insertMode,
       setInsertMode,
       kbdSearchLet,
-      setKdbSearchLet
+      setKdbSearchLet,
+      settingsOpen,
+      setSettingsOpen
     }),
-    [menu, renaming, propertiesShown, pathWriting, insertMode, kbdSearchLet]
+    [menu, renaming, propertiesShown, pathWriting, insertMode, kbdSearchLet, settingsOpen]
   )
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>

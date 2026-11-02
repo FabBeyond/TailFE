@@ -14,6 +14,7 @@ import File from "./components/File.jsx"
 import { sortFiles } from "./utils/fileUtils.js"
 import { handleKeybinds } from "./utils/keybinds.js"
 import Confirmation from "./components/Confirmation.jsx"
+import Settings from "./components/Settings.jsx"
 
 function App() {
   const [isFileDragging, setIsFileDragging] = useState(false)
@@ -24,7 +25,7 @@ function App() {
   const { sortingMode, foldersOnTop } = settings
   const { activeTab, setActiveTab, selectedFiles, getFiles, setSelectedFiles, getPath, tabs } =
     usedTabs
-  const { setMenu } = ui
+  const { setMenu, settingsOpen } = ui
 
   // merged view of all contexts for window listeners and drag handlers
   const statesRef = useRef({ ...settings, ...usedTabs, ...ui })
@@ -120,6 +121,7 @@ function App() {
         style={{ position: "fixed", display: "none" }}
       ></div>
       <Confirmation />
+      {settingsOpen && <Settings />}
     </>
   )
 }

@@ -2,7 +2,7 @@ import { Fragment, useState } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
 import { removeLastPathElement, pathParts } from "../utils/paths"
-import { ChevronLeftIcon, ChevronRightIcon, ArrowUp } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, ArrowUp, SettingsIcon } from "lucide-react"
 
 function AddressInput({ initialPath, activeTab, setPathWriting, navigate }) {
   const [tempPath, setTempPath] = useState(initialPath)
@@ -54,26 +54,22 @@ function SlashSeparator() {
 
 function TopBar() {
   const { activeTab, moveInHistory, getPath, canMoveHistory, navigate } = useTabs()
-  const { insertMode, pathWriting, setPathWriting } = useUI()
+  const { insertMode, pathWriting, setPathWriting, setSettingsOpen } = useUI()
   const splitPaths = pathParts(getPath(activeTab))
   const historyMove = canMoveHistory(activeTab)
 
   return (
     <div className="top-bar">
       <ChevronLeftIcon
-        style={{
-          color: historyMove.backwards ? "var(--text-color)" : "var(--text-muted)"
-        }}
+        className={historyMove.backwards ? "" : "disabled"}
         onClick={() => moveInHistory(activeTab, -1)}
       />
       <ChevronRightIcon
-        style={{
-          color: historyMove.forwards ? "var(--text-color)" : "var(--text-muted)"
-        }}
+        className={historyMove.forwards ? "" : "disabled"}
         onClick={() => moveInHistory(activeTab, 1)}
       />
       <ArrowUp
-        style={{ color: splitPaths.length != 0 ? "var(--text-color)" : "var(--text-muted)" }}
+        className={splitPaths.length != 0 ? "" : "disabled"}
         onClick={() => {
           navigate(activeTab, removeLastPathElement(getPath(activeTab)))
         }}
@@ -105,6 +101,7 @@ function TopBar() {
       <div className="mode-indicator">
         <p>{insertMode ? "INSERT" : "NORMAL"}</p>
       </div>
+      <SettingsIcon onClick={() => setSettingsOpen(true)} />
     </div>
   )
 }
