@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { deferred, mockApi } from "./helpers.js"
 import { showToast } from "../src/renderer/src/utils/toast.js"
+import { confirm } from "../src/renderer/src/utils/confirmation.js"
 import {
   createFolder,
   deleteFile,
@@ -12,6 +13,9 @@ import {
 vi.mock("../src/renderer/src/utils/toast.js", async (importOriginal) => ({
   ...(await importOriginal()),
   showToast: vi.fn()
+}))
+vi.mock("../src/renderer/src/utils/confirmation.js", () => ({
+  confirm: vi.fn(async () => true)
 }))
 
 let api, refresh
@@ -34,6 +38,13 @@ describe("deleteFile", () => {
     await deleteFile(["/a", "/b"], refresh)
     expect(showToast).toHaveBeenCalledWith("Couldn't delete", "Permission denied", "error")
     expect(refresh).toHaveBeenCalledTimes(1)
+  })
+
+  it("deletes nothing when the confirmation is declined", async () => {
+    vi.mocked(confirm).mockResolvedValueOnce(false)
+    await deleteFile(["/a", "/b"], refresh)
+    expect(api.deleteFile).not.toHaveBeenCalled()
+    expect(refresh).not.toHaveBeenCalled()
   })
 })
 

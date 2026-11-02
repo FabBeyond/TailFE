@@ -19,6 +19,14 @@ describe("useSettings", () => {
     expect(result.current.sortingMode).toEqual({ key: "size", desc: true })
   })
 
+  it("accepts an updater function", () => {
+    const { result } = renderHook(useSettings, { wrapper: SettingsProvider })
+    const start = result.current.mainZoom
+
+    act(() => result.current.updateSetting("mainZoom", (prev) => prev + 2))
+    expect(result.current.mainZoom).toBe(start + 2)
+  })
+
   it("keeps the same value object when nothing changed", () => {
     const { result, rerender } = renderHook(useSettings, { wrapper: SettingsProvider })
     const first = result.current

@@ -197,6 +197,15 @@ describe("open-file", () => {
     expect(await call("open-file", "/a.txt")).toEqual({ noProgram: true })
   })
 
+  it.each(["win32", "darwin"])("opens files on %s without xdg-mime", async (platform) => {
+    setPlatform(platform)
+    execFile.mockImplementation((cmd, args, cb) => cb(new Error("spawn xdg-mime ENOENT")))
+
+    expect(await call("open-file", "/a.txt")).toEqual({ success: true })
+    expect(execFile).not.toHaveBeenCalled()
+    expect(shell.openPath).toHaveBeenCalledWith("/a.txt")
+  })
+
   it("returns the openPath error string", async () => {
     mockXdg("org.gnome.TextEditor.desktop")
     shell.openPath.mockResolvedValueOnce("Failed to open")
