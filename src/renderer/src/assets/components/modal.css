@@ -5,6 +5,8 @@
   transform: translate(-50%, -50%);
   background-color: var(--menus);
   border: var(--border-width) solid var(--border-raised);
+  display: flex;
+  flex-direction: column;
 }
 .properties-blocker {
   position: absolute;
@@ -15,16 +17,25 @@
   background-color: transparent;
 }
 .close-button {
-  position: fixed;
-  right: 10px;
-  top: 10px;
   color: var(--text-muted);
   cursor: pointer;
   padding: 5px;
-  height: 30px;
-  width: 30px;
+  height: 35px;
+  width: 35px;
   border-radius: var(--radius-md);
 }
 .close-button:hover {
   background-color: var(--menu-item-hover);
+}
+.modal-titlebar {
+  height: 75px;
+  width: 100%;
+  border-bottom: 2px solid var(--border-raised);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  font-size: 25px;
+  font-weight: 550;
+  justify-content: space-between;
 }

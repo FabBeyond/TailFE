@@ -24,6 +24,7 @@ function Settings() {
   const { setSettingsOpen, settingsOpen } = useUI()
   const [activeId, setActiveId] = useState(settingsSchema[0].id)
   const active = settingsSchema.find((c) => c.id === activeId)
+  console.log(activeId)
 
   return (
     <div
@@ -36,18 +37,27 @@ function Settings() {
     >
       <div>
         <div className="modal settings" onClick={(e) => e.stopPropagation()}>
-          <XIcon onClick={() => setSettingsOpen(false)} className="close-button" />
-          <div className="categories">
-            {settingsSchema.map((item) => (
-              <p key={item.id} onClick={() => setActiveId(item.id)}>
-                {item.label}
-              </p>
-            ))}
+          <div className="modal-titlebar">
+            <p>Settings</p>
+            <XIcon onClick={() => setSettingsOpen(false)} className="close-button" />
           </div>
-          <div className="settings-content">
-            {active.settings.map((item) => (
-              <SettingsRow key={item.key} setting={item} />
-            ))}
+          <div className="settings-main-panel">
+            <div className="categories">
+              {settingsSchema.map((item) => (
+                <p
+                  className={activeId == item.id ? "selected-settings-cat" : ""}
+                  key={item.id}
+                  onClick={() => setActiveId(item.id)}
+                >
+                  {item.label}
+                </p>
+              ))}
+            </div>
+            <div className="settings-content">
+              {active.settings.map((item) => (
+                <SettingsRow key={item.key} setting={item} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
