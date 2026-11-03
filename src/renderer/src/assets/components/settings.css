@@ -74,3 +74,38 @@
   display: flex;
   align-items: center;
 }
+
+.settings-title {
+  color: var(--text-muted);
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.toggle-control {
+  position: relative;
+  flex-shrink: 0;
+  width: 65px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--border-raised);
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+.toggle-control.on {
+  background-color: var(--accent);
+}
+.toggle-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  background-color: #fff;
+  border-radius: 999px;
+  transition: transform 0.2s ease;
+}
+.toggle-control.on .toggle-thumb {
+  transform: translateX(35px);
+}

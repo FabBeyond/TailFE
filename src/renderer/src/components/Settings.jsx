@@ -8,14 +8,34 @@ const settingsSchema = [
     id: "general",
     label: "General",
     settings: [
-      { key: "showDotFiles", label: "Show hidden files", type: "toggle" },
-      { key: "foldersOnTop", label: "Folders on top", type: "toggle" }
+      { type: "label", label: "View" },
+      {
+        key: "showDotFiles",
+        label: "Show hidden files",
+        desc: "Show dotfiles like .git or .config",
+        type: "toggle"
+      },
+      {
+        key: "foldersOnTop",
+        label: "Folders on top",
+        desc: "Sort folders before files",
+        type: "toggle"
+      }
     ]
   },
   {
     id: "behaviour",
     label: "Behaviour",
-    settings: [{ key: "dragDeadzone", label: "Drag deadzone", type: "number", min: 0, unit: "px" }]
+    settings: [
+      {
+        key: "dragDeadzone",
+        label: "Drag deadzone",
+        desc: "Min. distance to start dragging files",
+        type: "number",
+        min: 0,
+        unit: "px"
+      }
+    ]
   }
 ]
 const controls = { toggle: ToggleControl, number: NumberControl }
@@ -24,7 +44,6 @@ function Settings() {
   const { setSettingsOpen, settingsOpen } = useUI()
   const [activeId, setActiveId] = useState(settingsSchema[0].id)
   const active = settingsSchema.find((c) => c.id === activeId)
-  console.log(activeId)
 
   return (
     <div
@@ -54,8 +73,8 @@ function Settings() {
               ))}
             </div>
             <div className="settings-content">
-              {active.settings.map((item) => (
-                <SettingsRow key={item.key} setting={item} />
+              {active.settings.map((item, idx) => (
+                <SettingsRow key={item.key ?? idx} setting={item} />
               ))}
             </div>
           </div>
@@ -66,11 +85,17 @@ function Settings() {
 }
 
 function SettingsRow({ setting }) {
+  if (setting.type === "label") {
+    return <p className="settings-title">{setting.label}</p>
+  }
   const Control = controls[setting.type]
 
   return (
     <div className="settings-row">
-      <p className="setting-label">{setting.label}</p>
+      <div>
+        <p className="setting-label">{setting.label}</p>
+        <p className="setting-desc">{setting.desc}</p>
+      </div>
       <Control setting={setting} />
     </div>
   )
@@ -78,15 +103,15 @@ function SettingsRow({ setting }) {
 
 function ToggleControl({ setting }) {
   const { updateSetting, ...settings } = useSettings()
+  const isOn = Boolean(settings[setting.key])
 
   return (
-    <div className="toggle-control">
-      <input
-        type="checkbox"
-        checked={settings[setting.key]}
-        onChange={(e) => updateSetting(setting.key, e.target.checked)}
-      />
-    </div>
+    <button
+      className={`toggle-control ${isOn ? "on" : ""}`}
+      onClick={() => updateSetting(setting.key, !isOn)}
+    >
+      <div className="toggle-thumb" />
+    </button>
   )
 }
 function NumberControl({ setting }) {
