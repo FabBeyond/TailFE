@@ -67,11 +67,20 @@ function SettingsRow({ setting }) {
 }
 
 function ToggleControl({ setting }) {
-  return <div></div>
+  const { updateSetting, ...settings } = useSettings()
+
+  return (
+    <div className="toggle-control">
+      <input
+        type="checkbox"
+        checked={settings[setting.key]}
+        onChange={(e) => updateSetting(setting.key, e.target.checked)}
+      />
+    </div>
+  )
 }
 function NumberControl({ setting }) {
-  const settings = useSettings()
-  const { updateSetting } = settings
+  const { updateSetting, ...settings } = useSettings()
   const [tempValue, setTempValue] = useState(settings[setting.key])
 
   const min = setting.min ?? -Infinity
