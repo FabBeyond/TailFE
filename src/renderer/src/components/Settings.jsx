@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { PlusIcon, MinusIcon, XIcon } from "lucide-react"
+import { PlusIcon, MinusIcon, XIcon, RotateCcw } from "lucide-react"
 import { useSettings } from "../hooks/useSettings"
 import { useUI } from "../hooks/useUI"
 
@@ -8,7 +8,7 @@ const settingsSchema = [
     id: "general",
     label: "General",
     settings: [
-      { type: "label", label: "View" },
+      { type: "label", label: "VIEW" },
       {
         key: "showDotFiles",
         label: "Show hidden files",
@@ -27,12 +27,14 @@ const settingsSchema = [
     id: "behaviour",
     label: "Behaviour",
     settings: [
+      { type: "label", label: "DRAGGING" },
       {
         key: "dragDeadzone",
         label: "Drag deadzone",
         desc: "Min. distance to start dragging files",
         type: "number",
-        min: 0,
+        min: 1,
+        max: 99,
         unit: "px"
       }
     ]
@@ -74,7 +76,9 @@ function Settings() {
             </div>
             <div className="settings-content">
               {active.settings.map((item, idx) => (
-                <SettingsRow key={item.key ?? idx} setting={item} />
+                <div key={item.key ?? idx}>
+                  <SettingsRow setting={item} />
+                </div>
               ))}
             </div>
           </div>
@@ -85,6 +89,8 @@ function Settings() {
 }
 
 function SettingsRow({ setting }) {
+  const { DEFAULT_SETTINGS, updateSetting, ...settings } = useSettings()
+
   if (setting.type === "label") {
     return <p className="settings-title">{setting.label}</p>
   }
@@ -92,11 +98,17 @@ function SettingsRow({ setting }) {
 
   return (
     <div className="settings-row">
-      <div>
+      <div className="setting-left-side">
         <p className="setting-label">{setting.label}</p>
         <p className="setting-desc">{setting.desc}</p>
       </div>
-      <Control setting={setting} />
+      <div className="setting-right-side">
+        <Control setting={setting} />
+        <RotateCcw
+          onClick={() => updateSetting(setting.key, DEFAULT_SETTINGS[setting.key])}
+          className={settings[setting.key] == DEFAULT_SETTINGS[setting.key] ? "disabled" : ""}
+        />
+      </div>
     </div>
   )
 }
@@ -116,32 +128,42 @@ function ToggleControl({ setting }) {
 }
 function NumberControl({ setting }) {
   const { updateSetting, ...settings } = useSettings()
-  const [tempValue, setTempValue] = useState(settings[setting.key])
+  const saved = settings[setting.key]
+  const [draft, setDraft] = useState(null)
+  const shownValue = draft ?? saved
 
   const min = setting.min ?? -Infinity
   const max = setting.max ?? Infinity
 
   const commit = (value) => {
     const clamped = Math.max(min, Math.min(value, max))
-    setTempValue(clamped)
+    setDraft(null)
     updateSetting(setting.key, clamped)
   }
 
   return (
     <div className="number-control">
-      <button onClick={() => commit(tempValue - 1)}>
+      <button
+        onClick={() => commit(shownValue - 1)}
+        className={shownValue <= min ? "off disabled" : ""}
+      >
         <MinusIcon />
       </button>
       <input
         type="text"
-        value={tempValue}
+        value={shownValue}
         onChange={(e) => {
           const newValue = Number(e.target.value)
-          if (!isNaN(newValue)) setTempValue(newValue)
+          if (!isNaN(newValue)) setDraft(newValue)
         }}
         onBlur={(e) => commit(Number(e.target.value))}
       ></input>
-      <button onClick={() => commit(tempValue + 1)}>
+      {setting.unit && <p>{setting.unit}</p>}
+
+      <button
+        onClick={() => commit(shownValue + 1)}
+        className={shownValue >= max ? "off disabled" : ""}
+      >
         <PlusIcon />
       </button>
     </div>

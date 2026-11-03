@@ -24,6 +24,7 @@ export function SettingsProvider({ children }) {
   const value = useMemo(
     () => ({
       ...settings,
+      DEFAULT_SETTINGS,
       updateSetting
     }),
     [settings, updateSetting]
