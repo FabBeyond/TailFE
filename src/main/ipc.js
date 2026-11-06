@@ -18,6 +18,8 @@ const FILE_MANAGER_DESKTOP_IDS = [
 ]
 const ALLOWED_PATHS = ["home", "desktop", "documents", "downloads", "music", "pictures", "videos"]
 
+const settingsPath = () => join(app.getPath("userData"), "settings.json")
+
 const execFileAsync = promisify(execFile)
 
 async function hasDefaultProgram(path) {
@@ -131,5 +133,17 @@ export function registerIpcHandlers() {
 
     await fs.cp(oldPath, newPath, { recursive: true })
     if (!copy) await fs.rm(oldPath, { recursive: true })
+  })
+  handle("load-settings", async () => {
+    try {
+      return JSON.parse(await fs.readFile(settingsPath(), "utf8"))
+    } catch {
+      return {}
+    }
+  })
+  handle("save-settings", async (settings) => {
+    const tmp = `${settingsPath()}.tmp`
+    await fs.writeFile(tmp, JSON.stringify(settings, null, 2))
+    await fs.rename(tmp, settingsPath())
   })
 }

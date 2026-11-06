@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useRef } from "react"
 
 const SettingsContext = createContext(null)
 const DEFAULT_SETTINGS = {
@@ -11,8 +11,33 @@ const DEFAULT_SETTINGS = {
   sortingMode: { key: "name", desc: false }
 }
 
-export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+function mergeSettings(saved = {}) {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...saved,
+    columnWidths: { ...DEFAULT_SETTINGS.columnWidths, ...saved.columnWidths },
+    sortingMode: { ...DEFAULT_SETTINGS.sortingMode, ...saved.sortingMode }
+  }
+}
+
+export function SettingsProvider({ children, initialSettings }) {
+  const [settings, setSettings] = useState(() => mergeSettings(initialSettings))
+  const lastSaved = useRef(settings)
+
+  useEffect(() => {
+    if (settings === lastSaved.current) return
+
+    const save = () => {
+      lastSaved.current = settings
+      window.api.saveSettings(settings)
+    }
+    const timer = setTimeout(save, 300)
+    window.addEventListener("pagehide", save)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener("pagehide", save)
+    }
+  })
 
   const updateSetting = useCallback((key, value) => {
     setSettings((prev) => ({

@@ -8,5 +8,7 @@ contextBridge.exposeInMainWorld("api", {
   openFile: (path) => ipcRenderer.invoke("open-file", path),
   getPath: (name) => ipcRenderer.invoke("get-path", name),
   move: (oldPath, destDir, copy = false) => ipcRenderer.invoke("move", oldPath, destDir, copy),
+  loadSettings: () => ipcRenderer.invoke("load-settings"),
+  saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
   platform: process.platform
 })
