@@ -11,8 +11,8 @@ import {
   TrashIcon,
   FolderArchiveIcon
 } from "lucide-react"
-import { showToast } from "../utils/toast.js"
-import { IS_WIN } from "../utils/paths"
+import { errorMessage, showToast } from "../utils/toast.js"
+import { concatPath, getCurrentDirName, IS_WIN } from "../utils/paths"
 
 function ContextMenu() {
   const { menu, setMenu, setRenaming, setPropertiesShown } = useUI()
@@ -84,7 +84,25 @@ function ContextMenu() {
         name: "Extract",
         icon: FolderArchiveIcon,
         show: isEntry && isArchive,
-        action: () => window.api.extractArchive(menu.target)
+        action: async () => {
+          const result = await window.api.extractArchive(menu.target)
+          if (result.error)
+            showToast("Couldn't extract archive", errorMessage(result.error), "error")
+          refresh()
+        }
+      },
+      {
+        name: "Archive",
+        icon: FolderArchiveIcon,
+        show: isEntry,
+        action: async () => {
+          const name = getCurrentDirName(selectedFiles[0])
+          const dest = concatPath(getPath(activeTab), `${name}.zip`)
+          const result = await window.api.createArchive(selectedFiles, dest)
+          if (result.error)
+            showToast("Couldn't create archive", errorMessage(result.error), "error")
+          refresh()
+        }
       }
     ],
     [

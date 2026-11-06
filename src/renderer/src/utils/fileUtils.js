@@ -1,3 +1,5 @@
+import { pathParts } from "./paths"
+
 const UNITS = ["Bytes", "KB", "MB", "GB", "TB"]
 const COMPARE = {
   name: (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }),
@@ -25,11 +27,9 @@ export function sortFiles(files, { key, desc }, foldersOnTop) {
 export function visibleFiles(files, showDotFiles) {
   return showDotFiles ? files : files.filter((f) => !f.name.startsWith("."))
 }
-export function getFileExtension(name) {
-  if (!name || name?.includes("/")) return ""
-
-  const parts = name.split(".")
-  if (parts.length === 1) return ""
-
-  return parts[parts.length - 1]
+export function getFileExtension(path) {
+  if (!path) return ""
+  const name = path.slice(path.lastIndexOf("/") + 1)
+  const dot = name.lastIndexOf(".")
+  return dot > 0 ? name.slice(dot + 1).toLowerCase() : ""
 }

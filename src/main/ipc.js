@@ -166,4 +166,24 @@ export function registerIpcHandlers() {
       await pipeline(readStream, createWriteStream(outPath))
     }
   })
+  handle("create-archive", async (paths, destZip) => {
+    if (await exists(destZip)) return { error: "EEXIST" }
+
+    const archive = new ZipArchive({ zlib: { level: 6 } })
+    const done = pipeline(archive, createWriteStream(destZip))
+
+    try {
+      for (const p of paths) {
+        if ((await fs.stat(p)).isDirectory()) archive.directory(p, basename(p))
+        else archive.file(p, { name: basename(p) })
+      }
+
+      await archive.finalize()
+
+      await done
+    } catch (err) {
+      await fs.rm(destZip, { force: true })
+      throw err
+    }
+  })
 }

@@ -11,5 +11,6 @@ contextBridge.exposeInMainWorld("api", {
   loadSettings: () => ipcRenderer.invoke("load-settings"),
   saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
   extractArchive: (path) => ipcRenderer.invoke("extract-archive", path),
+  createArchive: (paths, destZip) => ipcRenderer.invoke("create-archive", paths, destZip),
   platform: process.platform
 })
