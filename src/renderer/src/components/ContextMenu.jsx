@@ -2,12 +2,14 @@ import { Fragment, useEffect, useRef } from "react"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
 import { createFolder, deleteFile, openFile } from "../utils/fileActions"
+import { getFileExtension } from "../utils/fileUtils.js"
 import {
   FolderIcon,
   SquareArrowOutUpRightIcon,
   FolderPlusIcon,
   InfoIcon,
-  TrashIcon
+  TrashIcon,
+  FolderArchiveIcon
 } from "lucide-react"
 import { showToast } from "../utils/toast.js"
 import { IS_WIN } from "../utils/paths"
@@ -50,6 +52,7 @@ function ContextMenu() {
   const isTab = !!menu.target && menu.type === "tab"
   const isDriveRoot = IS_WIN && /^[A-Z]:\/$/.test(menu.target)
   const atThisPC = IS_WIN && getPath(activeTab) === "/"
+  const isArchive = getFileExtension(menu.target) === "zip"
 
   const groups = [
     [
@@ -76,6 +79,12 @@ function ContextMenu() {
         icon: SquareArrowOutUpRightIcon,
         show: isDirectory,
         action: () => addTab(menu.target)
+      },
+      {
+        name: "Extract",
+        icon: FolderArchiveIcon,
+        show: isEntry && isArchive,
+        action: () => window.api.extractArchive(menu.target)
       }
     ],
     [

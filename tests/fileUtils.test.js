@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { bytesToReadable, sortFiles, visibleFiles } from "../src/renderer/src/utils/fileUtils.js"
+import {
+  bytesToReadable,
+  getFileExtension,
+  sortFiles,
+  visibleFiles
+} from "../src/renderer/src/utils/fileUtils.js"
 
 describe("bytesToReadable", () => {
   it("keeps bytes as whole numbers", () => {
@@ -73,5 +78,25 @@ describe("visibleFiles", () => {
   it("hides dot files unless enabled", () => {
     expect(visibleFiles(files, false)).toEqual([{ name: "docs" }])
     expect(visibleFiles(files, true)).toBe(files)
+  })
+})
+
+describe("getFileExtension", () => {
+  it("returns the part after the last dot", () => {
+    expect(getFileExtension("archive.zip")).toBe("zip")
+    expect(getFileExtension("/home/user/photos.2024.zip")).toBe("")
+    expect(getFileExtension("backup.tar.gz")).toBe("gz")
+  })
+
+  // Context-menu targets are full paths, and background menus have no target at all
+  it("returns an empty string when there is no extension", () => {
+    expect(getFileExtension("Makefile")).toBe("")
+    expect(getFileExtension("/home/user/zip")).toBe("")
+    expect(getFileExtension("/home/my.folder/README")).toBe("")
+  })
+
+  it("handles a missing name", () => {
+    expect(getFileExtension(null)).toBe("")
+    expect(getFileExtension(undefined)).toBe("")
   })
 })

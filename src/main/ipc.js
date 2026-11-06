@@ -1,8 +1,12 @@
 import { execFile } from "node:child_process"
 import fs from "node:fs/promises"
 import { promisify } from "node:util"
-import { basename, join } from "node:path"
+import { basename, join, dirname, resolve, sep, extname } from "node:path"
 import { app, ipcMain, shell } from "electron"
+import { openPromise } from "yauzl"
+import { pipeline } from "node:stream/promises"
+import { createWriteStream } from "node:fs"
+import { ZipArchive } from "archiver"
 
 const FILE_MANAGER_DESKTOP_IDS = [
   "org.gnome.nautilus.desktop",
@@ -145,5 +149,21 @@ export function registerIpcHandlers() {
     const tmp = `${settingsPath()}.tmp`
     await fs.writeFile(tmp, JSON.stringify(settings, null, 2))
     await fs.rename(tmp, settingsPath())
+  })
+  handle("extract-archive", async (path) => {
+    const zipFile = await openPromise(path)
+    for await (let entry of zipFile.eachEntry()) {
+      const destDir = join(dirname(path), basename(path, extname(path)))
+      const outPath = resolve(destDir, entry.fileName)
+      if (!outPath.startsWith(resolve(destDir) + sep)) continue
+
+      if (entry.fileName.endsWith("/")) {
+        await fs.mkdir(outPath, { recursive: true })
+        continue
+      }
+      await fs.mkdir(dirname(outPath), { recursive: true })
+      const readStream = await zipFile.openReadStreamPromise(entry)
+      await pipeline(readStream, createWriteStream(outPath))
+    }
   })
 }

@@ -4,6 +4,7 @@ import fs from "node:fs/promises"
 import os from "node:os"
 import { join } from "node:path"
 import { execFile } from "node:child_process"
+import { crc32 } from "node:zlib"
 import { app, shell } from "electron"
 import { registerIpcHandlers } from "../src/main/ipc.js"
 
@@ -210,5 +211,129 @@ describe("open-file", () => {
     mockXdg("org.gnome.TextEditor.desktop")
     shell.openPath.mockResolvedValueOnce("Failed to open")
     expect(await call("open-file", "/a.txt")).toEqual({ error: "Failed to open" })
+  })
+})
+
+describe("load-settings / save-settings", () => {
+  beforeEach(() => app.getPath.mockImplementation((name) => (name === "userData" ? tmp : "")))
+
+  it("returns {} when there is no settings file", async () => {
+    expect(await call("load-settings")).toEqual({})
+  })
+
+  it("returns {} for a corrupt settings file", async () => {
+    await fs.writeFile(join(tmp, "settings.json"), "{ not json")
+    expect(await call("load-settings")).toEqual({})
+  })
+
+  it("round-trips saved settings", async () => {
+    const settings = { showDotFiles: true, columnWidths: { nameCol: 123 } }
+    expect(await call("save-settings", settings)).toEqual({ success: true })
+    expect(await call("load-settings")).toEqual(settings)
+  })
+
+  it("does not leave the temp file behind", async () => {
+    await call("save-settings", { a: 1 })
+    expect(await fs.readdir(tmp)).toEqual(["settings.json"])
+  })
+})
+
+// Builds an uncompressed ("stored") zip so tests can use names a real zip tool would refuse
+function makeZip(entries) {
+  const u16 = (n) => Buffer.from([n & 0xff, (n >> 8) & 0xff])
+  const u32 = (n) => {
+    const b = Buffer.alloc(4)
+    b.writeUInt32LE(n >>> 0)
+    return b
+  }
+  const locals = []
+  const centrals = []
+  let offset = 0
+  for (const [name, content = ""] of Object.entries(entries)) {
+    const nameBuf = Buffer.from(name)
+    const data = Buffer.from(content)
+    const crc = crc32(data)
+    const shared = [u16(0), u16(0), u16(0), u16(0x21), u32(crc), u32(data.length), u32(data.length)]
+    const local = Buffer.concat([
+      u32(0x04034b50), u16(20), ...shared, u16(nameBuf.length), u16(0), nameBuf, data
+    ])
+    centrals.push(
+      Buffer.concat([
+        u32(0x02014b50), u16(20), u16(20), ...shared, u16(nameBuf.length), u16(0), u16(0),
+        u16(0), u16(0), u32(0), u32(offset), nameBuf
+      ])
+    )
+    locals.push(local)
+    offset += local.length
+  }
+  const central = Buffer.concat(centrals)
+  const count = centrals.length
+  const end = Buffer.concat([
+    u32(0x06054b50), u16(0), u16(0), u16(count), u16(count), u32(central.length), u32(offset),
+    u16(0)
+  ])
+  return Buffer.concat([...locals, central, end])
+}
+
+describe("extract-archive", () => {
+  async function writeZip(entries, name = "photos.zip") {
+    const path = join(tmp, name)
+    await fs.writeFile(path, makeZip(entries))
+    return path
+  }
+
+  it("extracts into a folder named after the archive", async () => {
+    const zip = await writeZip({ "a.txt": "hello", "b.txt": "world" })
+    expect(await call("extract-archive", zip)).toEqual({ success: true })
+    expect(await fs.readFile(join(tmp, "photos", "a.txt"), "utf8")).toBe("hello")
+    expect(await fs.readFile(join(tmp, "photos", "b.txt"), "utf8")).toBe("world")
+  })
+
+  it("keeps the archive", async () => {
+    const zip = await writeZip({ "a.txt": "x" })
+    await call("extract-archive", zip)
+    await expect(fs.access(zip)).resolves.toBeUndefined()
+  })
+
+  it("recreates nested folders, with or without folder entries", async () => {
+    const zip = await writeZip({
+      "docs/": "",
+      "docs/readme.md": "# hi",
+      "deep/er/still/file.txt": "nested"
+    })
+    expect(await call("extract-archive", zip)).toEqual({ success: true })
+    expect(await fs.readFile(join(tmp, "photos", "docs", "readme.md"), "utf8")).toBe("# hi")
+    expect(await fs.readFile(join(tmp, "photos", "deep/er/still/file.txt"), "utf8")).toBe("nested")
+    expect((await fs.stat(join(tmp, "photos", "docs"))).isDirectory()).toBe(true)
+  })
+
+  it("creates empty folders from folder entries", async () => {
+    const zip = await writeZip({ "empty/": "" })
+    await call("extract-archive", zip)
+    expect((await fs.stat(join(tmp, "photos", "empty"))).isDirectory()).toBe(true)
+  })
+
+  it("only strips the last extension from the folder name", async () => {
+    const zip = await writeZip({ "a.txt": "x" }, "backup.2024.zip")
+    await call("extract-archive", zip)
+    expect(await fs.readFile(join(tmp, "backup.2024", "a.txt"), "utf8")).toBe("x")
+  })
+
+  it("never writes outside the destination folder (zip slip)", async () => {
+    const zip = await writeZip({ "../evil.txt": "pwned", "ok.txt": "fine" })
+    const result = await call("extract-archive", zip)
+    await expect(fs.access(join(tmp, "evil.txt"))).rejects.toThrow()
+    // yauzl rejects ../ names itself, so the whole extraction reports an error
+    expect(result.error).toMatch(/invalid relative path/)
+  })
+
+  it("returns an error for a missing archive", async () => {
+    expect(await call("extract-archive", join(tmp, "nope.zip"))).toEqual({ error: "ENOENT" })
+  })
+
+  it("returns an error for a file that is not a zip", async () => {
+    await fs.writeFile(join(tmp, "fake.zip"), "definitely not a zip")
+    const result = await call("extract-archive", join(tmp, "fake.zip"))
+    expect(result.error).toBeTruthy()
   })
 })

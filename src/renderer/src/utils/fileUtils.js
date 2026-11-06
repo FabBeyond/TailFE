@@ -25,3 +25,11 @@ export function sortFiles(files, { key, desc }, foldersOnTop) {
 export function visibleFiles(files, showDotFiles) {
   return showDotFiles ? files : files.filter((f) => !f.name.startsWith("."))
 }
+export function getFileExtension(name) {
+  if (!name || name?.includes("/")) return ""
+
+  const parts = name.split(".")
+  if (parts.length === 1) return ""
+
+  return parts[parts.length - 1]
+}
