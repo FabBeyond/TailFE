@@ -21,6 +21,7 @@ const FILE_MANAGER_DESKTOP_IDS = [
   "io.elementary.files.desktop"
 ]
 const ALLOWED_PATHS = ["home", "desktop", "documents", "downloads", "music", "pictures", "videos"]
+const DRIVE_PATHS = ["/mnt/", "/media/", "/run/media/"]
 
 const settingsPath = () => join(app.getPath("userData"), "settings.json")
 
@@ -40,6 +41,12 @@ async function hasDefaultProgram(path) {
   } catch {
     return false
   }
+}
+function isValidDrive(drive) {
+  if (!drive.source.startsWith("/dev/")) return false
+  if (drive.target === "/") return true
+
+  return DRIVE_PATHS.some((p) => drive.target.startsWith(p))
 }
 
 async function exists(path) {
@@ -184,6 +191,29 @@ export function registerIpcHandlers() {
     } catch (err) {
       await fs.rm(destZip, { force: true })
       throw err
+    }
+  })
+  handle("list-drives", async () => {
+    if (process.platform === "linux") {
+      const output = await execFileAsync("findmnt", [
+        "--json",
+        "--real",
+        "--list",
+        "-o",
+        "TARGET,SOURCE,FSTYPE,LABEL,SIZE"
+      ])
+      const mntList = JSON.parse(output.stdout).filesystems
+
+      mntList.forEach((element) => {
+        if (isValidDrive(element)) {
+          console.log("ELEMENT:", element)
+        }
+      })
+      return mntList
+        .map((element) => (isValidDrive(element) ? element : null))
+        .filter((element) => element != null)
+    } else if (process.platform === "win32") {
+      console.log(listDrives())
     }
   })
 }

@@ -8,7 +8,8 @@ import {
   HouseIcon,
   FileTextIcon,
   ArrowDownToLineIcon,
-  ImageIcon
+  ImageIcon,
+  HardDriveIcon
 } from "lucide-react"
 import { startResize } from "../utils/resize"
 import { visibleFiles } from "../utils/fileUtils"
@@ -22,11 +23,18 @@ const PLACES = [
 
 export function Sidebar() {
   const { sidebarWidth, updateSetting } = useSettings()
+  const [drives, setDrives] = useState([])
 
+  useEffect(() => {
+    window.api.listDrives().then((result) => {
+      if (!result.error) setDrives(result)
+    })
+  })
   return (
     <div className="sidebar" style={{ width: sidebarWidth, flexShrink: 0 }}>
       <div className="sidebar-content">
         <Places />
+        <Drives drives={drives} />
         <RootFolderList />
       </div>
       <div
@@ -35,6 +43,20 @@ export function Sidebar() {
           startResize(e, sidebarWidth, (width) => updateSetting("sidebarWidth", width))
         }}
       ></div>
+    </div>
+  )
+}
+function Drives({ drives }) {
+  const { activeTab, navigate } = useTabs()
+
+  return (
+    <div className="drive-list">
+      {drives.map((drive) => (
+        <div key={drive.target} className="drive" onClick={() => navigate(activeTab, drive.target)}>
+          <HardDriveIcon />
+          <p>{drive.label ?? drive.target}</p>
+        </div>
+      ))}
     </div>
   )
 }
