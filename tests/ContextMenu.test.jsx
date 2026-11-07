@@ -64,7 +64,14 @@ describe("visibility", () => {
 
   it("shows file items for a file", () => {
     setup(fileMenu("/home/user/a.txt"))
-    expect(itemNames()).toEqual(["Open", "Open With", "New Folder", "Properties", "Delete"])
+    expect(itemNames()).toEqual([
+      "Open",
+      "Open With",
+      "Archive",
+      "New Folder",
+      "Properties",
+      "Delete"
+    ])
   })
 
   it("adds Open in new Tab for folders", () => {

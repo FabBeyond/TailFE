@@ -12,6 +12,7 @@ export function mockApi(overrides = {}) {
     openFile: vi.fn(async () => ({ success: true })),
     getPath: vi.fn(async (name) => ({ path: `/home/user/${name}` })),
     move: vi.fn(async () => ({ success: true })),
+    listDrives: vi.fn(async () => []),
     ...overrides
   }
   return window.api

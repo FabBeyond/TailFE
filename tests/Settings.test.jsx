@@ -9,7 +9,7 @@ function StoredDeadzone() {
   return <output data-testid="stored">{dragDeadzone}</output>
 }
 
-// dragDeadzone starts at 20 and has min: 0
+// dragDeadzone starts at 20 and has min: 1
 function setup() {
   const { container } = render(
     <SettingsProvider>
@@ -44,14 +44,14 @@ describe("NumberControl", () => {
 
   it("- stops at min", () => {
     const { input, minus } = setup()
-    fireEvent.change(input, { target: { value: "1" } })
+    fireEvent.change(input, { target: { value: "2" } })
     fireEvent.blur(input)
 
     fireEvent.click(minus)
     fireEvent.click(minus)
 
-    expect(stored()).toBe("0")
-    expect(input.value).toBe("0")
+    expect(stored()).toBe("1")
+    expect(input.value).toBe("1")
   })
 
   it("never stores a typed value below min", () => {
@@ -61,7 +61,7 @@ describe("NumberControl", () => {
     expect(stored()).not.toBe("-5")
 
     fireEvent.blur(input)
-    expect(stored()).toBe("0")
-    expect(input.value).toBe("0")
+    expect(stored()).toBe("1")
+    expect(input.value).toBe("1")
   })
 })

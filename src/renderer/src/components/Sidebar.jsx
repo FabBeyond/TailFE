@@ -29,7 +29,7 @@ export function Sidebar() {
     window.api.listDrives().then((result) => {
       if (!result.error) setDrives(result)
     })
-  })
+  }, [])
   return (
     <div className="sidebar" style={{ width: sidebarWidth, flexShrink: 0 }}>
       <div className="sidebar-content">

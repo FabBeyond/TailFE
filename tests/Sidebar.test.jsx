@@ -21,14 +21,15 @@ function SettingsSpy() {
 
 function setup(initialSettings) {
   tabs = { activeTab: "1", navigate: vi.fn(), treeVersion: 0 }
-  const ui = (
+  // A fresh element each time: re-rendering the same element object makes React skip the update
+  const ui = () => (
     <SettingsProvider initialSettings={initialSettings}>
       <Sidebar />
       <SettingsSpy />
     </SettingsProvider>
   )
-  const result = render(ui)
-  return { ...result, rerender: () => result.rerender(ui) }
+  const result = render(ui())
+  return { ...result, rerender: () => result.rerender(ui()) }
 }
 
 beforeEach(() => {
@@ -128,5 +129,46 @@ describe("resizing", () => {
     act(() => fireEvent.mouseUp(window))
     expect(settings.sidebarWidth).toBe(260)
     expect(container.querySelector(".sidebar").style.width).toBe("260px")
+  })
+})
+
+describe("drives", () => {
+  const drives = [
+    { target: "/", source: "/dev/nvme0n1p2", label: null },
+    { target: "/mnt/daten", source: "/dev/nvme1n1p4", label: "Daten" }
+  ]
+
+  it("lists drives by label, falling back to the mount point", async () => {
+    window.api.listDrives.mockResolvedValueOnce(drives)
+    const { container } = setup()
+    await waitFor(() => expect(container.querySelectorAll(".drive")).toHaveLength(2))
+    expect([...container.querySelectorAll(".drive p")].map((p) => p.textContent)).toEqual([
+      "/",
+      "Daten"
+    ])
+  })
+
+  it("navigates to the mount point", async () => {
+    window.api.listDrives.mockResolvedValueOnce(drives)
+    setup()
+    fireEvent.click(await screen.findByText("Daten"))
+    expect(tabs.navigate).toHaveBeenCalledWith("1", "/mnt/daten")
+  })
+
+  // Every call runs findmnt in the main process
+  it("lists drives only once, not on every render", async () => {
+    window.api.listDrives.mockResolvedValue(drives)
+    const { rerender } = setup()
+    await screen.findByText("Daten")
+    rerender()
+    await new Promise((r) => setTimeout(r, 20))
+    expect(window.api.listDrives).toHaveBeenCalledTimes(1)
+  })
+
+  it("shows no drives when listing fails", async () => {
+    window.api.listDrives.mockResolvedValueOnce({ error: "ENOENT" })
+    const { container } = setup()
+    await waitFor(() => expect(window.api.listDrives).toHaveBeenCalled())
+    expect(container.querySelectorAll(".drive")).toHaveLength(0)
   })
 })
