@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, u
 const SettingsContext = createContext(null)
 const DEFAULT_SETTINGS = {
   showDotFiles: false,
+  darkenDotFiles: true,
   mainZoom: 20,
   columnWidths: { nameCol: 300, sizeCol: 150 },
   sidebarWidth: 200,

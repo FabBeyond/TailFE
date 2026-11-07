@@ -84,7 +84,7 @@ describe("visibleFiles", () => {
 describe("getFileExtension", () => {
   it("returns the part after the last dot", () => {
     expect(getFileExtension("archive.zip")).toBe("zip")
-    expect(getFileExtension("/home/user/photos.2024.zip")).toBe("")
+    expect(getFileExtension("/home/user/photos.2024.zip")).toBe("zip")
     expect(getFileExtension("backup.tar.gz")).toBe("gz")
   })
 

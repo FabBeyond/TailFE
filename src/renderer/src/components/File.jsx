@@ -29,7 +29,7 @@ function RenameInput({ initialName, onSubmit, onCancel }) {
 }
 
 function File({ file, tabId, tabPath }) {
-  const { mainZoom, columnWidths } = useSettings()
+  const { mainZoom, columnWidths, darkenDotFiles } = useSettings()
   const { selectedFiles, setSelectedFiles, refresh, navigate } = useTabs()
   const { renaming, setRenaming, insertMode, kbdSearchLet } = useUI()
 
@@ -37,7 +37,7 @@ function File({ file, tabId, tabPath }) {
 
   return (
     <div
-      className={`file ${selectedFiles.includes(path) ? "selected" : ""}`}
+      className={`file ${selectedFiles.includes(path) ? "selected" : ""} ${file.name.startsWith(".") && darkenDotFiles ? "dotfile" : ""}`}
       data-context="file"
       data-id={path}
       data-is-directory={file.isDirectory}

@@ -16,6 +16,12 @@ const settingsSchema = [
         type: "toggle"
       },
       {
+        key: "darkenDotFiles",
+        label: "Darken hidden files",
+        desc: "Darken the text of hidden files",
+        type: "toggle"
+      },
+      {
         key: "foldersOnTop",
         label: "Folders on top",
         desc: "Sort folders before files",

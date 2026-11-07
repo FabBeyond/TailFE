@@ -1,15 +1,11 @@
 Things to port to other os:
 - App picker
-- Check if places work
 
 General todo:
 - add app picker for unknown files
 - permission popup for restricted stuff
-- add zipping features
 - add status bar
 - searching
-- add settings menu
-- finish properties menu
 - add context menu stuff in non file list
 
 Bugs:
