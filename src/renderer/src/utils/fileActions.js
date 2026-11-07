@@ -1,5 +1,6 @@
 import { showToast, errorMessage } from "./toast.js"
 import { confirm } from "./confirmation.js"
+import { shell } from "electron"
 
 export async function deleteFile(paths, refresh) {
   const ok = await confirm(`Delete ${paths.length} item(s)?`, { confirmText: "Delete" })
@@ -38,6 +39,8 @@ export async function openFile(path) {
     showToast("No default app", "No program is set to open this file type", "warning")
   } else if (result.error) {
     showToast("Couldn't open file", result.error, "error")
+  } else if (result == true) {
+    shell.openPath(path)
   }
 }
 export async function moveFiles(selectedIds, targetPath, copy, refresh) {

@@ -28,6 +28,7 @@ const settingsPath = () => join(app.getPath("userData"), "settings.json")
 const execFileAsync = promisify(execFile)
 
 async function hasDefaultProgram(path) {
+  if (process.platform !== "linux") return true
   try {
     const { stdout: mimeType } = await execFileAsync("xdg-mime", ["query", "filetype", path])
     const { stdout: defaultApp } = await execFileAsync("xdg-mime", [

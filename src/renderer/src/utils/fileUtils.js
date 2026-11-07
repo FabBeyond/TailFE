@@ -1,5 +1,3 @@
-import { pathParts } from "./paths"
-
 const UNITS = ["Bytes", "KB", "MB", "GB", "TB"]
 const COMPARE = {
   name: (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }),
