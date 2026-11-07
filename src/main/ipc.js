@@ -213,7 +213,8 @@ export function registerIpcHandlers() {
         .map((element) => (isValidDrive(element) ? element : null))
         .filter((element) => element != null)
     } else if (process.platform === "win32") {
-      console.log(listDrives())
+      const drives = await listDrives()
+      return drives.map((element) => ({ target: element.name }))
     }
   })
 }
