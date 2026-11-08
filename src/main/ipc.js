@@ -205,11 +205,6 @@ export function registerIpcHandlers() {
       ])
       const mntList = JSON.parse(output.stdout).filesystems
 
-      mntList.forEach((element) => {
-        if (isValidDrive(element)) {
-          console.log("ELEMENT:", element)
-        }
-      })
       return mntList
         .map((element) => (isValidDrive(element) ? element : null))
         .filter((element) => element != null)
