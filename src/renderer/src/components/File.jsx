@@ -1,12 +1,13 @@
-import { useState } from "react"
+import { createElement, useState } from "react"
 import { useSettings } from "../hooks/useSettings"
 import { useTabs } from "../hooks/useTabs"
 import { useUI } from "../hooks/useUI"
 import { concatPath } from "../utils/paths"
-import { FileTextIcon, FolderIcon } from "lucide-react"
+import { FolderIcon } from "lucide-react"
 import { timeAgo } from "../utils/timeAgo"
 import { rename, openFile } from "../utils/fileActions.js"
 import { bytesToReadable } from "../utils/fileUtils.js"
+import { getFileIcon } from "../utils/fileIcons.js"
 
 function RenameInput({ initialName, onSubmit, onCancel }) {
   const [name, setName] = useState(initialName)
@@ -54,7 +55,7 @@ function File({ file, tabId, tabPath }) {
     >
       <button style={{ fontSize: mainZoom }}>
         <div className="file-name" style={{ width: columnWidths.nameCol }}>
-          {file.isDirectory ? <FolderIcon /> : <FileTextIcon />}
+          {file.isDirectory ? <FolderIcon /> : createElement(getFileIcon(file.name))}
           {renaming && selectedFiles.length === 1 && selectedFiles[0] === path ? (
             <RenameInput
               initialName={file.name}
