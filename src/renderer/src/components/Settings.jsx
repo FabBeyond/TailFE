@@ -26,6 +26,13 @@ const settingsSchema = [
         label: "Folders on top",
         desc: "Sort folders before files",
         type: "toggle"
+      },
+      { type: "label", label: "Popups" },
+      {
+        key: "showDeleteConfirmation",
+        label: "Delete confirmation popup",
+        desc: "Open a popup to confirm file deletion",
+        type: "toggle"
       }
     ]
   },

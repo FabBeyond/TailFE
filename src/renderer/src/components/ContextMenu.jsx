@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { errorMessage, showToast } from "../utils/toast.js"
 import { concatPath, getCurrentDirName, IS_WIN } from "../utils/paths"
+import { useSettings } from "../hooks/useSettings.jsx"
 
 function ContextMenu() {
   const { menu, setMenu, setRenaming, setPropertiesShown } = useUI()
@@ -29,6 +30,7 @@ function ContextMenu() {
     refresh,
     tabs
   } = useTabs()
+  const { showDeleteConfirmation } = useSettings()
   const menuRef = useRef(null)
 
   useEffect(() => {
@@ -144,7 +146,7 @@ function ContextMenu() {
         name: "Delete",
         icon: TrashIcon,
         show: isEntry && !isDriveRoot,
-        action: () => deleteFile(selectedFiles, refresh)
+        action: () => deleteFile(selectedFiles, refresh, showDeleteConfirmation)
       }
     ]
   ]

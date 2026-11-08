@@ -9,7 +9,8 @@ const DEFAULT_SETTINGS = {
   sidebarWidth: 200,
   foldersOnTop: true,
   dragDeadzone: 20,
-  sortingMode: { key: "name", desc: false }
+  sortingMode: { key: "name", desc: false },
+  showDeleteConfirmation: true
 }
 
 function mergeSettings(saved = {}) {
