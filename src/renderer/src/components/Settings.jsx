@@ -27,6 +27,14 @@ const settingsSchema = [
         desc: "Sort folders before files",
         type: "toggle"
       },
+      {
+        key: "mainZoom",
+        label: "File List Zoom",
+        desc: "Size of files in the file list",
+        type: "number",
+        min: 1,
+        unit: "px"
+      },
       { type: "label", label: "Popups" },
       {
         key: "showDeleteConfirmation",
