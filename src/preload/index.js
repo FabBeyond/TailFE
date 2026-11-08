@@ -13,5 +13,6 @@ contextBridge.exposeInMainWorld("api", {
   extractArchive: (path) => ipcRenderer.invoke("extract-archive", path),
   createArchive: (paths, destZip) => ipcRenderer.invoke("create-archive", paths, destZip),
   listDrives: () => ipcRenderer.invoke("list-drives"),
+  exists: (path) => ipcRenderer.invoke("exists", path),
   platform: process.platform
 })

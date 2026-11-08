@@ -3,18 +3,19 @@ import { showToast, errorMessage } from "../utils/toast.js"
 import { concatPath, normalizePath, removeLastPathElement } from "../utils/paths.js"
 
 const TabsContext = createContext(null)
-const INITIAL_TAB = {
+const createInitialTab = (path) => ({
   id: "1",
-  path: "/",
+  path,
   files: [],
-  history: ["/"],
+  history: [path],
   historyIndex: 0
-}
+})
 
-export function TabsProvider({ children }) {
-  const [activeTab, setActiveTabState] = useState(INITIAL_TAB.id)
+export function TabsProvider({ children, startupPath = "/" }) {
+  const [initialTab] = useState(() => createInitialTab(normalizePath(startupPath)))
+  const [activeTab, setActiveTabState] = useState(initialTab.id)
   const [selectedFiles, setSelectedFiles] = useState([])
-  const [tabs, setTabs] = useState([INITIAL_TAB])
+  const [tabs, setTabs] = useState([initialTab])
   const [treeVersion, setTreeVersion] = useState(0)
   const loadIds = useRef(new Map())
 
@@ -146,8 +147,8 @@ export function TabsProvider({ children }) {
 
   useEffect(() => {
     //eslint-disable-next-line react-hooks/set-state-in-effect -- setTabs runs after await
-    loadTab(INITIAL_TAB.id, INITIAL_TAB.path)
-  }, [loadTab])
+    loadTab(initialTab.id, initialTab.path, (tab, loaded) => ({ ...tab, history: [loaded] }), true)
+  }, [loadTab, initialTab])
 
   const setActiveTab = useCallback((id) => {
     setActiveTabState(id)

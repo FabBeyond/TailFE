@@ -2,6 +2,7 @@ import { useState } from "react"
 import { PlusIcon, MinusIcon, XIcon, RotateCcw } from "lucide-react"
 import { useSettings } from "../hooks/useSettings"
 import { useUI } from "../hooks/useUI"
+import { normalizePath } from "../utils/paths.js"
 
 const settingsSchema = [
   {
@@ -35,6 +36,12 @@ const settingsSchema = [
         min: 1,
         unit: "px"
       },
+      {
+        key: "startupPath",
+        label: "Startup Path",
+        desc: "Path shown on startup",
+        type: "path"
+      },
       { type: "label", label: "Popups" },
       {
         key: "showDeleteConfirmation",
@@ -61,7 +68,7 @@ const settingsSchema = [
     ]
   }
 ]
-const controls = { toggle: ToggleControl, number: NumberControl }
+const controls = { toggle: ToggleControl, number: NumberControl, path: PathControl }
 
 function Settings() {
   const { setSettingsOpen, settingsOpen } = useUI()
@@ -130,6 +137,36 @@ function SettingsRow({ setting }) {
           className={settings[setting.key] == DEFAULT_SETTINGS[setting.key] ? "disabled" : ""}
         />
       </div>
+    </div>
+  )
+}
+
+function PathControl({ setting }) {
+  const { updateSetting, ...settings } = useSettings()
+  const [draft, setDraft] = useState(null)
+  const [invalidPath, setInvalidPath] = useState(false)
+  const shownValue = draft ?? settings[setting.key]
+
+  return (
+    <div className="path-control">
+      <input
+        className={invalidPath ? "invalid" : ""}
+        value={shownValue}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={async () => {
+          if (draft === null) return
+
+          const path = normalizePath(draft)
+          const result = await window.api.exists(path)
+          if (result.error) {
+            setInvalidPath(true)
+            return
+          }
+          setInvalidPath(false)
+          updateSetting(setting.key, path)
+          setDraft(null)
+        }}
+      />
     </div>
   )
 }

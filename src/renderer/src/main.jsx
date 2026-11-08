@@ -13,7 +13,7 @@ const initialSettings = await window.api.loadSettings()
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <SettingsProvider initialSettings={initialSettings}>
-      <TabsProvider>
+      <TabsProvider startupPath={initialSettings.startupPath}>
         <UIProvider>
           <App />
         </UIProvider>

@@ -218,4 +218,8 @@ export function registerIpcHandlers() {
       return drives.map((element) => ({ target: element.name }))
     }
   })
+  handle("exists", async (path) => {
+    const result = await exists(path)
+    return result ? true : { error: "ENOENT" }
+  })
 }

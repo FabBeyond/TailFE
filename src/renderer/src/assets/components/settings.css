@@ -140,3 +140,14 @@
 .toggle-control.on .toggle-thumb {
   transform: translateX(35px);
 }
+
+.path-control input {
+  border: 2px solid var(--border-raised);
+  background-color: var(--bars-colors);
+  color: var(--text-color);
+  border-radius: var(--radius-md);
+  padding-left: 10px;
+}
+.path-control .invalid {
+  border: 2px solid var(--error);
+}

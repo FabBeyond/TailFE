@@ -10,7 +10,8 @@ const DEFAULT_SETTINGS = {
   foldersOnTop: true,
   dragDeadzone: 20,
   sortingMode: { key: "name", desc: false },
-  showDeleteConfirmation: true
+  showDeleteConfirmation: true,
+  startupPath: "/"
 }
 
 function mergeSettings(saved = {}) {
