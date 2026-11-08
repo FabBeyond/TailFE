@@ -8,6 +8,9 @@ import ContextMenu from "../src/renderer/src/components/ContextMenu.jsx"
 let ui, tabs
 vi.mock("../src/renderer/src/hooks/useUI.jsx", () => ({ useUI: () => ui }))
 vi.mock("../src/renderer/src/hooks/useTabs.jsx", () => ({ useTabs: () => tabs }))
+vi.mock("../src/renderer/src/hooks/useSettings.jsx", () => ({
+  useSettings: () => ({ showDeleteConfirmation: true })
+}))
 vi.mock("../src/renderer/src/utils/fileActions.js", () => ({
   createFolder: vi.fn(async () => null),
   deleteFile: vi.fn(async () => {}),
@@ -204,7 +207,11 @@ describe("actions", () => {
     setup(fileMenu("/home/user/a.txt"), { selectedFiles: ["/home/user/a.txt", "/home/user/b"] })
     click("Delete")
     await waitFor(() =>
-      expect(deleteFile).toHaveBeenCalledWith(["/home/user/a.txt", "/home/user/b"], tabs.refresh)
+      expect(deleteFile).toHaveBeenCalledWith(
+        ["/home/user/a.txt", "/home/user/b"],
+        tabs.refresh,
+        true
+      )
     )
   })
 

@@ -1,7 +1,7 @@
 import { showToast, errorMessage } from "./toast.js"
 import { confirm } from "./confirmation.js"
 
-export async function deleteFile(paths, refresh, confirmDelete) {
+export async function deleteFile(paths, refresh, confirmDelete = true) {
   if (confirmDelete) {
     const ok = await confirm(`Delete ${paths.length} item(s)?`, { confirmText: "Delete" })
     if (!ok) return

@@ -46,6 +46,14 @@ describe("deleteFile", () => {
     expect(api.deleteFile).not.toHaveBeenCalled()
     expect(refresh).not.toHaveBeenCalled()
   })
+
+  it("deletes without asking when confirmation is turned off", async () => {
+    vi.mocked(confirm).mockClear()
+    await deleteFile(["/a", "/b"], refresh, false)
+    expect(confirm).not.toHaveBeenCalled()
+    expect(api.deleteFile.mock.calls).toEqual([["/a"], ["/b"]])
+    expect(refresh).toHaveBeenCalledTimes(1)
+  })
 })
 
 describe("createFolder", () => {
