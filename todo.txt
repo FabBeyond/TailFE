@@ -7,6 +7,8 @@ General todo:
 - add status bar
 - searching
 - add context menu stuff in non file list
+- add network stuff like sftp/scp etc.
+- add filetype property in file columns
 
 Bugs:
 - General

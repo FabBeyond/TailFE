@@ -37,6 +37,20 @@ npm install
 npm run dev
 ```
 
+If you get an error that says the following
+
+```
+error during start dev server and electron
+Error: electron uninstall
+...
+```
+
+run this command to fix it
+
+```
+node mode_modules/electron/install.js
+```
+
 ### Scripts
 
 ## Scripts
