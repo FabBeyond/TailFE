@@ -26,7 +26,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx electron-builder ${{ matrix.args }} --publish never
+      - run: DEBUG=electron-builder npx electron-builder ${{ matrix.args }} --publish never
       - uses: actions/upload-artifact@v4
         with:
           name: tailfe-${{ matrix.os }}
